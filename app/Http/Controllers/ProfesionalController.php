@@ -30,14 +30,3 @@ class ProfesionalController extends Controller
         ]);
     }
 }
-// public function index(): View
-//     {
-//         return view('peliculas.index', [
-//             'peliculas' => Pelicula::withCount('resenas')
-//                 ->orderBy('titulo')
-//                 ->get(),
-//             'titulo' => 'Catalogo de peliculas',
-//             'activeFilter' => 'todas',
-//             'modelo' => new Pelicula(),
-//         ]);
-//     }
