@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Models;
-
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,8 +24,7 @@ class User extends Authenticatable
     use InteractsWithChatify;
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-
-
+    
     protected $fillable = [
         'usuario','telefono','tipo', 'imagen', 'email_verified_at', 'password'
     ];

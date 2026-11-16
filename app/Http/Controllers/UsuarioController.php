@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
+
 class UsuarioController extends Controller
 {
 
@@ -46,16 +47,4 @@ class UsuarioController extends Controller
          }
         
     }
-
-    /** Guardar un usuario nuevo*/
-    // public function store(Request $request): JsonResponse|RedirectResponse
-    // {
-    //     $datos = $request->validate([
-    //         '' => ['required', 'string', 'max:80'],
-    //         '' => ['required', 'string', 'max:2000'],
-    //         '' => ['required', 'integer', 'between:1,5'],
-    //     ]);
-
-    //     return redirect()->route('profesional.show');
-    // }
 }

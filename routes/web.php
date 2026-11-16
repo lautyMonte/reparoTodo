@@ -29,3 +29,4 @@ Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
         ->name('mensajes');
 
 });
+
