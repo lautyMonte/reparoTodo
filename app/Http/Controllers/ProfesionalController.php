@@ -21,12 +21,22 @@ class ProfesionalController extends Controller
      public function index(): View
     {                                  //deben tener el nombre de mi funcion que hace la conexion entre usuarios y oficios de un profesional
         $profesionales=Profesional::with('user','oficios')->get();
-        //$profesional=User::where('tipo','profesional')->orderBy('usuario')->get();
 
-        return view('profesional.index',[
+        return view('profesional.listado',[
             'profesionales'=>$profesionales,
             'titulo' => 'Muestra',
-            'modelo' => new Profesional()//User()
+            'modelo' => new Profesional()
+        ]);
+    }
+
+    public function perfil(int $id): View
+    {
+       $profesional=Profesional::with('user','oficios')->find($id);
+
+        return view('profesional.perfil', [
+            'profesional' => $profesional,
+            'titulo'=> 'el profesional',
+            'modelo' => new Profesional(),
         ]);
     }
 }

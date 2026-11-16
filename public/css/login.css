@@ -15,7 +15,7 @@ body {
 
 /* HEADER */
 .header {
-    background: #202c3b;
+    background: #1d3557;
     color: white;
     padding: 20px 40px;
     display: flex;
@@ -117,11 +117,19 @@ body {
 }
 
 /*Profesionales*/
-.profesional { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 15px 0; display: flex; gap: 20px; align-items: center; }
+.profesional { 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    padding: 16px; 
+    margin: 15px 0; 
+    display: flex; 
+    gap: 20px; 
+    align-items: center; 
+}
 
 /* FOOTER */
 .footer {
-    background: #202c3b;
+    background: #1d3557;
     color: #d1d5db;
     text-align: center;
     padding: 20px;

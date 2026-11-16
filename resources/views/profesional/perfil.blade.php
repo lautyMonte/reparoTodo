@@ -5,7 +5,6 @@
     $profesional->user->atributo (devuelve la tupla del atributo que se encuentra en user)
     $oficio->atributo (devuelve la tupla del atributo que se encuentra en oficios)
 --}}
-@forelse ($profesionales as $profesional)
         <article class="profesional">
             @if ($url = $profesional->user->urlImagen($profesional->user->imagen))
                 <img
@@ -23,10 +22,8 @@
                     <p>{{ $oficio->tipo }}</p>
                 @endforeach
                 <p>{{ $profesional->provincia }} - {{ $profesional->ciudad }}</p>
-                <a href="#">Ver detalle</a>
             </div>
         </article>
-    @empty
-        <p>No hay profesionals para mostrar.</p>
-    @endforelse
+         {{-- Bandeja de entrada --}}
+        @include('chatify.box')
 @endsection

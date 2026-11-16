@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -33,7 +34,13 @@ class UsuarioController extends Controller
         $usuario = User::where('usuario', $datos['usuario'])->first();
 
         if ($usuario && Hash::check($datos['password'], $usuario->password)) {
-            return redirect()->route('profesional.index');   
+            Auth::login($usuario);
+            $request->session()->regenerate();
+            if($usuario['tipo']==='comun'){
+                return redirect()->route('profesional.listado',$usuario)->with('nombre', 'hola '.$usuario['usuario']); //para un usuario  
+            }else{
+                return redirect()->route('profesional.perfil', $usuario);// para un profesional
+            }
          }else{
              return redirect()->route('usuario.index')->with('error','usuario o contraseña incorrecta');
          }
