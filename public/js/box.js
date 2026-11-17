@@ -157,6 +157,7 @@ async function cargarMensajes() {
         elemento.textContent = mensaje.attributes?.body ?? '';
 
         contenedor.appendChild(elemento);
+        
     });
 
     contenedor.scrollTop = contenedor.scrollHeight;
