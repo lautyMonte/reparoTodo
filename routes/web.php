@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',[UsuarioController::class,'index'])->name('usuario.index');
 Route::post('/',[UsuarioController::class,'verifica'])->name('usuario.verifica');
 
-//muestra todos los profesionales cargados en la pagina
-Route::get('/buscador',[ProfesionalController::class,'index'])->name('profesional.listado');
-Route::get('/profesional/{id}',[ProfesionalController::class,'perfil'])->whereNumber('id')->name('profesional.perfil');
+//ingreso a la pagina web de forma segura (autenticacion)
+Route::middleware('auth')->group(function () {
+    Route::get('/buscador',[ProfesionalController::class,'index'])->name('profesional.listado');
+    Route::get('/profesional/{id}',[ProfesionalController::class,'perfil'])->whereNumber('id')->name('profesional.perfil');
+});
+
 
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
 

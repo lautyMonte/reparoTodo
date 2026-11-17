@@ -5,8 +5,9 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+//para manejar la autenticacion de usuarios
+use Illuminate\Support\Facades\Hash;//contraseña
+use Illuminate\Support\Facades\Auth;//usuario logueado
 
 
 class UsuarioController extends Controller
@@ -19,7 +20,7 @@ class UsuarioController extends Controller
         ]);
     }
 
-     public function verifica(Request $request):RedirectResponse
+    public function verifica(Request $request):RedirectResponse
     {
         
         $datos=$request->validate([
@@ -48,8 +49,14 @@ class UsuarioController extends Controller
         
     }
 
-    public function salir(Request $request): RedirectResponse
-    {
+    public function registrar(){
+        //aca iria la validacion de un nuevo usuario
+    }
+
+
+
+    //para que el usuario pueda cerrar sesion
+    public function salir(Request $request){
         Auth::logout();
 
         $request->session()->invalidate();

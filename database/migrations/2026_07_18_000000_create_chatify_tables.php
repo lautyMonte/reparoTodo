@@ -14,15 +14,15 @@ return new class extends Migration
         $conversations = config('chatify.tables.conversations', 'ch_conversations');
         $participants = config('chatify.tables.participants', 'ch_conversation_participants');
         $messages = config('chatify.tables.messages', 'ch_messages');
-        $favorites = config('chatify.tables.favorites', 'ch_favorites');
-        $blocks = config('chatify.tables.blocks', 'ch_user_blocks');
+        $favorites = config('chatify.tables.favorites', 'ch_favorites');//no lo usamos
+        $blocks = config('chatify.tables.blocks', 'ch_user_blocks');//no lo usamos
         $userSettings = config('chatify.tables.user_settings', 'ch_user_settings');
         $messageUserStates = 'ch_message_user_states';
 
         Schema::dropIfExists($messageUserStates);
-        Schema::dropIfExists($favorites);
+        Schema::dropIfExists($favorites);//no lo usamos
         Schema::dropIfExists($messages);
-        Schema::dropIfExists($blocks);
+        Schema::dropIfExists($blocks);//no lo usamos
         Schema::dropIfExists($participants);
         Schema::dropIfExists($conversations);
         Schema::dropIfExists($userSettings);

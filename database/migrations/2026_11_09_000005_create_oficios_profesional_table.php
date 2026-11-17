@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('oficio_profesional', function (Blueprint $table) {
-            $table->id();
+            $table->id();                        //para indicar que es un valor foraneo constrained()
             $table->foreignId('profesional_id')->constrained('profesionales')->cascadeOnDelete();
             $table->foreignId('oficio_id')->constrained('oficios')->cascadeOnDelete();
             $table->unique(['profesional_id', 'oficio_id']);

@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('imagen')->nullable();
             $table->string('email');
             $table->enum('tipo', ['comun', 'profesional'])->default('comun');
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();//nulllable() significa que no es obligatorio, puede ser nulo
             $table->string('password');
-            $table->rememberToken();
+            $table->rememberToken();// es el token que se genera para recordar la sesion del usuario
             $table->timestamps();
         });
 
