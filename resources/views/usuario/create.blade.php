@@ -1,4 +1,4 @@
-@extends('layout.app')
-@section('content')
+@extends('layout.login')
+@section('session-content')
 
 @endsection

@@ -37,8 +37,8 @@ class UsuarioController extends Controller
         if ($usuario && Hash::check($datos['password'], $usuario->password)) {
             Auth::login($usuario);
             $request->session()->regenerate();
-            if($usuario['tipo']==='comun'){
-                return redirect()->route('profesional.listado',$usuario)->with('nombre', 'hola '.$usuario['usuario']); //para un usuario  
+            if($usuario->tipo==='comun'){
+                return redirect()->route('profesional.listado')->with('nombre', 'hola '.$usuario->usuario); //para un usuario  
             }else{
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional
             }
@@ -46,5 +46,15 @@ class UsuarioController extends Controller
              return redirect()->route('usuario.index')->with('error','usuario o contraseña incorrecta');
          }
         
+    }
+
+    public function salir(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('usuario.index');
     }
 }

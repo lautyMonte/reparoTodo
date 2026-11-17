@@ -1,6 +1,6 @@
-@extends('layouts.app', ['title' => $titulo])
+@extends('layouts.login', ['title' => $titulo])
 
-@section('content')
+@section('session-content')
         <form class="login-form" method="POST" action="{{route('usuario.verifica')}}">
             @csrf
 
