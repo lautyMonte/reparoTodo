@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;//usuario logueado
 class UsuarioController extends Controller
 {
 
-    public function index(): View
+    public function registro(): View
     {
         return view('usuario.index',[
             'titulo' => 'Inicio'
@@ -44,7 +44,7 @@ class UsuarioController extends Controller
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional
             }
          }else{
-             return redirect()->route('usuario.index')->with('error','usuario o contraseña incorrecta');
+             return redirect()->route('usuario.registro')->with('error','usuario o contraseña incorrecta');
          }
         
     }
@@ -54,7 +54,6 @@ class UsuarioController extends Controller
     }
 
 
-
     //para que el usuario pueda cerrar sesion
     public function salir(Request $request){
         Auth::logout();
@@ -62,6 +61,6 @@ class UsuarioController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('usuario.index');
+        return redirect()->route('usuario.registro');
     }
 }

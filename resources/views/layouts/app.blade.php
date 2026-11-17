@@ -8,7 +8,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="usuario-id" content="{{ auth()->id() }}">
-    <title></title>
+    <title>Lista de Profesionales</title>
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
     <link rel="stylesheet" href="{{ asset('css/box.css') }}">
@@ -19,7 +19,7 @@
 
         <a class="navbar-brand fw-bold" href="{{ route('profesional.listado') }}">Reparo<span class="brand-accent">Todo</span></a>
         <nav>
-            <a href="{{route('usuario.index')}}">Cerrar sesion</a>
+            <a href="{{route('usuario.registro')}}">Cerrar sesion</a>
         </nav>
     </header>
 
