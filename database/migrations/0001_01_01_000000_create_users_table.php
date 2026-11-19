@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('usuario',20);
+            $table->string('usuario',20)->unique();
             $table->string('telefono',12);
             $table->string('imagen')->nullable();
-            $table->string('email');
-            $table->enum('tipo', ['comun', 'profesional'])->default('comun');
-            $table->timestamp('email_verified_at')->nullable();//nulllable() significa que no es obligatorio, puede ser nulo
+            $table->string('email')->unique();
+            $table->enum('tipo', ['cliente', 'profesional'])->default('cliente');
+            $table->timestamp('email_verified_at')->nullable(); // nulllable() significa que no es obligatorio, puede ser nulo
             $table->string('password');
-            $table->rememberToken();// es el token que se genera para recordar la sesion del usuario
+            $table->rememberToken(); // Es el token que se genera para recordar la sesion del usuario
             $table->timestamps();
         });
 

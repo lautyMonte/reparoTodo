@@ -123,11 +123,11 @@ class ChatController extends Controller
     ): void {
 
         $tiposValidos =
-            ($emisor->tipo === 'comun' &&
+            ($emisor->tipo === 'cliente' &&
              $destinatario->tipo === 'profesional')
             ||
             ($emisor->tipo === 'profesional' &&
-             $destinatario->tipo === 'comun');
+             $destinatario->tipo === 'cliente');
 
         abort_unless($tiposValidos, 403);
     }

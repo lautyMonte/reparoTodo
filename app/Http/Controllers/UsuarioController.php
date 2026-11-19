@@ -39,7 +39,7 @@ class UsuarioController extends Controller
         if ($usuario && Hash::check($datos['password'], $usuario->password)) {
             Auth::login($usuario);
             $request->session()->regenerate();
-            if($usuario->tipo==='comun'){
+            if($usuario->tipo==='cliente'){
                 return redirect()->route('profesional.listado')->with('nombre', 'hola '.$usuario->usuario); //para un usuario  
             }else{
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional

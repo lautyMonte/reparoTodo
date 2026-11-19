@@ -30,7 +30,7 @@ class User extends Authenticatable
     ];
 
 
-    //porque el profesional solo puede tener un usuario
+    // Porque el profesional solo puede tener un usuario
     public function profesional(): HasOne
     {
         return $this->hasOne(Profesional::class);

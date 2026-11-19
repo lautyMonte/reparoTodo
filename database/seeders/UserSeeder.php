@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class userSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -53,7 +53,7 @@ User::updateOrCreate(
     [
         'usuario' => 'lautaro Rodriguez',
         'telefono' => '542994237859',
-        'tipo' => 'comun',
+        'tipo' => 'cliente',
         'imagen' => null,
         'email_verified_at' => now(),
         'password' => Hash::make('password123'),

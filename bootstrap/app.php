@@ -5,8 +5,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
-//aca coloco los middlewares que creo
-use App\Http\Middleware\SoloComun;
+//Aca colocamos los middlewares que creamos
+use App\Http\Middleware\SoloCliente;
 use App\Http\Middleware\SoloProfesional;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,11 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //aca coloco los middlewares que creo
+        //Aca colocamos los middlewares que creamos
         $middleware->alias([
-            'comun'=>SoloComun::class,
+            'cliente'=>SoloCliente::class,
             'profesional'=>SoloProfesional::class
         ]);
+        //Si alguien sin sesion entra a una ruta protegida, lo mandamos al login
+        $middleware->redirectGuestsTo(fn () => route('usuario.registro'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

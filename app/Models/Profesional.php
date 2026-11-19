@@ -15,13 +15,13 @@ class Profesional extends Model
         'ciudad',
     ];
 
-    //relacion muchos a muchos con oficios
+    // Relacion muchos a muchos con oficios
     public function oficios(): BelongsToMany
     {
         return $this->belongsToMany(Oficio::class);
     }
 
-    //relacion uno a muchos con usuario
+    // Relacion uno a uno con usuario (cada profesional pertenece a un solo usuario)
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
