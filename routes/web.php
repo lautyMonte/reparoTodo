@@ -3,15 +3,17 @@
 use App\Http\Controllers\ProfesionalController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ChatController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 //inicio de la pagina
 Route::get('/',[UsuarioController::class,'registro'])->name('usuario.registro');
 Route::post('/',[UsuarioController::class,'verifica'])->name('usuario.verifica');
 Route::get('/salir',[UsuarioController::class,'salir'])->name('usuario.salir');
+Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create');
+Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
 
-//ingreso a la pagina web de forma segura (autenticacion), aun no esta terminado
+
+//ingreso a la pagina web de forma segura (autenticacion)
 Route::middleware(['auth', 'comun'])->group(function () {
    Route::get('/buscador',[ProfesionalController::class,'index'])->name('profesional.listado');
      
@@ -21,7 +23,7 @@ Route::middleware(['auth', 'profesional'])->group(function () {
      
 });
 
-
+//para los chats
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
 
     // Iniciar conversación

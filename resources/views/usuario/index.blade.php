@@ -31,6 +31,6 @@
 
             <button type="submit">Ingresar</button>
 
-            <a href="#">¿No tenés una cuenta? Registrate</a>
+            <a href="{{ route('usuario.create') }}">¿No tenés una cuenta? Registrate</a>
         </form>
 @endsection

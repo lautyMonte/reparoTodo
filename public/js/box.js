@@ -163,6 +163,7 @@ async function cargarMensajes() {
     contenedor.scrollTop = contenedor.scrollHeight;
 }
 
+
 // ÚNICO evento para enviar mensajes.
 const formulario = document.getElementById('form-chat');
 
