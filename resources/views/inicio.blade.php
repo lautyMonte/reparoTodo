@@ -20,7 +20,7 @@
                 <div class="slide-rt" style="background-image: url('{{ asset('img/home/slide-cliente.avif') }}')">
                     <div class="slide-contenido">
                         <h1>¿Qué necesitás reparar hoy?</h1>
-                        <a href="{{ route('profesional.listado') }}" class="btn btn-accent btn-lg fw-bold px-5">Busco profesional</a>
+                        <a href="{{ route('profesional.index') }}" class="btn btn-accent btn-lg fw-bold px-5">Busco profesional</a>
                     </div>
                 </div>
             </div>
@@ -152,7 +152,9 @@
                                 <div class="avatar-rt mx-auto mb-2">{{ mb_strtoupper(mb_substr($destacado->user->usuario, 0, 1)) }}</div>
                             @endif
 
-                            <h3 class="h5 mb-1">{{ $destacado->user->usuario }}</h3>
+                            <h3 class="h5 mb-1">
+                                <a href="{{ route('profesional.show', $destacado->id) }}" class="stretched-link text-reset text-decoration-none">{{ $destacado->user->usuario }}</a>
+                            </h3>
 
                             <p class="estrellas small mb-2">
                                 <i data-lucide="star"></i>
@@ -176,7 +178,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ route('profesional.listado') }}" class="btn btn-primary fw-semibold px-4">Ver más profesionales</a>
+            <a href="{{ route('profesional.index') }}" class="btn btn-primary fw-semibold px-4">Ver más profesionales</a>
         </div>
     </section>
 
@@ -239,7 +241,7 @@
             <div class="carousel-item active">
                 <div class="slide-cta">
                     <h2>¿Listo para empezar?</h2>
-                    <a href="{{ route('profesional.listado') }}" class="btn btn-accent fw-bold px-5">Buscar profesional</a>
+                    <a href="{{ route('profesional.index') }}" class="btn btn-accent fw-bold px-5">Buscar profesional</a>
                 </div>
             </div>
             <div class="carousel-item">

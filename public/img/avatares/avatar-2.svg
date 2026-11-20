@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#1FA5B8"/>
+  <g transform="translate(100 132) scale(1.2) translate(-100 -132)">
+  
+  <!-- torso -->
+  <path d="M18 200 C18 162 54 148 100 148 C146 148 182 162 182 200 Z" fill="#F28C28"/>
+  <path d="M84 150 L100 172 L116 150 Z" fill="#fff"/><rect x="118" y="170" width="26" height="30" rx="3" fill="#d9791a"/>
+  <!-- cuello -->
+  <path d="M84 118 H116 V150 C116 158 84 158 84 150 Z" fill="#A0653D"/>
+  <!-- orejas -->
+  <ellipse cx="63" cy="92" rx="6.5" ry="9" fill="#A0653D"/><ellipse cx="137" cy="92" rx="6.5" ry="9" fill="#A0653D"/>
+  <!-- cabeza -->
+  <ellipse cx="100" cy="90" rx="36" ry="42" fill="#B97A4F"/>
+  <!-- cejas, ojos, nariz, boca -->
+  <path d="M77 78 Q86 73 94 77" stroke="#241811" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+  <path d="M106 77 Q114 73 123 78" stroke="#241811" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+  <ellipse cx="86" cy="89" rx="3.4" ry="4.2" fill="#1f1a17"/>
+  <ellipse cx="114" cy="89" rx="3.4" ry="4.2" fill="#1f1a17"/>
+  <path d="M100 92 Q96 103 101 106" stroke="#A0653D" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M72 106 C72 124 86 132 100 132 C114 132 128 124 128 106 C124 116 114 120 100 120 C86 120 76 116 72 106 Z" fill="#241811" opacity=".28"/>
+  <path d="M87 110 Q100 119 113 110" stroke="#6b2f24" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+  <path d="M64 80 C60 46 84 36 102 36 C124 36 142 50 136 80 C130 66 118 58 100 58 C84 58 72 66 64 80 Z" fill="#241811"/>
+  <g fill="none" stroke="#14263f" stroke-width="3">
+    <rect x="72" y="80" width="26" height="20" rx="8"/><rect x="102" y="80" width="26" height="20" rx="8"/>
+    <path d="M98 89 H102"/><path d="M72 88 L64 85"/><path d="M128 88 L136 85"/></g>
+  </g>
+</svg>

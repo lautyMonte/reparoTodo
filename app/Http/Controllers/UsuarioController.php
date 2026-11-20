@@ -41,13 +41,9 @@ class UsuarioController extends Controller
         if ($usuario && Hash::check($datos['password'], $usuario->password)) {
             Auth::login($usuario);
             $request->session()->regenerate();
-            if($usuario->tipo==='cliente'){
-                return redirect()->route('profesional.listado')->with('nombre', 'hola '.$usuario->usuario); //para un usuario  
-            }else{
-                return redirect()->route('profesional.perfil', $usuario);// para un profesional
-            }
+            return redirect()->route('inicio')->with('exito', 'Hola, '.$usuario->usuario);
         } else {
-            return redirect()->route('profesional.perfil', $usuario->profesional->id); // para un profesional
+            return back()->with('error', 'Usuario o contraseña incorrectos')->withInput();
         }
     }
 

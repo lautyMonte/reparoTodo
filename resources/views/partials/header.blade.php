@@ -23,7 +23,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesional.listado') ? 'active' : '' }}" href="{{ route('profesional.listado') }}">
+                        <a class="nav-link {{ request()->routeIs('profesional.index') ? 'active' : '' }}" href="{{ route('profesional.index') }}">
                             <i data-lucide="search"></i> Buscar profesional
                         </a>
                     </li>
@@ -61,7 +61,7 @@
 
                         {{-- "Mi perfil" solo para profesionales --}}
                         @if (auth()->user()->tipo === 'profesional' && auth()->user()->profesional)
-                            <a class="btn btn-outline-light" href="{{ route('profesional.perfil', auth()->user()->profesional->id) }}">Mi perfil</a>
+                            <a class="btn btn-outline-light" href="{{ route('profesional.show', auth()->user()->profesional->id) }}">Mi perfil</a>
                         @endif
 
                         <a class="btn btn-accent" href="{{ route('usuario.salir') }}">

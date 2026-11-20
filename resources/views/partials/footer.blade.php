@@ -24,7 +24,7 @@
                 <h3 class="footer-titulo">Navegación</h3>
                 <ul class="list-unstyled footer-links mb-0">
                     <li><a href="{{ route('inicio') }}">Inicio</a></li>
-                    <li><a href="{{ route('profesional.listado') }}">Buscar profesional</a></li>
+                    <li><a href="{{ route('profesional.index') }}">Buscar profesional</a></li>
                     <li><a href="{{ route('inicio') }}#como-funciona">Cómo funciona</a></li>
                 </ul>
             </div>
