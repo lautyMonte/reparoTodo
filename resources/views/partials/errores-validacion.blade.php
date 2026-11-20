@@ -6,8 +6,4 @@
             @endforeach
         </ul>
     </div>
-@elseif (session('error'))
-    <div class="alert alert-danger" id=alert role="alert">
-        <h3>{{ session('error') }}</h3>
-    </div>
 @endif
