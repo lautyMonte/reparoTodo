@@ -29,9 +29,27 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 /* ===== Header ===== */
 .navbar-rt { background-color: var(--rt-azul); }
 .navbar-rt .navbar-brand { color: #fff; }
-.navbar-rt .nav-link { color: #fff; }
-.navbar-rt .nav-link:hover,
-.navbar-rt .nav-link.active { color: var(--rt-naranja); }
+.navbar-rt .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+.navbar-rt .nav-link .lucide { width: 1.1rem; height: 1.1rem; }
+.navbar-rt .nav-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+.navbar-rt .nav-link.active {
+    background: rgba(242, 140, 40, 0.18);
+    color: var(--rt-naranja);
+}
 .navbar-rt .btn .lucide { margin-right: 0.25rem; vertical-align: -4px; }
 .brand-accent { color: var(--rt-naranja); }
 
@@ -68,31 +86,62 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     --bs-btn-active-color: var(--rt-azul);
 }
 
+/* Blanco con texto azul (para "Iniciar sesión") */
+.btn-blanco {
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: #fff;
+    --bs-btn-color: var(--rt-azul);
+    --bs-btn-hover-bg: var(--rt-crema);
+    --bs-btn-hover-border-color: var(--rt-crema);
+    --bs-btn-hover-color: var(--rt-azul);
+    --bs-btn-active-bg: var(--rt-crema);
+    --bs-btn-active-border-color: var(--rt-crema);
+    --bs-btn-active-color: var(--rt-azul);
+}
+
 /* ===== Footer ===== */
 .footer-rt { background: var(--rt-azul); color: #fff; }
-.footer-rt h2 { color: #fff; }
-.footer-texto { max-width: 480px; color: rgba(255, 255, 255, 0.85); }
+.footer-marca {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #fff;
+    text-decoration: none;
+}
+.footer-marca:hover { color: #fff; }
+.footer-texto { max-width: 380px; color: rgba(255, 255, 255, 0.85); }
+.footer-titulo {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rt-naranja);
+    margin-bottom: 1rem;
+}
 .footer-red {
     width: 44px;
     height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     border: 1.5px solid rgba(255, 255, 255, 0.6);
     border-radius: 50%;
     color: #fff;
-    font-size: 1.2rem;
     text-decoration: none;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
+.footer-red .bi { font-size: 1.25rem; line-height: 1; }
+.footer-red .bi::before { vertical-align: 0; }
 .footer-red:hover {
     background: var(--rt-naranja);
     border-color: var(--rt-naranja);
     color: var(--rt-azul);
 }
-.footer-links a { color: #fff; text-decoration: none; }
+.footer-links li { margin-bottom: 0.6rem; }
+.footer-links a { color: rgba(255, 255, 255, 0.85); text-decoration: none; }
 .footer-links a:hover { color: var(--rt-naranja); }
 .footer-copy {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--rt-azul-oscuro);
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
 }
@@ -173,3 +222,91 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
 }
 #chat-widget .chat-toggle:hover { background: var(--rt-azul-oscuro); }
+
+/* ===== Anclas: que el header fijo no tape el título al hacer scroll ===== */
+[id] { scroll-margin-top: 90px; }
+
+/* ===== Profesionales destacados y tarjeta de perfil ===== */
+.tarjeta-profesional {
+    background: #fff;
+    border: 1px solid #e4dfd3;
+    border-radius: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.tarjeta-profesional:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(29, 53, 87, 0.12);
+}
+.tarjeta-profesional .lucide { width: 1rem; height: 1rem; vertical-align: -3px; }
+.avatar-rt {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--rt-azul);
+    color: #fff;
+    border: 3px solid var(--rt-naranja);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+.etiqueta-destacado {
+    display: inline-block;
+    background: var(--rt-naranja);
+    color: var(--rt-azul);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 50rem;
+}
+.etiqueta-destacado .lucide { width: 0.8rem; height: 0.8rem; fill: currentColor; }
+.chip-oficio {
+    display: inline-block;
+    background: var(--rt-azul);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.7rem;
+    border-radius: 50rem;
+}
+.estrellas .lucide { color: var(--rt-naranja); fill: currentColor; }
+
+/* ===== "Así te ven los clientes" ===== */
+.bloque-perfil {
+    background: var(--rt-azul);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+}
+.bloque-perfil h2 { color: #fff; }
+.lista-check li { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.check-rt {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--rt-naranja);
+    color: var(--rt-azul);
+}
+.check-rt .lucide { width: 1rem; height: 1rem; }
+
+/* ===== Carrusel final (más chico) ===== */
+.carrusel-cta {
+    background: var(--rt-azul);
+    border-radius: 1.5rem;
+    overflow: hidden;
+}
+.slide-cta { padding: 2.5rem 5rem 3.5rem; text-align: center; }
+.slide-cta h2 { color: #fff; font-size: 1.6rem; margin-bottom: 1.25rem; }
+.carrusel-cta .carousel-indicators { margin-bottom: 0.9rem; }
+.carrusel-cta .carousel-indicators [data-bs-target] {
+    width: 24px;
+    height: 5px;
+    border: 0;
+    border-radius: 3px;
+}

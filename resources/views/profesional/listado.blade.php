@@ -23,13 +23,19 @@
                     <p>{{ $oficio->tipo }}</p>
                 @endforeach
                 <p>{{ $profesional->provincia }} - {{ $profesional->ciudad }}</p>
-                <button type="button" class="btn-contactar" data-user-id="{{ $profesional->user->id }}" data-user-name="{{ $profesional->user->usuario }}">
-                    Contactar profesional
-                </button>
+                @auth
+                    <button type="button" class="btn-contactar" data-user-id="{{ $profesional->user->id }}" data-user-name="{{ $profesional->user->usuario }}">
+                        Contactar profesional
+                    </button>
+                @else
+                    <a href="{{ route('usuario.registro') }}" class="btn-contactar">Contactar profesional</a>
+                @endauth
             </div>
         </article>
     @empty
         <p>No hay profesionals para mostrar.</p>
     @endforelse
-    @include('chatify.index')
+    @auth
+        @include('chatify.index')
+    @endauth
 @endsection

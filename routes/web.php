@@ -17,12 +17,11 @@ Route::get('/salir',[UsuarioController::class,'salir'])->name('usuario.salir');
 Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create');
 Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
 
+// Buscador de profesionales: es publico, lo puede ver cualquiera (con o sin sesion)
+Route::get('/buscador',[ProfesionalController::class,'index'])->name('profesional.listado');
+
 
 // Ingreso a la pagina web de forma segura (autenticacion)
-Route::middleware(['auth', 'cliente'])->group(function () {
-   Route::get('/buscador',[ProfesionalController::class,'index'])->name('profesional.listado');
-     
-});
 Route::middleware(['auth', 'profesional'])->group(function () {
    Route::get('/profesional/{id}',[ProfesionalController::class,'perfil'])->whereNumber('id')->name('profesional.perfil');
      

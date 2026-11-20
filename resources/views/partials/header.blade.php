@@ -18,10 +18,14 @@
                 {{-- Links de navegación --}}
                 <ul class="navbar-nav mx-lg-auto gap-lg-2">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">Inicio</a>
+                        <a class="nav-link {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">
+                            <i data-lucide="house"></i> Inicio
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesional.listado') ? 'active' : '' }}" href="{{ route('profesional.listado') }}">Buscar profesional</a>
+                        <a class="nav-link {{ request()->routeIs('profesional.listado') ? 'active' : '' }}" href="{{ route('profesional.listado') }}">
+                            <i data-lucide="search"></i> Buscar profesional
+                        </a>
                     </li>
                     {{-- Pendientes (se agregan cuando existan las páginas):
                          Rubros, Ofrecer servicios, Preguntas frecuentes, Contacto --}}
@@ -32,10 +36,10 @@
 
                     {{-- SIN LOGIN --}}
                     @guest
-                        <a class="btn btn-outline-light" href="{{ route('usuario.create') }}">
+                        <a class="btn btn-accent fw-semibold" href="{{ route('usuario.create') }}">
                             <i data-lucide="user-plus"></i> Crear cuenta
                         </a>
-                        <a class="btn btn-accent" href="{{ route('usuario.registro') }}">
+                        <a class="btn btn-blanco fw-semibold" href="{{ route('usuario.registro') }}">
                             <i data-lucide="log-in"></i> Iniciar sesión
                         </a>
                     @endguest
