@@ -1,12 +1,11 @@
-@extends('layouts.login', ['title' => $titulo])
+@extends('layouts.app', ['title' => $titulo])
 
-@section('session-content')
-<div>
+@section('contenido')
+            <h1 class="titulo">¡Bienvenido!</h1>
+            <p class="subtitulo">Ingresá a tu cuenta para encontrar profesionales y gestionar tus solicitudes</p>
+
         <form class="login-form" method="POST" action="{{route('usuario.verifica')}}">
             @csrf
-
-            <h1>!Bienvenido¡</h1>
-            <p>Ingresá a tu cuenta para encontrar profesionales y gestionar tus solicitudes</p>
 
             <div class="campo">
                 <label for="usuario">Nombre de usuario</label>
@@ -30,8 +29,8 @@
                 >
             </div>
 
-            <button type="submit">Ingresar</button>
+            <button type="submit" class="btn-login">Iniciar sesion</button>
 
-            <a href="{{ route('usuario.create') }}">¿No tenés una cuenta? Registrate</a>
+            <p class="subtitulo">¿Todavia no tenés cuenta?<a href="{{ route('usuario.create') }}"> Registrate</a></p>
         </form>
 @endsection

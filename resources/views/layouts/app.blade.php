@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="{{ asset('css/reparotodo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
     <link rel="stylesheet" href="{{ asset('css/box.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/create.css') }}">{{-- Estilos específicos para el crear un usuario --}}
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">{{-- Estilos específicos para el login --}}
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -56,6 +58,8 @@
         <script src="{{ asset('js/chat.js') }}" defer></script>
         <script src="{{ asset('js/box.js') }}" defer></script>
     @endauth
+
+    <script src="{{ asset('js/registro.js') }}"></script>
 
     @stack('scripts')
 

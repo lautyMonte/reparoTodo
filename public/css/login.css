@@ -1,4 +1,4 @@
-
+/* CONFIGURACIÓN GENERAL */
 * {
     margin: 0;
     padding: 0;
@@ -6,139 +6,86 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: #f3f5f8;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f5f2eb;
+    color: #20395d;
 }
 
-/* HEADER */
-.header {
-    background: #1d3557;
-    color: white;
-    padding: 20px 40px;
+/* TÍTULO y SUBTITULO */
+.titulo {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-}
-
-.header a {
-    color: white;
-    text-decoration: none;
-}
-
-/* CONTENIDO */
-.container {
-    flex: 1;
-    display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 30px 15px;
+    position: relative;
+    margin-bottom: 8px;
+    font-size: 40px;
+    font-weight: 600;
 }
 
-/*ALERTA DE ERRORES*/
-#alert{
-    background: red;
-    position: absolute;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    
+.subtitulo {
+    text-align: center;
+    font-size: 15px;
+    margin-bottom: 5px;
 }
 
 /* FORMULARIO */
-.login-form {
-    background: white;
-    width: 100%;
-    max-width: 400px;
-    padding: 35px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
-.login-form h1 {
-    text-align: center;
-    color: #202c3b;
-    margin-bottom: 10px;
-}
-
-.login-form p {
-    text-align: center;
-    color: #64748b;
-    margin-bottom: 25px;
+.form-registro {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .campo {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
+    gap: 4px;
 }
 
 .campo label {
-    margin-bottom: 8px;
-    color: #334155;
-    font-weight: bold;
+    font-size: 17px;
+    font-weight: 500;
+    color: #20395d;
 }
 
 .campo input {
-    padding: 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 15px;
+    width: 100%;
+    height: 34px;
+    padding: 0 16px;
+    border: 1px solid #20395d;
+    border-radius: 17px;
+    outline: none;
+    background-color: white;
+    color: #20395d;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.campo input::placeholder {
+    color: #71809a;
 }
 
 .campo input:focus {
-    outline: none;
-    border-color: #2563eb;
+    border: 2px solid #f58b22;
 }
 
-.login-form button {
+
+/* BOTÓN CREAR CUENTA */
+.btn-login {
     width: 100%;
-    padding: 13px;
-    background: #2563eb;
-    color: white;
+    height: 45px;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 11px;
+    background-color: #f58b22;
+    color: #20395d;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.login-form button:hover {
-    background: #1d4ed8;
-}
-
-.login-form > a {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    color: #2563eb;
-    text-decoration: none;
-}
-
-/*Profesionales*/
-.profesional { 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    padding: 16px; 
-    margin: 15px 0; 
-    display: flex; 
-    gap: 20px; 
-    align-items: center; 
-}
-
-/* FOOTER */
-.footer {
-    background: #1d3557;
-}
-
-.profesional { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 15px 0; display: flex; gap: 20px; align-items: center; }
-
-/* FOOTER */
-.footer {
-    background: #202c3b;
-    color: #d1d5db;
-    text-align: center;
-    padding: 20px;
-    font-size: 13px;
+.btn-login:hover {
+    background-color: #e87c13;
 }
