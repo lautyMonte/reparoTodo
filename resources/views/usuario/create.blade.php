@@ -48,4 +48,5 @@
         <button type="submit" class="btn-crear">Crear Cuenta</button>
     </form>
     <br><p class="subtitulo">Ya tienes una cuenta? <a href="{{ route('usuario.registro') }}">Inicia sesión</a></p>
+    
 @endsection
