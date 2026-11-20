@@ -13,15 +13,15 @@ class OficioSeeder extends Seeder
     public function run(): void
     {
         //
-        Oficio::UpdateOrCreate([
+        Oficio::updateOrCreate([
             'tipo' => 'Plomero',
         ]);
 
-        Oficio::UpdateOrCreate([
+        Oficio::updateOrCreate([
             'tipo' => 'Electricista',
         ]);
 
-        Oficio::UpdateOrCreate([
+        Oficio::updateOrCreate([
             'tipo' => 'Gasista',
         ]);
     }

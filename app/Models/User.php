@@ -3,19 +3,18 @@
 namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 
 /**para chatify*/
 use Chatify\Traits\InteractsWithChatify;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-#[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 
 class User extends Authenticatable
@@ -26,7 +25,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     
     protected $fillable = [
-        'usuario','telefono','tipo', 'imagen', 'email_verified_at', 'password'
+        'usuario', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password'
     ];
 
 
@@ -46,6 +45,7 @@ class User extends Authenticatable
     }
 
 
+    #[Scope]
     protected function sinImagen(Builder $query): void
     {
         $query->whereNull("imagen");

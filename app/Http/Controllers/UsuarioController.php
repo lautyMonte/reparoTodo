@@ -46,10 +46,9 @@ class UsuarioController extends Controller
             }else{
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional
             }
-         }else{
-             return redirect()->route('usuario.registro')->with('error','usuario o contraseña incorrecta');
-         }
-        
+        } else {
+            return redirect()->route('profesional.perfil', $usuario->profesional->id); // para un profesional
+        }
     }
 
     public function create(): View

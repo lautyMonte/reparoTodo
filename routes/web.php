@@ -5,10 +5,8 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 
-// Pagina de inicio (home): no necesita datos de ningun modelo, solo muestra la vista
-Route::get('/', function () {
-    return view('inicio', ['titulo' => 'Inicio']);
-})->name('inicio');
+// Pagina de inicio (home): muestra los profesionales destacados (los de mejores resenas)
+Route::get('/', [ProfesionalController::class, 'destacados'])->name('inicio');
 
 // Inicio de sesion (el login paso de "/" a "/ingresar")
 Route::get('/ingresar',[UsuarioController::class,'registro'])->name('usuario.registro');
