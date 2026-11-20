@@ -1,33 +1,57 @@
 
 const botones = document.querySelectorAll('.btn-tipo');
-const tipoInput = document.getElementById('tipo');
-const campoProfesional = document.getElementById('campo-profesional');
 
+const tipo = document.getElementById('tipo');
+
+const camposCliente = document.getElementById('campo-cliente');
+
+const camposProfesional = document.getElementById('campos-profesional');
+
+
+function actualizarFormulario(tipoSeleccionado) {
+
+    // Actualizar el tipo de cuenta
+    tipo.value = tipoSeleccionado;
+
+    const esCliente = tipoSeleccionado === 'cliente';
+    const esProfesional = tipoSeleccionado === 'profesional';
+
+    // Mostrar u ocultar campos
+    camposCliente.hidden = !esCliente;
+    camposProfesional.hidden = !esProfesional;
+
+    // Controlar campos obligatorios del cliente
+    camposCliente.querySelectorAll('input').forEach(input => {
+        input.required = esCliente;
+    });
+
+    // Controlar campos obligatorios del profesional
+    camposProfesional.querySelectorAll('input, textarea').forEach(input => {
+        input.required = esProfesional;
+    });
+
+    // Cambiar el botón seleccionado
+    botones.forEach(boton => {
+        boton.classList.toggle(
+            'activo',
+            boton.dataset.tipo === tipoSeleccionado
+        );
+    });
+}
+
+
+// Detectar los clics en los botones
 botones.forEach(boton => {
 
     boton.addEventListener('click', () => {
 
-        // Obtener el tipo seleccionado
-        const tipoSeleccionado = boton.dataset.tipo;
-
-        // Actualizar el input hidden
-        tipoInput.value = tipoSeleccionado;
-
-        // Mostrar u ocultar campos
-        const esProfesional = tipoSeleccionado === 'profesional';
-
-        camposProfesional.hidden = !esProfesional;
-
-        // Actualizar obligatoriedad
-        campoProfesional.querySelectorAll('input, textarea').forEach(input => {
-            input.required = esProfesional;
-        });
-
-        // Cambiar botón activo
-        botones.forEach(btn => btn.classList.remove('activo'));
-
-        boton.classList.add('activo');
+        actualizarFormulario(boton.dataset.tipo);
 
     });
 
 });
+
+
+// Estado inicial
+actualizarFormulario('cliente');
+
