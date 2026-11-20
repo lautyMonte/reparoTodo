@@ -5,7 +5,7 @@
     <form action="#" method="POST" id="opcion-form">
         <div class="form-group" id="tipo-cuenta">
             <button type="submit" class="btn btn-primary" class="tipo-cuenta button">Busco Profesional</button>
-            <button type="submit" class="btn btn-secondary" class="tipo-cuenta button.activo">Ofrecer Servicios</button>
+            <button type="submit" class="btn btn-secondary" class="tipo-cuenta button.activo">estoy haciendo</button>
         </div>
     </form>
 
