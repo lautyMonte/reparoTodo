@@ -31,9 +31,9 @@ class UsuarioController extends Controller
             'password'=>['required', 'string', 'min:8','max:20'],
 
         ],[
-            'usuario.required'=>'Escribir un usuario',
-            'password.required'=>'Escribir una contraseña',
-            'password.min'=>'contraseña muy corta',
+            'usuario.required'=>'Ingrese un usuario',
+            'password.required'=>'Ingrese una contraseña',
+            'password.min'=>'La contraseña debe tener un mínimo de 8 caracteres',
         ]);
         
         $usuario = User::where('usuario', $datos['usuario'])->first();
@@ -47,7 +47,7 @@ class UsuarioController extends Controller
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional
             }
         } else {
-            return redirect()->route('profesional.perfil', $usuario->profesional->id); // para un profesional
+            return redirect()->route('usuario.registro')->with('error', 'El usuario no existe'); // Devuelve al login
         }
     }
 
