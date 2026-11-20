@@ -19,7 +19,7 @@ class ProfesionalController extends Controller
 
     /** Mostrar listado de todos los profesionales*/
      public function index(): View
-    {                                  //deben tener el nombre de mi funcion que hace la conexion entre usuarios y oficios de un profesional
+    {                                  // Deben tener el nombre de la funcion que hace la conexion entre usuarios y oficios de un profesional
         $profesionales=Profesional::with('user','oficios')->get();
 
         return view('profesional.listado',[
@@ -37,6 +37,23 @@ class ProfesionalController extends Controller
             'profesional' => $profesional,
             'titulo'=> 'el profesional',
             'modelo' => new Profesional(),
+        ]);
+    }
+
+    /** Home: muestra los 3 profesionales con mejor promedio de resenas */
+    public function destacados(): View {
+        $destacados = Profesional::with('user', 'oficios')
+            ->withAvg('resenas', 'puntaje')
+            ->withCount('resenas')
+            ->has('resenas')
+            ->orderByDesc('resenas_avg_puntaje')
+            ->orderByDesc('resenas_count')
+            ->limit(3)
+            ->get();
+
+        return view('inicio', [
+            'titulo' => 'Inicio',
+            'destacados' => $destacados,
         ]);
     }
 }

@@ -56,7 +56,7 @@
                     <div class="card-body">
                         <span class="icono-circulo mb-3"><i data-lucide="hand-coins"></i></span>
                         <h3 class="h6">Gratis para todos</h3>
-                        <p class="small text-muted mb-0">Registrate, consultá y pedí presupuestos sin costo.</p>
+                        <p class="small text-muted mb-0">Registrate, consultá y recibí presupuestos sin costo.</p>
                     </div>
                 </div>
             </div>
@@ -125,8 +125,8 @@
                         <span class="numero-paso">3</span>
                         <div>
                             <h3 class="h6 mb-1">Conectate</h3>
-                            <p class="small mb-1"><strong>Cliente:</strong> contactalo y pedí tu presupuesto.</p>
-                            <p class="small mb-0"><strong>Profesional:</strong> recibí pedidos de clientes.</p>
+                            <p class="small mb-1"><strong>Cliente:</strong> contactá al profesional y recibí su presupuesto.</p>
+                            <p class="small mb-0"><strong>Profesional:</strong> recibí pedidos y enviale tu presupuesto al cliente.</p>
                         </div>
                     </div>
                 </div>
@@ -135,43 +135,44 @@
     </section>
 
 
-    {{-- ========== 4. PROFESIONALES DESTACADOS (datos de ejemplo por ahora) ========== --}}
-    @php
-        $destacados = [
-            ['nombre' => 'Matias Jañez',   'iniciales' => 'MJ', 'oficios' => ['Electricista', 'Plomero'], 'zona' => 'Cipolletti, Río Negro', 'puntaje' => '4,5', 'valoraciones' => 24],
-            ['nombre' => 'Esteban Quito',  'iniciales' => 'EQ', 'oficios' => ['Carpintero', 'Pintor'],    'zona' => 'Neuquén, Neuquén',      'puntaje' => '4,8', 'valoraciones' => 31],
-            ['nombre' => 'Armando Paredes','iniciales' => 'AP', 'oficios' => ['Albañil', 'Gasista'],      'zona' => 'Centenario, Neuquén',   'puntaje' => '4,3', 'valoraciones' => 17],
-        ];
-    @endphp
-
+    {{-- ========== 4. PROFESIONALES DESTACADOS ========== --}}
     <section class="bloque-home">
         <h2 class="titulo-seccion">Profesionales destacados</h2>
 
         <div class="row g-3">
-            @foreach ($destacados as $destacado)
+            @forelse ($destacados as $destacado)
                 <div class="col-md-4">
                     <div class="card tarjeta-profesional h-100">
                         <div class="card-body text-center p-4">
                             <span class="etiqueta-destacado mb-3"><i data-lucide="star"></i> Destacado</span>
-                            <div class="avatar-rt mx-auto mb-2">{{ $destacado['iniciales'] }}</div>
-                            <h3 class="h5 mb-1">{{ $destacado['nombre'] }}</h3>
+
+                            @if ($url = $destacado->user->urlImagen($destacado->user->imagen))
+                                <img class="avatar-rt mx-auto mb-2" src="{{ $url }}" alt="Foto de {{ $destacado->user->usuario }}">
+                            @else
+                                <div class="avatar-rt mx-auto mb-2">{{ mb_strtoupper(mb_substr($destacado->user->usuario, 0, 1)) }}</div>
+                            @endif
+
+                            <h3 class="h5 mb-1">{{ $destacado->user->usuario }}</h3>
 
                             <p class="estrellas small mb-2">
-                                <i data-lucide="star"></i> <strong>{{ $destacado['puntaje'] }}</strong>
-                                <span class="text-muted">({{ $destacado['valoraciones'] }} valoraciones)</span>
+                                <i data-lucide="star"></i>
+                                <strong>{{ number_format($destacado->resenas_avg_puntaje, 1, ',', '.') }}</strong>
+                                <span class="text-muted">({{ $destacado->resenas_count }} valoraciones)</span>
                             </p>
 
                             <div class="mb-3">
-                                @foreach ($destacado['oficios'] as $oficio)
-                                    <span class="chip-oficio">{{ $oficio }}</span>
+                                @foreach ($destacado->oficios as $oficio)
+                                    <span class="chip-oficio">{{ $oficio->tipo }}</span>
                                 @endforeach
                             </div>
 
-                            <p class="small text-muted mb-0"><i data-lucide="map-pin"></i> {{ $destacado['zona'] }}</p>
+                            <p class="small text-muted mb-0"><i data-lucide="map-pin"></i> {{ $destacado->ciudad }}, {{ $destacado->provincia }}</p>
                         </div>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <p class="text-center text-muted">Todavía no hay profesionales con reseñas.</p>
+            @endforelse
         </div>
 
         <div class="text-center mt-4">

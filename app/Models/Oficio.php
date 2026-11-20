@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Oficio extends Model
 {
-    protected $table = 'oficios';
-
     protected $fillable = [
         'tipo'
     ];
@@ -16,6 +14,6 @@ class Oficio extends Model
     // Relacion muchos a muchos con profesionales
     public function profesionales(): BelongsToMany
     {
-        return $this->belongsToMany(Profesional::class);
+        return $this->belongsToMany(Profesional::class)->withTimestamps();
     }
 }
