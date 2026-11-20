@@ -1,6 +1,6 @@
-@extends('layouts.app', ['title' => $titulo])
+@extends('layouts.app', ['titulo' => $titulo])
 
-@section('content')
+@section('contenido')
 {{-- 
     $profesional->user->atributo (devuelve la tupla del atributo que se encuentra en user)
     $oficio->atributo (devuelve la tupla del atributo que se encuentra en oficios)

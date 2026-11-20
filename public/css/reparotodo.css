@@ -1,0 +1,175 @@
+/* ===== Style Tile ReparoTodo ===== */
+:root {
+    --rt-azul: #1D3557;
+    --rt-azul-oscuro: #14263f;
+    --rt-naranja: #F28C28;
+    --rt-naranja-oscuro: #d9791a;
+    --rt-crema: #F6F3EC;
+
+    --bs-body-font-family: 'Nunito Sans', sans-serif;
+    --bs-body-bg: var(--rt-crema);
+    --bs-link-color-rgb: 29, 53, 87;
+    --bs-link-hover-color-rgb: 217, 121, 26;
+}
+
+body {
+    background-color: var(--rt-crema);
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--rt-azul);
+}
+
+/* Íconos de Lucide */
+.lucide { width: 1.25rem; height: 1.25rem; }
+
+/* ===== Header ===== */
+.navbar-rt { background-color: var(--rt-azul); }
+.navbar-rt .navbar-brand { color: #fff; }
+.navbar-rt .nav-link { color: #fff; }
+.navbar-rt .nav-link:hover,
+.navbar-rt .nav-link.active { color: var(--rt-naranja); }
+.navbar-rt .btn .lucide { margin-right: 0.25rem; vertical-align: -4px; }
+.brand-accent { color: var(--rt-naranja); }
+
+.btn-campana {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+}
+.btn-campana:hover { color: var(--rt-naranja); }
+.menu-notificaciones { width: 320px; border-radius: 1rem; }
+.menu-notificaciones .lucide { width: 2rem; height: 2rem; color: #6b6b6b; }
+
+/* ===== Botones ===== */
+.btn-primary {
+    --bs-btn-bg: var(--rt-azul);
+    --bs-btn-border-color: var(--rt-azul);
+    --bs-btn-hover-bg: var(--rt-azul-oscuro);
+    --bs-btn-hover-border-color: var(--rt-azul-oscuro);
+    --bs-btn-active-bg: var(--rt-azul-oscuro);
+    --bs-btn-active-border-color: var(--rt-azul-oscuro);
+}
+
+/* Naranja con texto azul */
+.btn-accent {
+    --bs-btn-bg: var(--rt-naranja);
+    --bs-btn-border-color: var(--rt-naranja);
+    --bs-btn-color: var(--rt-azul);
+    --bs-btn-hover-bg: var(--rt-naranja-oscuro);
+    --bs-btn-hover-border-color: var(--rt-naranja-oscuro);
+    --bs-btn-hover-color: var(--rt-azul);
+    --bs-btn-active-bg: var(--rt-naranja-oscuro);
+    --bs-btn-active-border-color: var(--rt-naranja-oscuro);
+    --bs-btn-active-color: var(--rt-azul);
+}
+
+/* ===== Footer ===== */
+.footer-rt { background: var(--rt-azul); color: #fff; }
+.footer-rt h2 { color: #fff; }
+.footer-texto { max-width: 480px; color: rgba(255, 255, 255, 0.85); }
+.footer-red {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+.footer-red:hover {
+    background: var(--rt-naranja);
+    border-color: var(--rt-naranja);
+    color: var(--rt-azul);
+}
+.footer-links a { color: #fff; text-decoration: none; }
+.footer-links a:hover { color: var(--rt-naranja); }
+.footer-copy {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+/* ===== Home ===== */
+.carrusel-rt { border-radius: 1.5rem; overflow: hidden; }
+.slide-rt {
+    min-height: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    background-color: var(--rt-azul);   /* se ve si todavía no está la foto */
+    background-size: cover;
+    background-position: center;
+}
+.slide-rt::before {                      /* capa oscura para que se lea el texto */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 38, 63, 0.55);
+}
+.slide-contenido { position: relative; padding: 2rem; }
+.slide-contenido h1 { color: #fff; font-size: 2.75rem; margin-bottom: 1.5rem; }
+.carrusel-rt .carousel-indicators [data-bs-target] {
+    width: 28px;
+    height: 6px;
+    border: 0;
+    border-radius: 3px;
+}
+
+.bloque-home { margin-bottom: 3rem; }
+.titulo-seccion { text-align: center; margin-bottom: 1.5rem; }
+.tarjeta-beneficio,
+.tarjeta-paso {
+    background: #fff;
+    border: 1px solid #e4dfd3;
+    border-radius: 1rem;
+}
+.icono-circulo {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--rt-azul);
+    color: var(--rt-naranja);
+}
+.numero-paso {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--rt-azul);
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ===== Chat flotante: abajo a la derecha ===== */
+#chat-widget {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    z-index: 1050;
+}
+#chat-widget .chat-toggle {
+    background: var(--rt-azul);
+    color: #fff;
+    border: 0;
+    border-radius: 50rem;
+    padding: 0.75rem 1.25rem;
+    box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
+}
+#chat-widget .chat-toggle:hover { background: var(--rt-azul-oscuro); }
