@@ -4,7 +4,7 @@
         <h1 class="titulo">Crear Cuenta</h1>
         <p class="subtitulo">¿Como vas a usar Reparo Todo?</p>
     
-    <form action="#" method="POST" class="form-registro">
+    <form action="{{ route('usuario.store') }}" method="POST" class="form-registro">
         @csrf
 
         <div class="tipo-cuenta">
@@ -24,7 +24,7 @@
         
         
             <label for="password">Contraseña:</label>
-            <input type="password" name="password" id="password" required placeholder="Minimo 8 caracteres">
+            <input type="password" name="password" id="password" required placeholder="Minimo 8 caracteres" minlength="8" maxlength="20">
         
         
             <label for="password_confirmation">Confirmar su contraseña</label>
@@ -33,7 +33,7 @@
 
         <div class="campo" id="campo-cliente">
             <label for="telefono">Número de teléfono</label>
-            <input type="number" name="telefono" id="telefono" required value="{{ old('telefono') }}" placeholder="EJ:1123456789">
+            <input type="tel" name="telefono" id="telefono" required value="{{ old('telefono') }}" placeholder="ej: +54 9 11 1234-5678" pattern="^\+?[0-9 ]{8,15}$">
         </div>
         
         <!--Campo exclusivo del profesional!-->
@@ -41,6 +41,15 @@
             <label for="especialidad">Selecciona tu especialidad</label>
             <input type="text" name="especialidad" id="especialidad" required>
         </div>
+        <div class="campo" id="campo-profesional" hidden>
+            <label for="provincia">Provincia en la que realizas servicios</label>
+            <input type="text" name="provincia" id="provincia" required>
+        </div>
+        <div class="campo" id="campo-profesional" hidden>
+            <label for="ciudad">Ciudad en la que realizas servicios</label>
+            <input type="text" name="ciudad" id="ciudad" required>
+        </div>
+
         <div class="terminos">
             <input type="checkbox" name="terminos" id="terminos" required>
             <label for="terminos">Acepto los términos y condiciones</label>
