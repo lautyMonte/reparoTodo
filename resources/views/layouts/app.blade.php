@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
     <link rel="stylesheet" href="{{ asset('css/box.css') }}">
     <link rel="stylesheet" href="{{ asset('css/create.css') }}">{{-- Estilos específicos para el crear un usuario --}}
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">{{-- Estilos específicos para el login --}}
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">{{-- Estilos específicos para el crear un usuario --}}
 </head>
 <body class="d-flex flex-column min-vh-100">
 

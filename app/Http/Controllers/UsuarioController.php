@@ -42,7 +42,7 @@ class UsuarioController extends Controller
             Auth::login($usuario);
             $request->session()->regenerate();
             if($usuario->tipo==='cliente'){
-                return redirect()->route('profesional.listado')->with('nombre', 'hola '.$usuario->usuario); //para un usuario  
+                return redirect()->route('profesional.listado'); //para un usuario  
             }else{
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional
             }
@@ -60,6 +60,11 @@ class UsuarioController extends Controller
     public function store(Request $request):RedirectResponse
     {
         //aca iria la validacion de un nuevo usuario
+        //para saber si el usuario que se creo ya existe
+        $usuario = User::where('usuario', $request['usuario'])->first();
+        if($usuario){
+            return redirect()->route('usuario.create')->with('error','usuario ya existente');
+        }   
         if($request->tipo==='cliente'){
             $validated = $request->validate([
             'usuario' => ['required', 'string', 'max:20'],
