@@ -1,6 +1,7 @@
 @extends('layouts.login', ['title' => $titulo])
 
 @section('session-content')
+<div>
         <form class="login-form" method="POST" action="{{route('usuario.verifica')}}">
             @csrf
 
