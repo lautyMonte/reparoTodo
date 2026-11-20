@@ -33,21 +33,21 @@
 
         <div class="campo" id="campo-cliente">
             <label for="telefono">Número de teléfono</label>
-            <input type="tel" name="telefono" id="telefono" required value="{{ old('telefono') }}" placeholder="ej: +54 9 11 1234-5678" pattern="^\+?[0-9 ]{8,15}$">
+            <input type="tel" name="telefono" id="telefono" value="{{ old('telefono') }}" placeholder="ej: +54 9 11 1234-5678" pattern="^\+?[0-9 ]{8,15}$">
         </div>
         
         <!--Campo exclusivo del profesional!-->
-        <div class="campo" id="campo-profesional" hidden>
+        <div class="campo" id="campos-profesional" hidden>
             <label for="especialidad">Selecciona tu especialidad</label>
-            <input type="text" name="especialidad" id="especialidad" required>
-        </div>
-        <div class="campo" id="campo-profesional" hidden>
+            <input type="text" name="especialidad" id="especialidad" value="{{old ('especialidad')}}">
+        
+       
             <label for="provincia">Provincia en la que realizas servicios</label>
-            <input type="text" name="provincia" id="provincia" required>
-        </div>
-        <div class="campo" id="campo-profesional" hidden>
+            <input type="text" name="provincia" id="provincia" value="{{old ('provincia')}}">
+        
+        
             <label for="ciudad">Ciudad en la que realizas servicios</label>
-            <input type="text" name="ciudad" id="ciudad" required>
+            <input type="text" name="ciudad" id="ciudad" value="{{old ('ciudad')}}">
         </div>
 
         <div class="terminos">

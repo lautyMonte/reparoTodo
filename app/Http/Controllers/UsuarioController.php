@@ -42,7 +42,7 @@ class UsuarioController extends Controller
             Auth::login($usuario);
             $request->session()->regenerate();
             if($usuario->tipo==='cliente'){
-                return redirect()->route('profesional.listado')->with('nombre', 'hola '.$usuario->usuario); //para un usuario  
+                return redirect()->route('profesional.listado'); //para un usuario  
             }else{
                 return redirect()->route('profesional.perfil', $usuario);// para un profesional
             }
@@ -60,17 +60,19 @@ class UsuarioController extends Controller
     public function store(Request $request):RedirectResponse
     {
         //aca iria la validacion de un nuevo usuario
+        //para saber si el usuario que se creo ya existe
+        $usuario = User::where('usuario', $request['usuario'])->first();
+        if($usuario){
+            return redirect()->route('usuario.create')->with('error','usuario ya existente');
+        }   
         if($request->tipo==='cliente'){
             $validated = $request->validate([
             'usuario' => ['required', 'string', 'max:20'],
             'email' => ['required', 'string', 'max:1000'],
             'password' => ['required', 'string', 'min:8', 'max:20'],
             'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
-            'imagen' => [
-                'required',
-                'image',
-                Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb'),
-            ],
+            'telefono' => ['required','regex:/^\+?[0-9 ]{8,15}$/'],
+            'imagen' => ['nullable', 'image'],
         ],[
             'usuario.required'=>'El usuario es obligatorio',
             'telefono.required'=>'El telefono es obligatorio',
@@ -84,7 +86,7 @@ class UsuarioController extends Controller
             'email' => $validated['email'],
             'telefono' => $validated['telefono'],
             'password' => Hash::make($validated['password']),
-            'imagen' => $request->file('imagen')->store('usuario', 'public'),
+            'imagen' => null,
             'tipo' => 'cliente',
             ]);   
 
@@ -93,13 +95,10 @@ class UsuarioController extends Controller
             $validated = $request->validate([
             'usuario' => ['required', 'string', 'max:20'],
             'email' => ['required', 'string', 'max:1000'],
+            'telefono' => ['nullable', 'regex:/^\+?[0-9 ]{8,15}$/'],
             'password' => ['required', 'string', 'min:8', 'max:20'],
             'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
-            'imagen' => [
-                'required',
-                'image',
-                Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb'),
-            ],
+            'imagen' => ['nullable', 'image'],
             'especialidad' => ['required', 'string', 'max:100'],
             'provincia' => ['required', 'string', 'max:100'],
             'ciudad' => ['required', 'string', 'max:100'],
@@ -114,14 +113,14 @@ class UsuarioController extends Controller
             'provincia.required'=>'La provincia es obligatoria',
             'ciudad.required'=>'La ciudad es obligatoria',
         ]);
-        DB::transaction(function () use ($validated, $request) {// esto es para que si falla una de las dos inserciones, no se haga ninguna
+        DB::transaction(function () use ($validated) {// esto es para que si falla una de las dos inserciones, no se haga ninguna
 
             $usuario=User::create([
                 'usuario' => $validated['usuario'],
-                'telefono' => $validated['telefono'],
+                'telefono' => null,
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'imagen' => $request->file('imagen')->store('usuario', 'public'),
+                'imagen' => null,
                 'tipo' => 'profesional'
             ]);
 
