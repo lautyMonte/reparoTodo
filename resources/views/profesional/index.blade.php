@@ -79,14 +79,14 @@
                 </article>
             </div>
         @empty
-    <p class="text-center text-muted">
-        @if(request('buscar'))
-            No se encontraron profesionales con el nombre "{{ request('buscar') }}".
-        @else
-            Todavía no hay profesionales para mostrar.
-        @endif
-    </p>
-    @endforelse
+        <p class="text-center text-muted">
+            @if(request('buscar'))
+                No se encontraron profesionales con el nombre "{{ request('buscar') }}".
+            @else
+                Todavía no hay profesionales para mostrar.
+            @endif
+        </p>
+        @endforelse
     </div>
 
     {{-- El chat solo existe con sesion iniciada --}}

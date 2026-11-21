@@ -65,13 +65,36 @@ class ProfesionalController extends Controller
         ]);
     }
 
+    // public function buscar(Request $request)
+    // {
+    // $request->validate([
+    //     'buscar' => ['nullable', 'string', 'max:100'],
+    // ]);
+
+    // $buscar = trim($request->input('buscar', ''));
+
+    // $profesionales = Profesional::with(['user', 'oficios'])
+    //     ->withCount('resenas')
+    //     ->withAvg('resenas', 'puntaje')
+    //     ->when($buscar, function ($query) use ($buscar) {
+    //         $query->whereHas('user', function ($q) use ($buscar) {
+    //             $q->where('usuario', 'LIKE', "%{$buscar}%");
+    //         });
+    //     })
+    //     ->get();
+
+    // return response()->json([
+    //     'html' => view('partials.tarjetas', compact('profesionales'))->render(),
+    // ]);
+    // }
+
     public function buscar(Request $request)
     {
     $request->validate([
         'buscar' => ['nullable', 'string', 'max:100'],
     ]);
 
-    $buscar = $request->input('buscar');
+     $buscar = $request->input('buscar');
 
     $profesionales = Profesional::with(['user', 'oficios'])
         ->withCount('resenas')
@@ -83,7 +106,7 @@ class ProfesionalController extends Controller
 
     return view('profesional.index', [
         'titulo' => 'Buscar profesional',
-        'profesionales' => $profesionales,
+        'profesionales' => $profesionales
     ]);
     }
 }
