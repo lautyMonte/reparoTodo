@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfesionalController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SolicitudController;
 use Illuminate\Support\Facades\Route;
 
 // Pagina de inicio (home): muestra los profesionales destacados (los de mejores resenas)
@@ -20,6 +21,12 @@ Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesio
 
 // Detalle de un profesional: tambien es publico (lo ve cualquiera, con o sin sesion)
 Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])->whereNumber('id')->name('profesional.show');
+
+// Solicitud de trabajo: solo la puede hacer un cliente con sesion iniciada
+Route::middleware('cliente')->group(function () {
+    Route::get('/profesional/{id}/solicitar', [SolicitudController::class, 'create'])->whereNumber('id')->name('solicitud.create');
+    Route::post('/profesional/{id}/solicitar', [SolicitudController::class, 'store'])->whereNumber('id')->name('solicitud.store');
+});
 
 // Para los chats
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {

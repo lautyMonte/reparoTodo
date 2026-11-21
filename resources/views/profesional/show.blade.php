@@ -43,13 +43,11 @@
                         <div>
                             @if ($esDuenio)
                                 <p class="text-secondary small mb-0">Así ven tu perfil los clientes.</p>
-                            @elseif (auth()->check())
-                                <button type="button" class="btn btn-accent btn-detalle w-100 btn-contactar"
-                                        data-user-id="{{ $usuario->id }}"
-                                        data-user-name="{{ $usuario->usuario }}">
+                            @elseif (auth()->check() && auth()->user()->tipo === 'cliente')
+                                <a href="{{ route('solicitud.create', $profesional->id) }}" class="btn btn-accent btn-detalle w-100">
                                     <i data-lucide="briefcase"></i> Solicitar trabajo
-                                </button>
-                            @else
+                                </a>
+                            @elseif (! auth()->check())
                                 <a href="{{ route('usuario.registro') }}" class="btn btn-accent btn-detalle w-100">
                                     <i data-lucide="briefcase"></i> Solicitar trabajo
                                 </a>
@@ -192,12 +190,10 @@
         </div>
     </div>
 
-    {{-- Chat: el duenio ve su bandeja; otro usuario logueado, el widget para contactar --}}
+    {{-- El duenio ve su bandeja de mensajes. El chat con un cliente se va a abrir recien al aceptar el presupuesto --}}
     @auth
         @if ($esDuenio)
             @include('chatify.box')
-        @else
-            @include('chatify.index')
         @endif
     @endauth
 @endsection

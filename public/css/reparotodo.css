@@ -539,3 +539,70 @@ img.avatar-rt { object-fit: cover; }
     .detalle-tab span { display: none; }
 }
 @media (max-width: 991.98px) { .detalle-lateral { position: static; } }
+
+/* ===== Formulario de solicitud de trabajo ===== */
+.solicitud-contenedor { max-width: 1100px; margin: 0 auto; position: relative; }
+.solicitud-volver { position: absolute; top: 0; left: 0; }
+.solicitud-pagina { max-width: 760px; margin: 0 auto; --rt-borde: rgba(29, 53, 87, 0.15); }
+.solicitud-tarjeta {
+    background: #fff;
+    border: 1px solid var(--rt-borde);
+    border-radius: 16px;
+    overflow: hidden;
+}
+.solicitud-destinatario {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.75rem;
+    background: var(--rt-azul);
+    color: #fff;
+}
+.solicitud-destinatario h1, .solicitud-destinatario .puntaje { color: #fff; }
+.solicitud-destinatario .text-secondary { color: rgba(255, 255, 255, 0.75) !important; }
+.solicitud-destinatario .puntaje .lucide { color: var(--rt-naranja); fill: currentColor; width: 1rem; height: 1rem; }
+.solicitud-destinatario img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    border: 3px solid #fff;
+}
+.solicitud-cuerpo { padding: 1.75rem; }
+.solicitud-encabezado { text-align: center; margin-bottom: 1.5rem; }
+.solicitud-cuerpo .form-label { font-weight: 700; color: var(--rt-azul); }
+.solicitud-cuerpo .form-control {
+    padding: 0.65rem 1rem;
+    border: 1px solid #20395d;
+    border-radius: 17px;
+    background-color: #fff;
+    color: #20395d;
+    font-size: 13px;
+    box-shadow: none;
+}
+.solicitud-cuerpo .form-control::placeholder { color: #71809a; }
+.solicitud-cuerpo .form-control:focus {
+    border: 2px solid #f58b22;
+    padding: calc(0.65rem - 1px) calc(1rem - 1px);
+    box-shadow: none;
+}
+.solicitud-cuerpo .form-control.is-invalid { border-color: var(--bs-form-invalid-border-color); }
+.solicitud-cuerpo .form-text { font-size: 0.85rem; }
+.solicitud-opcional { font-weight: 400; color: var(--bs-secondary-color); }
+.solicitud-acciones { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+.solicitud-acciones .btn { min-width: 180px; }
+.btn-cancelar {
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: rgba(29, 53, 87, 0.4);
+    --bs-btn-color: var(--rt-azul);
+    --bs-btn-hover-bg: var(--rt-crema);
+    --bs-btn-hover-border-color: rgba(29, 53, 87, 0.4);
+    --bs-btn-hover-color: var(--rt-azul);
+    --bs-btn-active-bg: var(--rt-crema);
+    --bs-btn-active-color: var(--rt-azul);
+}
+
+@media (max-width: 1199.98px) {
+    .solicitud-volver { position: static; margin-bottom: 1.5rem; }
+}
