@@ -19,14 +19,6 @@ return new class extends Migration
         $userSettings = config('chatify.tables.user_settings', 'ch_user_settings');
         $messageUserStates = 'ch_message_user_states';
 
-        Schema::dropIfExists($messageUserStates);
-        Schema::dropIfExists($favorites);//no lo usamos
-        Schema::dropIfExists($messages);
-        Schema::dropIfExists($blocks);//no lo usamos
-        Schema::dropIfExists($participants);
-        Schema::dropIfExists($conversations);
-        Schema::dropIfExists($userSettings);
-
         Schema::create($conversations, function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('type', 20)->default('direct');
