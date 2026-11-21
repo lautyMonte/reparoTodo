@@ -32,4 +32,9 @@ class Profesional extends Model
         return $this->hasMany(Resena::class);
     }
 
+    // Un profesional recibe muchas solicitudes de trabajo (1:N)
+    public function solicitudes(): HasMany
+    {
+        return $this->hasMany(Solicitud::class);
+    }
 }

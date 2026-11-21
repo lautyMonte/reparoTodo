@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**para chatify*/
 use Chatify\Traits\InteractsWithChatify;
@@ -33,6 +34,12 @@ class User extends Authenticatable
     public function profesional(): HasOne
     {
         return $this->hasOne(Profesional::class);
+    }
+
+    // Un cliente puede hacer muchas solicitudes. La columna se llama cliente_id, no user_id
+    public function solicitudes(): HasMany
+    {
+        return $this->hasMany(Solicitud::class, 'cliente_id');
     }
 
     public function urlImagen(?string $ruta): ?string
