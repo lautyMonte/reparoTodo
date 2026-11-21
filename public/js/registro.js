@@ -26,7 +26,7 @@ function actualizarFormulario(tipoSeleccionado) {
     });
 
     // Controlar campos obligatorios del profesional
-    camposProfesional.querySelectorAll('input, textarea').forEach(input => {
+    camposProfesional.querySelectorAll('input, select, textarea').forEach(input => {
         input.required = esProfesional;
     });
 

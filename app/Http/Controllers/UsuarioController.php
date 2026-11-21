@@ -99,8 +99,8 @@ class UsuarioController extends Controller
                 'password' => ['required', 'string', 'min:8', 'max:20'],
                 'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
                 'imagen' => ['nullable', 'image'],
-                'especialidad' => ['required', 'string', 'max:100'],
-                'provincia' => ['required', 'string', 'max:100'],
+                'especialidad' => ['required', 'exists:oficios,id'],
+                'provincia' => ['required', 'in:nqn,rn'],
                 'ciudad' => ['required', 'string', 'max:100'],
 
             ], [
@@ -113,7 +113,9 @@ class UsuarioController extends Controller
                 'provincia.required' => 'La provincia es obligatoria',
                 'ciudad.required' => 'La ciudad es obligatoria',
             ]);
-            DB::transaction(function () use ($validated) {// esto es para que si falla una de las dos inserciones, no se haga ninguna
+            $provincias = ['nqn' => 'Neuquén', 'rn' => 'Río Negro'];
+
+            DB::transaction(function () use ($validated, $provincias) {
 
                 $usuario = User::create([
                     'usuario' => $validated['usuario'],
@@ -124,11 +126,12 @@ class UsuarioController extends Controller
                     'tipo' => 'profesional',
                 ]);
 
-                $usuario->profesional()->create([
-                    'especialidad' => $validated['especialidad'],
-                    'provincia' => $validated['provincia'],
+                $profesional = $usuario->profesional()->create([
+                    'provincia' => $provincias[$validated['provincia']],
                     'ciudad' => $validated['ciudad'],
                 ]);
+
+                $profesional->oficios()->attach($validated['especialidad']);
             });
         }
 
