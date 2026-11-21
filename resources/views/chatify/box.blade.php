@@ -31,3 +31,7 @@
     </div>
 
 </div>
+
+@push('scripts')
+    <script src="{{ asset('js/box.js') }}" defer></script>
+@endpush

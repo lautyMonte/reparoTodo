@@ -51,7 +51,7 @@ User::updateOrCreate(
     User::updateOrCreate(
     ['email' => 'lautaro@mail.com'],
     [
-        'usuario' => 'lautaro Rodriguez',
+        'usuario' => 'Lautaro Rodriguez',
         'telefono' => '542994237859',
         'tipo' => 'cliente',
         'imagen' => null,

@@ -88,9 +88,4 @@
         </p>
         @endforelse
     </div>
-
-    {{-- El chat solo existe con sesion iniciada --}}
-    @auth
-        @include('chatify.index')
-    @endauth
 @endsection
