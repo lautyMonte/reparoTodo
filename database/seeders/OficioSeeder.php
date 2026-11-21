@@ -18,7 +18,7 @@ class OficioSeeder extends Seeder
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Electridad',
+            'tipo' => 'Electricidad',
         ]);
 
         Oficio::updateOrCreate([
