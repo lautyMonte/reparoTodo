@@ -40,13 +40,9 @@ class UsuarioController extends Controller
         if ($usuario && Hash::check($datos['password'], $usuario->password)) {
             Auth::login($usuario);
             $request->session()->regenerate();
-            if ($usuario->tipo === 'cliente') {
-                return redirect()->route('profesional.listado'); // para un usuario
-            } else {
-                return redirect()->route('profesional.perfil', $usuario); // para un profesional
-            }
+            return redirect()->route('inicio')->with('exito', 'Hola, '.$usuario->usuario);
         } else {
-            return redirect()->route('usuario.registro')->with('error', 'El usuario no existe'); // Devuelve al login
+            return back()->with('error', 'Usuario o contraseña incorrectos')->withInput();
         }
     }
 

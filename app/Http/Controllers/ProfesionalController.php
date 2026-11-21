@@ -20,22 +20,30 @@ class ProfesionalController extends Controller
     /** Mostrar listado de todos los profesionales*/
      public function index(): View
     {                                  // Deben tener el nombre de la funcion que hace la conexion entre usuarios y oficios de un profesional
-        $profesionales=Profesional::with('user','oficios')->get();
+        $profesionales = Profesional::with('user', 'oficios')
+            ->withAvg('resenas', 'puntaje')
+            ->withCount('resenas')
+            ->orderByDesc('resenas_avg_puntaje')
+            ->orderByDesc('resenas_count')
+            ->get();
 
-        return view('profesional.listado',[
+        return view('profesional.index',[
             'profesionales'=>$profesionales,
-            'titulo' => 'Muestra',
+            'titulo' => 'Buscar profesional',
             'modelo' => new Profesional()
         ]);
     }
 
-    public function perfil(int $id): View
+    public function show(int $id): View
     {
-       $profesional=Profesional::with('user','oficios')->find($id);
+       $profesional = Profesional::with('user', 'oficios', 'resenas.user')
+            ->withAvg('resenas', 'puntaje')
+            ->withCount('resenas')
+            ->findOrFail($id);
 
-        return view('profesional.perfil', [
+        return view('profesional.show', [
             'profesional' => $profesional,
-            'titulo'=> 'el profesional',
+            'titulo' => $profesional->user->usuario,
             'modelo' => new Profesional(),
         ]);
     }

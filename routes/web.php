@@ -16,14 +16,10 @@ Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create')
 Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
 
 // Buscador de profesionales: es publico, lo puede ver cualquiera (con o sin sesion)
-Route::get('/buscador',[ProfesionalController::class,'index'])->name('profesional.listado');
+Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesional.index');
 
-
-// Ingreso a la pagina web de forma segura (autenticacion)
-Route::middleware(['auth', 'profesional'])->group(function () {
-   Route::get('/profesional/{id}',[ProfesionalController::class,'perfil'])->whereNumber('id')->name('profesional.perfil');
-     
-});
+// Detalle de un profesional: tambien es publico (lo ve cualquiera, con o sin sesion)
+Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])->whereNumber('id')->name('profesional.show');
 
 // Para los chats
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
