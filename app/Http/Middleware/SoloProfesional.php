@@ -14,7 +14,7 @@ class SoloProfesional
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || $request->user()->tipo!=='profesional') {
+        if (!$request->user() || !$request->user()->tienePerfilProfesional()) {
             return redirect()->route('usuario.registro')->with('error','Acceso denegado');
             }
         return $next($request);

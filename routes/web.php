@@ -10,11 +10,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [ProfesionalController::class, 'destacados'])->name('inicio');
 
 // Inicio de sesion (el login paso de "/" a "/ingresar")
-Route::get('/ingresar',[UsuarioController::class,'registro'])->name('usuario.registro');
-Route::post('/ingresar',[UsuarioController::class,'verifica'])->name('usuario.verifica');
-Route::get('/salir',[UsuarioController::class,'salir'])->name('usuario.salir');
-Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create');
-Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
+Route::get('/ingresar',[UsuarioController::class,'registro'])->name('usuario.registro')->middleware('guest');
+Route::post('/ingresar',[UsuarioController::class,'verifica'])->name('usuario.verifica')->middleware('guest');
+Route::post('/salir', [UsuarioController::class, 'salir'])
+    ->middleware('auth')
+    ->name('usuario.salir');
+Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create')->middleware('guest');
+Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store')->middleware('guest');
 
 // Buscador de profesionales: es publico, lo puede ver cualquiera (con o sin sesion)
 Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesional.index');
@@ -22,8 +24,8 @@ Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesio
 // Detalle de un profesional: tambien es publico (lo ve cualquiera, con o sin sesion)
 Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])->whereNumber('id')->name('profesional.show');
 
-// Solicitud de trabajo: solo la puede hacer un cliente con sesion iniciada
-Route::middleware('cliente')->group(function () {
+// Solicitud de trabajo: requiere un usuario autenticado
+Route::middleware('auth')->group(function () {
     Route::get('/profesional/{id}/solicitar', [SolicitudController::class, 'create'])->whereNumber('id')->name('solicitud.create');
     Route::post('/profesional/{id}/solicitar', [SolicitudController::class, 'store'])->whereNumber('id')->name('solicitud.store');
 });

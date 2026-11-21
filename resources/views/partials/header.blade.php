@@ -59,14 +59,19 @@
                             </div>
                         </div>
 
-                        {{-- "Mi perfil" solo para profesionales --}}
-                        @if (auth()->user()->tipo === 'profesional' && auth()->user()->profesional)
+                        {{-- "Mi perfil" para usuarios con perfil profesional --}}
+                        @if (auth()->user()->tienePerfilProfesional())
                             <a class="btn btn-outline-light" href="{{ route('profesional.show', auth()->user()->profesional->id) }}">Mi perfil</a>
                         @endif
 
-                        <a class="btn btn-accent" href="{{ route('usuario.salir') }}">
-                            <i data-lucide="log-out"></i> Cerrar sesión
-                        </a>
+                        <form action="{{ route('usuario.salir') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-accent">
+                                <i data-lucide="log-out"></i>
+                                Cerrar sesión
+                            </button>
+                        </form>
+
                     @endauth
                 </div>
             </div>

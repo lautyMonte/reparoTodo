@@ -26,7 +26,15 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     
     protected $fillable = [
-        'usuario', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password'
+        'usuario',
+        'nombre',
+        'apellido',
+        'telefono',
+        'email',
+        'tipo',
+        'imagen',
+        'email_verified_at',
+        'password'
     ];
 
 
@@ -34,6 +42,12 @@ class User extends Authenticatable
     public function profesional(): HasOne
     {
         return $this->hasOne(Profesional::class);
+    }
+
+    // Consulta la bd para comprobar si existe un perfil asociado a este usuario
+    public function tienePerfilProfesional(): bool
+    {
+        return $this->profesional()->exists();
     }
 
     // Un cliente puede hacer muchas solicitudes. La columna se llama cliente_id, no user_id

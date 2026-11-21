@@ -6,7 +6,6 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
 //Aca colocamos los middlewares que creamos
-use App\Http\Middleware\SoloCliente;
 use App\Http\Middleware\SoloProfesional;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -18,7 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         //Aca colocamos los middlewares que creamos
         $middleware->alias([
-            'cliente'=>SoloCliente::class,
             'profesional'=>SoloProfesional::class
         ]);
         //Si alguien sin sesion entra a una ruta protegida, lo mandamos al login

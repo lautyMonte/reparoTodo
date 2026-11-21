@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Oficio;
-use App\Models\Profesional;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 // para manejar la autenticacion de usuarios
 use Illuminate\Support\Facades\Hash; // contraseña
 use Illuminate\View\View; // usuario logueado
@@ -46,97 +44,51 @@ class UsuarioController extends Controller
         }
     }
 
+
     public function create(): View
     {
-        // return view('usuario.create');
-        $oficios = Oficio::orderBy('tipo')->get();
-
-        return view('usuario.create', [
-            'oficios' => $oficios,
-        ]);
+        return view('usuario.create');
     }
+
 
     public function store(Request $request): RedirectResponse
     {
-        // aca iria la validacion de un nuevo usuario
-        // para saber si el usuario que se creo ya existe
-        $usuario = User::where('usuario', $request['usuario'])->first();
-        if ($usuario) {
-            return redirect()->route('usuario.create')->with('error', 'usuario ya existente');
-        }
-        if ($request->tipo === 'cliente') {
-            $validated = $request->validate([
-                'usuario' => ['required', 'string', 'max:20'],
-                'email' => ['required', 'string', 'max:1000'],
-                'password' => ['required', 'string', 'min:8', 'max:20'],
-                'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
-                'telefono' => ['required', 'regex:/^\+?[0-9 ]{8,15}$/'],
-                'imagen' => ['nullable', 'image'],
-            ], [
-                'usuario.required' => 'El usuario es obligatorio',
-                'telefono.required' => 'El telefono es obligatorio',
-                'email.required' => 'El email es obligatorio',
-                'password.required' => 'La contraseña es obligatoria',
-                'password.min' => 'La contraseña es muy corta',
-                'password.max' => 'La contraseña es muy larga',
-            ]);
+        $validated = $request->validate([
+            'usuario' => ['required', 'string', 'max:20', 'unique:users,usuario'],
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'telefono' => ['required', 'regex:/^\+?[0-9 ]{8,15}$/'],
+            'password' => ['required', 'string', 'min:8', 'max:20', 'confirmed'],
+            'terminos' => ['accepted'],
+        ], [
+            'usuario.required' => 'El usuario es obligatorio.',
+            'usuario.unique' => 'El nombre de usuario ya está en uso.',
+            'nombre.required' => 'El nombre es obligatorio.',
+            'apellido.required' => 'El apellido es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'telefono.required' => 'El teléfono es obligatorio.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'terminos.accepted' => 'Debés aceptar los términos y condiciones.',
+        ]);
 
-            User::create([
-                'usuario' => $validated['usuario'],
-                'email' => $validated['email'],
-                'telefono' => $validated['telefono'],
-                'password' => Hash::make($validated['password']),
-                'imagen' => null,
-                'tipo' => 'cliente',
-            ]);
+        User::create([
+            'usuario' => $validated['usuario'],
+            'nombre' => $validated['nombre'],
+            'apellido' => $validated['apellido'],
+            'email' => $validated['email'],
+            'telefono' => $validated['telefono'],
+            'password' => Hash::make($validated['password']),
+        ]);
 
-        } else {
-            // para ingresar un profesional
-            $validated = $request->validate([
-                'usuario' => ['required', 'string', 'max:20'],
-                'email' => ['required', 'string', 'max:1000'],
-                'telefono' => ['nullable', 'regex:/^\+?[0-9 ]{8,15}$/'],
-                'password' => ['required', 'string', 'min:8', 'max:20'],
-                'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
-                'imagen' => ['nullable', 'image'],
-                'especialidad' => ['required', 'exists:oficios,id'],
-                'provincia' => ['required', 'in:nqn,rn'],
-                'ciudad' => ['required', 'string', 'max:100'],
-
-            ], [
-                'usuario.required' => 'El usuario es obligatorio',
-                'telefono.required' => 'El telefono es obligatorio',
-                'email.required' => 'El email es obligatorio',
-                'password.required' => 'La contraseña es obligatoria',
-                'password.min' => 'La contraseña es muy corta',
-                'especialidad.required' => 'La especialidad es obligatoria',
-                'provincia.required' => 'La provincia es obligatoria',
-                'ciudad.required' => 'La ciudad es obligatoria',
-            ]);
-            $provincias = ['nqn' => 'Neuquén', 'rn' => 'Río Negro'];
-
-            DB::transaction(function () use ($validated, $provincias) {
-
-                $usuario = User::create([
-                    'usuario' => $validated['usuario'],
-                    'telefono' => null,
-                    'email' => $validated['email'],
-                    'password' => Hash::make($validated['password']),
-                    'imagen' => null,
-                    'tipo' => 'profesional',
-                ]);
-
-                $profesional = $usuario->profesional()->create([
-                    'provincia' => $provincias[$validated['provincia']],
-                    'ciudad' => $validated['ciudad'],
-                ]);
-
-                $profesional->oficios()->attach($validated['especialidad']);
-            });
-        }
-
-        return redirect()->route('usuario.registro');
+        return redirect()
+            ->route('usuario.registro')
+            ->with('exito', 'Cuenta creada correctamente. Ya podés iniciar sesión.');
     }
+
 
     // para que el usuario pueda cerrar sesion
     public function salir(Request $request)
