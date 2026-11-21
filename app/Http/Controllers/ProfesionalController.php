@@ -36,11 +36,14 @@ class ProfesionalController extends Controller
 
     public function show(int $id): View
     {
-       $profesional = Profesional::with('user', 'oficios')->findOrFail($id);
+       $profesional = Profesional::with('user', 'oficios', 'resenas.user')
+            ->withAvg('resenas', 'puntaje')
+            ->withCount('resenas')
+            ->findOrFail($id);
 
         return view('profesional.show', [
             'profesional' => $profesional,
-            'titulo'=> 'el profesional',
+            'titulo' => $profesional->user->usuario,
             'modelo' => new Profesional(),
         ]);
     }
