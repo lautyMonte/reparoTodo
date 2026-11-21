@@ -1,4 +1,7 @@
 @extends('layouts.app', ['title' => $titulo])
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+@endpush
 
 @section('contenido')
             <h1 class="titulo">¡Bienvenido!</h1>

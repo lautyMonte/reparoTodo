@@ -21,11 +21,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     {{-- Bootstrap Icons: solo para los logos de redes del footer --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="{{ asset('css/reparotodo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
     <link rel="stylesheet" href="{{ asset('css/box.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/create.css') }}">{{-- Estilos específicos para el crear un usuario --}}
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">{{-- Estilos específicos para el crear un usuario --}}
+    @stack('styles')
+    {{--
+    <link rel="stylesheet" href="{{ asset('css/create.css') }}">{{-- Estilos específicos para el crear un usuario --
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">{{-- Estilos específicos para el crear un usuario --
+    --}}
 </head>
 <body class="d-flex flex-column min-vh-100">
 
