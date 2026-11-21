@@ -64,4 +64,26 @@ class ProfesionalController extends Controller
             'destacados' => $destacados,
         ]);
     }
+
+    public function buscar(Request $request)
+    {
+    $request->validate([
+        'buscar' => ['nullable', 'string', 'max:100'],
+    ]);
+
+    $buscar = $request->input('buscar');
+
+    $profesionales = Profesional::with(['user', 'oficios'])
+        ->withCount('resenas')
+        ->withAvg('resenas', 'puntaje')
+        ->whereHas('user', function ($query) use ($buscar) {
+            $query->where('usuario', 'LIKE', "%{$buscar}%");
+        })
+        ->get();
+
+    return view('profesional.index', [
+        'titulo' => 'Buscar profesional',
+        'profesionales' => $profesionales,
+    ]);
+    }
 }

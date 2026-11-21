@@ -17,6 +17,7 @@ Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
 
 // Buscador de profesionales: es publico, lo puede ver cualquiera (con o sin sesion)
 Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesional.index');
+Route::get('/buscador/profesional',[ProfesionalController::class,'buscar'])->name('profesional.busca');
 
 // Detalle de un profesional: tambien es publico (lo ve cualquiera, con o sin sesion)
 Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])->whereNumber('id')->name('profesional.show');
