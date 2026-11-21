@@ -85,5 +85,6 @@
     <p class="subtitulo">Ya tienes una cuenta? <a href="{{ route('usuario.registro') }}">Inicia sesión</a></p>
 @endsection
 @push('scripts')
+    <script src="{{ asset('js/registro.js') }}"></script>
     <script src="{{ asset('js/ciudades.js') }}" defer></script>
 @endpush

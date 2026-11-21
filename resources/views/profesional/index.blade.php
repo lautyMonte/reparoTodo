@@ -82,9 +82,4 @@
             <p class="text-center text-muted">Todavía no hay profesionales para mostrar.</p>
         @endforelse
     </div>
-
-    {{-- El chat solo existe con sesion iniciada --}}
-    @auth
-        @include('chatify.index')
-    @endauth
 @endsection
