@@ -7,7 +7,7 @@
     @auth
         <meta name="usuario-id" content="{{ auth()->id() }}">
     @endauth
-    <title>{{ $titulo ?? 'ReparoTodo' }} | ReparoTodo</title>
+    <title>{{ isset($titulo) ? $titulo . ' | ReparoTodo' : 'ReparoTodo' }}</title>
 
     {{-- Logo en la pestaña del navegador --}}
     <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo.svg') }}">
@@ -41,7 +41,7 @@
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
-        @if (session('exito'))
+        @if (session('exito')  && !request()->routeIs('contacto'))
             <div class="alert alert-success">{{ session('exito') }}</div>
         @endif
 
@@ -60,6 +60,7 @@
     {{-- El chat solo existe para usuarios logueados --}}
     @auth
         <script src="{{ asset('js/chat.js') }}" defer></script>
+        <script src="{{ asset('js/notificaciones.js') }}" defer></script>
     @endauth
 
     @stack('scripts')

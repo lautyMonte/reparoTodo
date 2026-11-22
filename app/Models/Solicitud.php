@@ -19,6 +19,7 @@ class Solicitud extends Model
         'zona',
         'fecha_deseada',
         'estado',
+        'leida_profesional',
     ];
 
     // Cada solicitud la hizo un cliente (un usuario). La columna se llama cliente_id, no user_id,
@@ -40,11 +41,11 @@ class Solicitud extends Model
         return $this->hasMany(SolicitudFoto::class);
     }
 
-    // Para que fecha_deseada se maneje como fecha y no como texto
     protected function casts(): array
     {
         return [
             'fecha_deseada' => 'date',
+            'leida_profesional' => 'boolean',
         ];
     }
 }

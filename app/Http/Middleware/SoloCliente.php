@@ -13,9 +13,12 @@ class SoloCliente
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || $request->user()->tipo!=='cliente') {
+        if (!$request->user()) {
             return redirect()->route('usuario.registro')->with('error','Acceso denegado');
-            }
+        }
+        if ($request->user()->tipo !== 'cliente') {
+            return redirect()->route('inicio')->with('error','Acceso denegado');
+        }
         return $next($request);
     }
 }

@@ -27,6 +27,22 @@
                             <i data-lucide="search"></i> Buscar profesional
                         </a>
                     </li>
+                    @auth
+                        @if (auth()->user()->tipo === 'profesional' && auth()->user()->profesional)
+                            @php $pendientes = auth()->user()->profesional->solicitudes()->where('estado', 'pendiente')->count(); @endphp
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('solicitud.*') ? 'active' : '' }}" href="{{ route('solicitud.index') }}">
+                                    <i data-lucide="inbox"></i> Mi bandeja
+                                    <span class="nav-numero {{ $pendientes === 0 ? 'd-none' : '' }}" id="bandeja-numero">{{ $pendientes }}</span>
+                                </a>
+                            </li>
+                        @endif
+                    @endauth
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('contacto') ? 'active' : '' }}" href="{{ route('contacto') }}">
+                            <i data-lucide="mail"></i> Contacto
+                        </a>
+                    </li>
                     {{-- Pendientes (se agregan cuando existan las páginas):
                          Rubros, Ofrecer servicios, Preguntas frecuentes, Contacto --}}
                 </ul>
@@ -46,16 +62,55 @@
 
                     {{-- CON LOGIN --}}
                     @auth
-                        {{-- Campanita de notificaciones (por ahora siempre vacía) --}}
+                        {{-- Campanita de notificaciones --}}
+                        @php
+                            $notificaciones = auth()->user()->notificaciones()->latest()->take(5)->get();
+                            $sinLeer = auth()->user()->notificaciones()->where('leida', false)->count();
+                            $titulosNotif = [
+                                'solicitud_nueva' => 'Nueva solicitud de trabajo.',
+                                'solicitud_aceptada' => 'Solicitud aceptada.',
+                                'solicitud_rechazada' => 'Solicitud rechazada.',
+                            ];
+                        @endphp
                         <div class="dropdown">
                             <button class="btn-campana" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notificaciones">
                                 <i data-lucide="bell"></i>
+                                <span class="campana-numero {{ $sinLeer === 0 ? 'd-none' : '' }}" id="campana-numero">{{ $sinLeer }}</span>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-end menu-notificaciones p-3 text-center">
-                                <h6 class="text-start mb-3">Notificaciones</h6>
-                                <i data-lucide="bell-off"></i>
-                                <p class="fw-bold mb-1 mt-2">No tenés notificaciones</p>
-                                <p class="small text-muted mb-0">Cuando haya novedades sobre tus consultas y presupuestos, las vas a ver acá.</p>
+                            <div data-bs-theme="light" class="dropdown-menu dropdown-menu-end menu-notificaciones">
+                                <div class="notif-cabecera">
+                                    <h6>Notificaciones</h6>
+                                    @if ($sinLeer > 0)
+                                        <form action="{{ route('notificacion.leer') }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="notif-leer">Marcar como leídas</button>
+                                        </form>
+                                    @endif
+                                </div>
+
+                                <div id="aviso-notificaciones" class="alert alert-warning text-center small rounded-0 mb-0 d-none" data-sin-leer="{{ $sinLeer }}">
+                                    Hay notificaciones nuevas. <a href="{{ request()->fullUrl() }}" class="alert-link">Actualizar</a>
+                                </div>
+
+                                @forelse ($notificaciones as $notificacion)
+                                    <a href="{{ $notificacion->tipo === 'solicitud_nueva' && $notificacion->solicitud_id ? route('solicitud.show', $notificacion->solicitud_id) : '#' }}" class="notif-item {{ $notificacion->leida ? '' : 'nueva' }}">
+                                        <div class="notif-icono"><i data-lucide="inbox"></i></div>
+                                        <div>
+                                            <div class="notif-texto"><strong>{{ $titulosNotif[$notificacion->tipo] ?? 'Novedad.' }}</strong> {{ $notificacion->mensaje }}</div>
+                                            <div class="notif-hora">{{ $notificacion->created_at->locale('es')->diffForHumans() }}</div>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="p-3 text-center">
+                                        <i data-lucide="bell-off"></i>
+                                        <p class="fw-bold mb-1 mt-2">No tenés notificaciones</p>
+                                        <p class="small text-muted mb-0">Cuando haya novedades sobre tus consultas y presupuestos, las vas a ver acá.</p>
+                                    </div>
+                                @endforelse
+
+                                @if (auth()->user()->tipo === 'profesional')
+                                    <a href="{{ route('solicitud.index') }}" class="notif-pie">Ver mi bandeja</a>
+                                @endif
                             </div>
                         </div>
 
