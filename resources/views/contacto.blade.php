@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['titulo' => 'Contacto'])
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/contacto.css') }}">
@@ -23,7 +23,8 @@
         <div class="campo">
             <label for="telefono">Teléfono (opcional)</label>
             <input type="tel" name="telefono" id="telefono" value="{{ old('telefono') }}"
-                placeholder="+54 9 11 1234-5678" pattern="^\+?[0-9 ]{8,15}$">
+                placeholder="Ej: 2994123456" pattern="^\+?[0-9 ]{8,15}$"
+                title="Solo números y espacios (entre 8 y 15). Podés empezar con +">
         </div>
         <div class="campo">
             <label for="motivo">Motivo de la consulta</label>

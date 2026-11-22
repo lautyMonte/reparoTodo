@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => $titulo])
+@extends('layouts.app', ['titulo' => $titulo])
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 @endpush
