@@ -1,0 +1,149 @@
+/* TITULO */
+.contenedor-tit {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.contenedor-tit p {
+    color: #2B2D31;
+}
+
+/* CONTENEDOR DE PREGUNTAS FRECUENTES */
+.contenedor-faq {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* CONTENEDOR DEL ACORDEÓN */
+.acordeon {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    /* Variables de Bootstrap */
+    --bs-accordion-bg: transparent;
+    --bs-accordion-border-color: transparent;
+    --bs-accordion-btn-focus-box-shadow: none;
+    --bs-accordion-btn-focus-border-color: transparent;
+    --bs-accordion-active-bg: #f58b22;
+    --bs-accordion-active-color: #000;
+}
+
+
+/* CADA PREGUNTA */
+.acordeon-item {
+    border: 1px solid #5B6B7F;
+    border-top: 1px solid #5B6B7F !important;
+    border-radius: 50px !important;
+    overflow: hidden;
+    background-color: white;
+}
+
+
+/* BOTÓN DE LA PREGUNTA */
+.acordeon-btn {
+    background-color: white;
+    color: #2B2D31;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 0px !important;
+    /* Esta linea es para cambiar el naranja del fondo cuando una FAQ esta abierta*/
+    box-shadow: none !important;
+    outline: none;
+    transition: background-color 0.3s ease;
+
+}
+
+
+/* PREGUNTA CERRADA */
+.acordeon-btn.collapsed {
+    background-color: white;
+    color: #2B2D31;
+}
+
+
+/* HOVER DE LA PREGUNTA */
+.acordeon-btn:hover {
+    background-color: #F28C28;
+}
+
+
+/* PREGUNTA ABIERTA */
+.acordeon-btn:not(.collapsed) {
+    background-color: #F28C28;
+    color: #1D3557;
+    box-shadow: none !important;
+}
+
+
+/* FOCO DEL BOTÓN */
+.acordeon-btn:focus {
+    box-shadow: none !important;
+    outline: none;
+}
+
+
+/* FOCO CON TECLADO */
+.acordeon-btn:focus-visible {
+    outline: 2px solid #F28C28;
+    outline-offset: -3px;
+}
+
+
+/* FLECHA DEL ACORDEÓN */
+.acordeon-btn::after {
+    width: 16px;
+    height: 16px;
+    background-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+
+/* FLECHA CUANDO ESTÁ ABIERTO */
+.acordeon-btn:not(.collapsed)::after {
+    transform: rotate(-180deg);
+}
+
+
+/* CONTENIDO DE LA RESPUESTA */
+.acordeon-body {
+    background-color: white;
+    color: #2B2D31;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+
+/* BOTON CONTACTO */
+.btn-faq {
+    background-color: #F28C28;
+    padding: 10px 30px;
+    font-weight: bold;
+    color: #1D3557;
+}
+
+.btn-faq:hover {
+    background-color: #e87c13;
+}
+
+/* CONTENEDOR NO RESPUESTA*/
+.contenedor-norta {
+    /* border: 1px solid #5B6B7F; */
+    /* background-color: white; */
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 15px auto 0;
+    max-width: 900px;
+}
+
+/* ENLACES DENTRO DE LOS ACORDEONES */
+.enlace {
+    font-weight: bold;
+    color: #2B2D31;
+}

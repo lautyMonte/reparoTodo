@@ -52,3 +52,8 @@ Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
 
 });
 
+// Preguntas frecuentes
+Route::view('/faq', 'faq')->name('faq');
+
+// Terminos y condiciones
+Route::view('/tyc', 'tyc')->name('tyc');
