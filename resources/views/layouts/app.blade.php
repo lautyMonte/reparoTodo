@@ -60,6 +60,7 @@
     {{-- El chat solo existe para usuarios logueados --}}
     @auth
         <script src="{{ asset('js/chat.js') }}" defer></script>
+        <script src="{{ asset('js/notificaciones.js') }}" defer></script>
     @endauth
 
     @stack('scripts')

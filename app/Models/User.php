@@ -57,6 +57,14 @@ class User extends Authenticatable
         return Storage::disk('public')->url($ruta);
     }
 
+    // Foto de perfil: la propia si la tiene y, si no, una imagen por defecto
+    // (cuando esten los avatares de los clientes, se cambia solo la ruta de abajo)
+    public function avatar(): string
+    {
+        return $this->urlImagen($this->imagen)
+            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 5 + 1).'.svg');
+    }
+
 
     #[Scope]
     protected function sinImagen(Builder $query): void
