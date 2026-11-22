@@ -42,6 +42,12 @@ class User extends Authenticatable
         return $this->hasMany(Solicitud::class, 'cliente_id');
     }
 
+    // Un usuario recibe muchas notificaciones. Se llama notificaciones (no notifications) para no chocar con el sistema propio de Laravel
+    public function notificaciones(): HasMany
+    {
+        return $this->hasMany(Notificacion::class);
+    }
+
     public function urlImagen(?string $ruta): ?string
     {
         if ($ruta === null || $ruta === '') {
