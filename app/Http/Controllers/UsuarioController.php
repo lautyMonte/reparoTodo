@@ -59,7 +59,7 @@ class UsuarioController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // aca iria la validacion de un nuevo usuario
-        // para saber si el usuario que se creo ya existe
+        // para saber si el usuario que se creo ya exist
         $usuario = User::where('usuario', $request['usuario'])->first();
         if ($usuario) {
             return redirect()->route('usuario.create')->with('error', 'usuario ya existente');
