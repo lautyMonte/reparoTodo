@@ -348,6 +348,18 @@ img.avatar-rt { object-fit: cover; }
 
 .buscador-lista { width: 380px; max-width: 100%; }
 
+/*Campo de filtro*/
+.campo-buscar .form-select{
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding-left: 0.5rem;
+    border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
+}
+.buscador-oficio .btn-barra {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 /* Campo de busqueda: un solo bloque blanco con la lupa adentro */
 .campo-buscar { position: relative; }
 .campo-buscar .lucide {
