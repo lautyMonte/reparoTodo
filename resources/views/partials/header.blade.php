@@ -27,6 +27,11 @@
                             <i data-lucide="search"></i> Buscar profesional
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('contacto') ? 'active' : '' }}" href="{{ route('contacto') }}">
+                            <i data-lucide="mail"></i> Contacto
+                        </a>
+                    </li>
                     {{-- Pendientes (se agregan cuando existan las páginas):
                          Rubros, Ofrecer servicios, Preguntas frecuentes, Contacto --}}
                 </ul>

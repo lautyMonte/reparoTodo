@@ -35,7 +35,7 @@
                 <ul class="list-unstyled footer-links mb-0">
                     <li><a href="#">Preguntas frecuentes</a></li>
                     <li><a href="#">Términos y condiciones</a></li>
-                    <li><a href="#">Contacto</a></li>
+                    <li><a href="/contacto">Contacto</a></li>
                 </ul>
             </div>
         </div>

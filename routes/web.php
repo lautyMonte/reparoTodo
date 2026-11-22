@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfesionalController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContactoController;
 use Illuminate\Support\Facades\Route;
 
 // Pagina de inicio (home): muestra los profesionales destacados (los de mejores resenas)
@@ -14,6 +15,12 @@ Route::post('/ingresar',[UsuarioController::class,'verifica'])->name('usuario.ve
 Route::get('/salir',[UsuarioController::class,'salir'])->name('usuario.salir');
 Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create');
 Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
+
+// Mostrar formulario de contacto
+Route::view('/contacto', 'contacto')->name('contacto');
+
+// Procesar formulario de contacto
+Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
 
 // Buscador de profesionales: es publico, lo puede ver cualquiera (con o sin sesion)
 Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesional.index');

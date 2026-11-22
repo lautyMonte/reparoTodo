@@ -1,0 +1,108 @@
+/* TÍTULO y SUBTITULO */
+.titulo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 8px;
+    font-size: 60px;
+    font-weight: 600;
+}
+
+.subtitulo {
+    text-align: center;
+    font-size: 15px;
+}
+
+/* FORMULARIO */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* width: 100%; */
+    align-items: center;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 30%;
+}
+
+.campo label {
+    font-size: 17px;
+    font-weight: 500;
+    color: #20395d;
+}
+
+.campo input,
+.campo select,
+textarea {
+    height: 45px;
+    padding: 0 16px;
+    border: 1px solid #20395d;
+    border-radius: 17px;
+    outline: none;
+    background-color: white;
+    color: #20395d;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.campo input::placeholder, 
+.campo select:invalid,
+.campo select:disabled {
+    color: #71809a;
+}
+
+.campo input:focus {
+    border: 2px solid #f58b22;
+}
+
+.campo select, option {
+    color: #000000;
+}
+
+/* BOTÓN ENVIAR */
+.btn-enviar {
+    width: 30%;
+    height: 45px;
+    border: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 11px;
+    background-color: #f58b22;
+    color: #20395d;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-enviar:hover {
+    background-color: #e87c13;
+}
+
+/* MENSAJE EXITOSO */
+.btn-exito {
+    width: 30%;
+    height: 45px;
+    border: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 11px;
+    background-color: #f58b22;
+    color: #20395d;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.icn-exito {
+    width: 64px;
+    height: 64px;
+}

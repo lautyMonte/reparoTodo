@@ -28,7 +28,7 @@
                 placeholder="juanperez@example.com">
 
 
-            <label for="password">Contraseña:</label>
+            <label for="password">Contraseña</label>
             <input type="password" name="password" id="password" required placeholder="Minimo 8 caracteres" minlength="8"
                 maxlength="20">
 
