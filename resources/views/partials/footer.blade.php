@@ -33,9 +33,9 @@
             <div class="col-6 col-lg-3">
                 <h3 class="footer-titulo">Ayuda</h3>
                 <ul class="list-unstyled footer-links mb-0">
-                    <li><a href="/faq">Preguntas frecuentes</a></li>
-                    <li><a href="/tyc">Términos y condiciones</a></li>
-                    <li><a href="/contacto">Contacto</a></li>
+                    <li><a href="{{ route('faq') }}">Preguntas frecuentes</a></li>
+                    <li><a href="{{ route('tyc') }}">Términos y condiciones</a></li>
+                    <li><a href="{{ route('contacto') }}">Contacto</a></li>
                 </ul>
             </div>
         </div>
