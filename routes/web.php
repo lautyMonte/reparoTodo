@@ -1,49 +1,152 @@
+
 <?php
 
-use App\Http\Controllers\ProfesionalController;
-use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\SolicitudController;
 use Illuminate\Support\Facades\Route;
 
-// Pagina de inicio (home): muestra los profesionales destacados (los de mejores resenas)
-Route::get('/', [ProfesionalController::class, 'destacados'])->name('inicio');
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ProfesionalController;
+use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\LocalidadController;
 
-// Inicio de sesion (el login paso de "/" a "/ingresar")
-Route::get('/ingresar',[UsuarioController::class,'registro'])->name('usuario.registro')->middleware('guest');
-Route::post('/ingresar',[UsuarioController::class,'verifica'])->name('usuario.verifica')->middleware('guest');
+/*
+|--------------------------------------------------------------------------
+| Página de inicio
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', [ProfesionalController::class, 'destacados'])
+    ->name('inicio');
+
+/*
+|--------------------------------------------------------------------------
+| Registro y autenticación de usuarios
+|--------------------------------------------------------------------------
+*/
+
+// Iniciar sesión
+Route::get('/ingresar', [UsuarioController::class, 'registro'])
+    ->middleware('guest')
+    ->name('usuario.registro');
+
+Route::post('/ingresar', [UsuarioController::class, 'verifica'])
+    ->middleware('guest')
+    ->name('usuario.verifica');
+
+// Crear cuenta
+Route::get('/nuevo', [UsuarioController::class, 'create'])
+    ->middleware('guest')
+    ->name('usuario.create');
+
+Route::post('/nuevo', [UsuarioController::class, 'store'])
+    ->middleware('guest')
+    ->name('usuario.store');
+
+// Cerrar sesión
 Route::post('/salir', [UsuarioController::class, 'salir'])
     ->middleware('auth')
     ->name('usuario.salir');
-Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create')->middleware('guest');
-Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store')->middleware('guest');
 
-// Buscador de profesionales: es publico, lo puede ver cualquiera (con o sin sesion)
-Route::get('/buscador', [ProfesionalController::class, 'index'])->name('profesional.index');
+/*
+|--------------------------------------------------------------------------
+| Profesionales: páginas públicas
+|--------------------------------------------------------------------------
+*/
 
-// Detalle de un profesional: tambien es publico (lo ve cualquiera, con o sin sesion)
-Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])->whereNumber('id')->name('profesional.show');
+// Buscador de profesionales publicados
+Route::get('/buscador', [ProfesionalController::class, 'index'])
+    ->name('profesional.index');
 
-// Solicitud de trabajo: requiere un usuario autenticado
+// Detalle público de un profesional publicado
+Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])
+    ->whereNumber('id')
+    ->name('profesional.show');
+
+/*
+|--------------------------------------------------------------------------
+| Perfil profesional propio (requiere autenticación)
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth')->group(function () {
-    Route::get('/profesional/{id}/solicitar', [SolicitudController::class, 'create'])->whereNumber('id')->name('solicitud.create');
-    Route::post('/profesional/{id}/solicitar', [SolicitudController::class, 'store'])->whereNumber('id')->name('solicitud.store');
+
+    // Ver mi perfil profesional
+    Route::get('/mi-perfil-profesional', [
+        ProfesionalController::class,
+        'miPerfil'
+    ])->name('profesional.mi-perfil');
+
+    // Crear mi perfil como borrador
+    Route::post('/mi-perfil-profesional', [
+        ProfesionalController::class,
+        'crearBorrador'
+    ])->name('profesional.crear-borrador');
+
+    // Actualizar los datos de mi perfil profesional
+    Route::patch('/mi-perfil-profesional', [
+        ProfesionalController::class,
+        'actualizarPerfil'
+    ])->name('profesional.actualizar');
+
+    // Obtener localidades por provincia mediante AJAX
+    Route::get('/geografia/localidades', [
+        LocalidadController::class,
+        'index'
+    ])->name('geografia.localidades');
+
 });
 
-// Para los chats
-Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Solicitudes de trabajo (requieren autenticación)
+|--------------------------------------------------------------------------
+*/
 
-    // Iniciar conversación
-    Route::post('/iniciar/{destinatario}', [ChatController::class, 'iniciar'])
-        ->name('iniciar');
+Route::middleware('auth')->group(function () {
 
-    // Enviar mensaje
-    Route::post('/enviar/{destinatario}', [ChatController::class, 'enviar'])
-        ->name('enviar');
+    Route::get('/profesional/{id}/solicitar', [
+        SolicitudController::class,
+        'create'
+    ])
+        ->whereNumber('id')
+        ->name('solicitud.create');
 
-    // Recuperar historial
-    Route::get('/mensajes/{destinatario}', [ChatController::class, 'mensajes'])
-        ->name('mensajes');
+    Route::post('/profesional/{id}/solicitar', [
+        SolicitudController::class,
+        'store'
+    ])
+        ->whereNumber('id')
+        ->name('solicitud.store');
 
 });
 
+/*
+|--------------------------------------------------------------------------
+| Chat (requiere autenticación)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')
+    ->prefix('chat')
+    ->name('chat.')
+    ->group(function () {
+
+        // Iniciar conversación
+        Route::post('/iniciar/{destinatario}', [
+            ChatController::class,
+            'iniciar'
+        ])->name('iniciar');
+
+        // Enviar mensaje
+        Route::post('/enviar/{destinatario}', [
+            ChatController::class,
+            'enviar'
+        ])->name('enviar');
+
+        // Recuperar historial
+        Route::get('/mensajes/{destinatario}', [
+            ChatController::class,
+            'mensajes'
+        ])->name('mensajes');
+
+    });

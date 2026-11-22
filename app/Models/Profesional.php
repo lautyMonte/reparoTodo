@@ -10,11 +10,27 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Profesional extends Model
 {
     protected $table = 'profesionales';
-    
+
+
     protected $fillable = [
+        'descripcion',
+        'nombre_comercial',
+        'telefono_comercial',
+        'foto',
+        'localidad_id',
+
+        // Compatibilidad temporal con el esquema anterior.
         'provincia',
         'ciudad',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'publicado' => 'boolean',
+        ];
+    }
+
 
     // Relacion muchos a muchos con oficios
     public function oficios(): BelongsToMany
@@ -37,4 +53,16 @@ class Profesional extends Model
     {
         return $this->hasMany(Solicitud::class);
     }
+
+    public function localidadesCobertura(): BelongsToMany
+    {
+        return $this->belongsToMany(Localidad::class)
+            ->withTimestamps();
+    }
+
+    public function localidadPrincipal(): BelongsTo
+    {
+        return $this->belongsTo(Localidad::class, 'localidad_id');
+    }
+
 }

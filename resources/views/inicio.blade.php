@@ -4,7 +4,9 @@
 
     {{-- Link del boton "Ofrecer servicios": sin sesion va al login; con sesion queda en "#" hasta que exista esa pantalla --}}
     @php
-        $urlOfrecer = auth()->check() ? '#' : route('usuario.registro');
+        $urlOfrecer = auth()->check()
+            ? route('profesional.mi-perfil')
+            : route('usuario.registro');
     @endphp
 
     {{-- ========== 1. CARRUSEL PRINCIPAL ========== --}}

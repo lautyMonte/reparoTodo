@@ -61,7 +61,14 @@
 
                         {{-- "Mi perfil" para usuarios con perfil profesional --}}
                         @if (auth()->user()->tienePerfilProfesional())
-                            <a class="btn btn-outline-light" href="{{ route('profesional.show', auth()->user()->profesional->id) }}">Mi perfil</a>
+                            <a
+                                class="btn btn-outline-light"
+                                href="{{ route('profesional.mi-perfil') }}"
+                            >
+                                {{ auth()->user()->tienePerfilProfesional()
+                                    ? 'Mi perfil'
+                                    : 'Ofrecer servicios' }}
+                            </a>
                         @endif
 
                         <form action="{{ route('usuario.salir') }}" method="POST">
