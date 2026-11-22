@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notificacion;
 use App\Models\Profesional;
 use App\Models\Solicitud;
 use Illuminate\Http\RedirectResponse;
@@ -68,8 +69,126 @@ class SolicitudController extends Controller
             ]);
         }
 
+        // Le avisamos al profesional que tiene una solicitud nueva (despues se va a ver en su campana)
+        Notificacion::create([
+            'user_id' => $profesional->user_id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'solicitud_nueva',
+            'mensaje' => $request->user()->usuario.' te pidió «'.$solicitud->titulo.'»',
+        ]);
+
         return redirect()
             ->route('profesional.show', $profesional->id)
             ->with('exito', 'Solicitud enviada. '.$profesional->user->usuario.' la va a revisar y te va a responder.');
+    }
+
+    /** Bandeja del profesional (se abre la solicitud mas nueva) */
+    public function index(Request $request): View|RedirectResponse
+    {
+        return $this->bandeja($request, null);
+    }
+
+    /** Bandeja del profesional con una solicitud puntual abierta */
+    public function show(Request $request, int $id): View|RedirectResponse
+    {
+        return $this->bandeja($request, $id);
+    }
+
+    /** Arma la bandeja: la lista de solicitudes y el detalle de la elegida */
+    private function bandeja(Request $request, ?int $id): View|RedirectResponse
+    {
+        $profesional = $request->user()->profesional;
+
+        // Las rechazadas no se muestran: para el profesional es como si se hubieran borrado
+        $todas = $profesional->solicitudes()
+            ->where('estado', '!=', 'rechazada')
+            ->with(['cliente', 'fotos'])
+            ->latest()
+            ->get();
+
+        // Si no pidio ninguna en particular, se abre la mas nueva
+        $seleccionada = $id === null ? $todas->first() : $todas->firstWhere('id', $id);
+
+        // Si pidio una que no es suya o que ya no esta, vuelve a la bandeja con un aviso
+        if ($id !== null && $seleccionada === null) {
+            return redirect()
+                ->route('solicitud.index')
+                ->with('error', 'Esa solicitud no existe o ya no está disponible.');
+        }
+
+        // Al abrirla queda leida, ella y sus notificaciones
+        if ($seleccionada !== null) {
+            if (! $seleccionada->leida_profesional) {
+                $seleccionada->update(['leida_profesional' => true]);
+            }
+
+            Notificacion::where('user_id', $request->user()->id)
+                ->where('solicitud_id', $seleccionada->id)
+                ->update(['leida' => true]);
+        }
+
+        // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
+        $estado = $request->query('estado');
+        if (! in_array($estado, ['pendiente', 'aceptada'], true)) {
+            $estado = null;
+        }
+        $lista = $estado === null ? $todas : $todas->where('estado', $estado);
+        
+        return view('solicitud.index', [
+            'titulo' => 'Mi bandeja',
+            'lista' => $lista,
+            'seleccionada' => $seleccionada,
+            'estado' => $estado,
+            'conteo' => $todas->countBy('estado'),
+            'total' => $todas->count(),
+        ]);
+    }
+
+    /** El profesional acepta la solicitud */
+    public function aceptar(Request $request, int $id): RedirectResponse
+    {
+        $solicitud = $this->pendienteDelProfesional($request, $id);
+
+        $solicitud->update(['estado' => 'aceptada']);
+
+        // Le avisamos al cliente
+        Notificacion::create([
+            'user_id' => $solicitud->cliente_id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'solicitud_aceptada',
+            'mensaje' => $request->user()->usuario.' aceptó tu solicitud «'.$solicitud->titulo.'»',
+        ]);
+
+        return redirect()
+            ->route('solicitud.show', $solicitud->id)
+            ->with('exito', 'Aceptaste la solicitud. Le avisamos a '.$solicitud->cliente->usuario.'.');
+    }
+
+    /** El profesional rechaza la solicitud (queda guardada pero deja de verse) */
+    public function rechazar(Request $request, int $id): RedirectResponse
+    {
+        $solicitud = $this->pendienteDelProfesional($request, $id);
+
+        $solicitud->update(['estado' => 'rechazada']);
+
+        // Le avisamos al cliente
+        Notificacion::create([
+            'user_id' => $solicitud->cliente_id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'solicitud_rechazada',
+            'mensaje' => $request->user()->usuario.' rechazó tu solicitud «'.$solicitud->titulo.'»',
+        ]);
+
+        return redirect()
+            ->route('solicitud.index')
+            ->with('exito', 'Rechazaste la solicitud. Le avisamos a '.$solicitud->cliente->usuario.'.');
+    }
+
+    /** Busca una solicitud pendiente que sea de este profesional (si no, da error 404) */
+    private function pendienteDelProfesional(Request $request, int $id): Solicitud
+    {
+        return $request->user()->profesional->solicitudes()
+            ->where('estado', 'pendiente')
+            ->findOrFail($id);
     }
 }

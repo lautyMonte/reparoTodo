@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['titulo' => 'Crear cuenta'])
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/create.css') }}">
 @endpush
@@ -41,7 +41,8 @@
         <div class="campo" id="campo-cliente">
             <label for="telefono">Número de teléfono</label>
             <input type="tel" name="telefono" id="telefono" value="{{ old('telefono') }}"
-                placeholder="+54 9 11 1234-5678" pattern="^\+?[0-9 ]{8,15}$">
+                placeholder="Ej: 2994123456" pattern="^\+?[0-9 ]{8,15}$"
+                title="Solo números y espacios (entre 8 y 15). Podés empezar con +">
         </div>
 
         <!--Campo exclusivo del profesional!-->

@@ -19,11 +19,11 @@
                 <i data-lucide="sliders-horizontal"></i> Filtros
             </button>
 
-            <form action="{{ route('profesional.index') }}" method="GET" class="buscador-lista">
+            <form action="{{ route('profesional.busca') }}" method="get" class="buscador-lista">
                 <div class="d-flex">
                     <div class="campo-buscar flex-grow-1">
                         <i data-lucide="search"></i>
-                        <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre" aria-label="Buscar profesional">
+                        <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre" aria-label="Buscar profesional"  value="{{ request('buscar') }}">
                     </div>
                     <button type="submit" class="btn btn-accent btn-barra fw-semibold">Buscar</button>
                 </div>
@@ -79,7 +79,13 @@
                 </article>
             </div>
         @empty
-            <p class="text-center text-muted">Todavía no hay profesionales para mostrar.</p>
+        <p class="text-center text-muted">
+            @if(request('buscar'))
+                No se encontraron profesionales con el nombre "{{ request('buscar') }}".
+            @else
+                Todavía no hay profesionales para mostrar.
+            @endif
+        </p>
         @endforelse
     </div>
 @endsection
