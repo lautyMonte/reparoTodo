@@ -1,38 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User;
+
 use App\Models\Oficio;
 use App\Models\Profesional;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Hash;
 
 class ProfesionalController extends Controller
 {
-
-    public function __construct(
-        
-    ) {
-    }
-
-    /** Mostrar listado de todos los profesionales*/
-    //  public function index(): View
-    // {                                  // Deben tener el nombre de la funcion que hace la conexion entre usuarios y oficios de un profesional
-    //     $profesionales = Profesional::with('user', 'oficios')
-    //         ->withAvg('resenas', 'puntaje')
-    //         ->withCount('resenas')
-    //         ->orderByDesc('resenas_avg_puntaje')
-    //         ->orderByDesc('resenas_count')
-    //         ->get();
-
-    //     return view('profesional.index',[
-    //         'profesionales'=>$profesionales,
-    //         'titulo' => 'Buscar profesional',
-    //         'modelo' => new Profesional()
-    //     ]);
-    // }
+    /** Listado de profesionales del buscador (con los oficios elegidos ya marcados) */
     public function index(Request $request)
     {
 

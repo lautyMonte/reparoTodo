@@ -29,7 +29,6 @@
                 'Carpintería' => ['Carpintero', 'hammer'],
                 'Cerrajería' => ['Cerrajero', 'key-round'],
                 'Electricidad' => ['Electricista', 'zap'],
-                'Electridad' => ['Electricista', 'zap'],
                 'Fletes' => ['Fletero', 'truck'],
                 'Gas' => ['Gasista', 'flame'],
                 'Pintura' => ['Pintor', 'paint-roller'],

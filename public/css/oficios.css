@@ -17,7 +17,7 @@
     margin: 0;
     font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
-    color: #1e3658;
+    color: var(--rt-azul);
 }
 
 .catalogo-volver {
@@ -29,7 +29,7 @@
     flex-shrink: 0;
     background: #ffffff;
     border-radius: 50%;
-    color: #1e3658;
+    color: var(--rt-azul);
     text-decoration: none;
 }
 
@@ -54,7 +54,7 @@
     border: 1px solid #c4cdd8;
     border-radius: 15px;
 
-    color: #1e3658;
+    color: var(--rt-azul);
     text-align: center;
     text-decoration: none;
 
@@ -77,13 +77,13 @@
 /* Interacción */
 .tarjeta-oficio:hover {
     transform: translateY(-3px);
-    border-color: #1e3658;
-    box-shadow: 0 5px 15px rgba(30, 54, 88, 0.12);
-    color: #1e3658;
+    border-color: var(--rt-azul);
+    box-shadow: 0 5px 15px rgba(29, 53, 87, 0.12);
+    color: var(--rt-azul);
 }
 
 .tarjeta-oficio:focus-visible {
-    outline: 3px solid #ed8b23;
+    outline: 3px solid var(--rt-naranja);
     outline-offset: 3px;
 }
 
