@@ -2,27 +2,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const resultados = document.getElementById('resultados-profesionales');
     const formularioNombre = document.getElementById('form-buscar');
-    const formularioOficio = document.getElementById('form-oficio');
+    const formularioFiltros = document.getElementById('form-filtros');
+    const campoBuscar = document.getElementById('buscar');
+    const botonLimpiar = document.getElementById('limpiar-filtros');
+    const contadorFiltros = document.getElementById('contador-filtros');
 
-    // Función AJAX reutilizable
-    async function realizarBusqueda(formulario) {
+    let temporizador = null;
+    let controladorActual = null;
 
+    // Búsqueda conjunta
+    async function realizarBusqueda(cerrarModal = false) {
+
+        // Cancelar la petición anterior, si existe
+        if (controladorActual) {
+            controladorActual.abort();
+        }
+
+        // Crear un nuevo controlador
+        controladorActual = new AbortController();
+
+        // Tomamos los filtros seleccionados
         const parametros = new URLSearchParams(
-            new FormData(formulario)
+            new FormData(formularioFiltros)
         );
+
+        // Agregamos el nombre escrito
+        parametros.set('buscar', campoBuscar.value.trim());
 
         try {
 
-            resultados.innerHTML = '<p class="text-center">Buscando profesionales...</p>';
+            resultados.innerHTML =
+                '<p class="text-center">Buscando profesionales...</p>';
 
+            // Siempre enviamos los datos al método filtrar
             const respuesta = await fetch(
-                `${formulario.action}?${parametros}`,
+                `${formularioFiltros.action}?${parametros}`,
                 {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    },
+
+                    // Asociar la petición al controlador
+                    signal: controladorActual.signal
                 }
             );
 
@@ -38,7 +61,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 lucide.createIcons();
             }
 
+            // Cerrar el modal solamente al aplicar los filtros
+            if (cerrarModal) {
+                const modal = document.getElementById('modalFiltros');
+
+                if (modal && window.bootstrap) {
+                    bootstrap.Modal.getOrCreateInstance(modal).hide();
+                }
+            }
+
         } catch (error) {
+
+            // No mostrar errores cuando cancelamos una petición
+            if (error.name === 'AbortError') {
+                return;
+            }
 
             console.error('Error en la búsqueda:', error);
 
@@ -50,20 +87,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Formulario de búsqueda por nombre
+    // Al presionar el botón Buscar
     formularioNombre.addEventListener('submit', (e) => {
         e.preventDefault();
-        document.getElementById('oficio').value = '';
-        realizarBusqueda(formularioNombre);
+        clearTimeout(temporizador);
+        realizarBusqueda();
     });
 
-    // Formulario de filtro por oficio
-    
+    // Buscar automáticamente mientras se escribe
+    campoBuscar.addEventListener('input', () => {
 
-    formularioOficio.addEventListener('submit', (e) => {
+        clearTimeout(temporizador);
+
+        temporizador = setTimeout(() => {
+            realizarBusqueda();
+        }, 350);
+
+    });
+
+    // Al aplicar los filtros del modal
+    formularioFiltros.addEventListener('submit', (e) => {
         e.preventDefault();
-        document.getElementById('buscar').value = '';
-        realizarBusqueda(formularioOficio);
+
+        clearTimeout(temporizador);
+        realizarBusqueda(true);
     });
 
+    // Limpiar filtros y nombre
+    botonLimpiar.addEventListener('click', () => {
+
+        formularioFiltros.reset();
+
+        
+
+        actualizarContadorFiltros();
+
+        clearTimeout(temporizador);
+        realizarBusqueda(true);
+    });
+
+    // Actualizar cantidad de filtros seleccionados
+    function actualizarContadorFiltros() {
+
+        const filtrosSeleccionados = formularioFiltros.querySelectorAll(
+            'input[type="checkbox"]:checked'
+        );
+
+        const cantidad = filtrosSeleccionados.length;
+
+        contadorFiltros.textContent = cantidad;
+
+        contadorFiltros.style.display = cantidad > 0 ? 'inline-block': 'none';
+    }
+
+    formularioFiltros.addEventListener('change', actualizarContadorFiltros);
+    // Inicializar contador
+    actualizarContadorFiltros();
 });

@@ -47,7 +47,7 @@
         @empty
         <p class="text-center text-muted">
             @if(request('buscar'))
-                No se encontraron profesionales con el nombre "{{ request('buscar') }}".
+                No se encontraron profesionales con esas especificaciones.
             @else
                 Todavía no hay profesionales para mostrar.
             @endif

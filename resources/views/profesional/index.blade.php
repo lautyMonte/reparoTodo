@@ -8,33 +8,24 @@
         <p class="text-muted mb-0">Encontrá al profesional ideal para lo que necesitás reparar.</p>
     </div>
 
-    {{-- Barra superior: volver a la izquierda | filtros + buscador a la derecha (todavia sin funcionalidad) --}}
+    {{-- Barra superior: volver a la izquierda | filtros + buscador a la derecha --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <a href="{{ url()->previous() }}" class="btn btn-accent btn-barra fw-semibold">
             <i data-lucide="arrow-left"></i> Volver
         </a>
 
         <div class="d-flex flex-wrap align-items-center gap-2">
+            {{--Aca va el boton de filtros--}}
+           <button type="button" class="btn btn-accent btn-barra fw-semibold" data-bs-toggle="modal" data-bs-target="#modalFiltros">
+                <i data-lucide="sliders-horizontal"></i>
+                    Filtros
+                    <span id="contador-filtros" class="badge rounded-pill bg-danger ms-1" style="display: none;">
+                        0
+                    </span>
+            </button>
+            
             {{--Aca va el buscador de los profesionales--}}
-            <form action="{{ route('profesional.filtrarOficio') }}" method="GET" class="buscador-oficio" id="form-oficio">
-
-                <div class="d-flex">
-                    <div class="campo-buscar flex-grow-1">
-                        <select name="oficio" id="oficio" class="form-select">
-                            <option value="">Seleccionar oficio</option>
-
-                                @foreach ($oficios as $oficio)
-                                    <option value="{{ $oficio->id }}">
-                                        {{ $oficio->tipo }}
-                                    </option>
-                                @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-accent btn-barra fw-semibold">Filtrar</button>
-                </div>
-            </form>
-
-            <form action="{{ route('profesional.busca') }}" method="GET" class="buscador-lista" id="form-buscar">
+            <form action="{{ route('profesional.filtrar') }}" method="GET" class="buscador-lista" id="form-buscar">
 
                 <div class="d-flex">
                     <div class="campo-buscar flex-grow-1">
@@ -47,10 +38,91 @@
             </form>
         </div>
     </div>
+    {{--Aca va la parte de filtros--}}
+    <div class="modal fade" id="modalFiltros" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                {{-- Encabezado --}}
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtrar profesionales</h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                {{-- Contenido --}}
+                <div class="modal-body">
+                    <form id="form-filtros" action="{{ route('profesional.filtrar') }}" method="GET">
+
+                    {{-- FILTRO POR OFICIO --}}
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Oficios</h6>
+                        
+                        @foreach ($oficios as $oficio)
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="oficios[]" value="{{ $oficio->id }}" id="oficio-{{ $oficio->id }}">
+
+                                <label class="form-check-label" for="oficio-{{ $oficio->id }}">
+                                    {{ $oficio->tipo }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <hr>
+                    {{-- FILTRO POR LOCALIDAD --}}
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Localidad</h6>
+                        @foreach ($localidades as $localidad)
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="localidades[]" value="{{ $localidad }}" id="localidad-{{ $loop->index }}">
+
+                                <label class="form-check-label" for="localidad-{{ $loop->index }}">
+                                    {{ $localidad }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <hr>
+                    {{-- FILTRO POR PUNTUACIÓN MINIMA--}}
+                    <div class="mb-3">
+
+                        <h6 class="fw-bold">Puntuación minima</h6>
+
+                        @foreach ([1, 2, 3, 4, 5] as $puntaje)
+
+                            <div class="form-check">
+
+                                <input class="form-check-input" type="checkbox" name="puntajes[]" value="{{ $puntaje }}" id="puntaje-{{ $puntaje }}">
+
+                                <label class="form-check-label" for="puntaje-{{ $puntaje }}">
+                                    {{ $puntaje }} estrellas
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </form>
+
+                    </div>
+                        {{-- Botones --}}
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" id="limpiar-filtros">
+                                Limpiar
+                            </button>
+
+                            <button type="submit" form="form-filtros" class="btn btn-accent">
+                                Aplicar filtros
+                            </button>
+                        </div>
+                    </div>
+        </div>
+    </div>
 
     <div class="row g-3" id="resultados-profesionales">
         @include('partials.tarjetas')
     </div>
      {{--Para el buscador de profesionales--}}
+    @push('scripts')
     <script src="{{ asset('js/buscador.js') }}" defer></script>
+    @endpush
 @endsection

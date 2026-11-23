@@ -44,9 +44,16 @@ class ProfesionalController extends Controller
 
     $oficios = Oficio::orderBy('tipo')->get();
 
+    $localidades = Profesional::whereNotNull('ciudad')
+        ->where('ciudad', '!=', '')
+        ->distinct()
+        ->orderBy('ciudad')
+        ->pluck('ciudad');
+
     return view('profesional.index', compact(
         'profesionales',
-        'oficios'
+        'oficios',
+        'localidades'
     ) + [
         'titulo' => 'Buscar profesional'
     ]);
@@ -84,52 +91,77 @@ class ProfesionalController extends Controller
     }
 
     /**
-     * Busca a los profesionales, según el nombre
+     * Buscara a los profesionales por su nombre, oficio, localidad o puntuacion 
+     * (tambien funciona si es todo junto)
      */
-    public function buscar(Request $request)
-    {
-        $request->validate([
-            'buscar' => ['nullable', 'string', 'max:100'],
-        ]);
+   public function filtrar(Request $request)
+{
+    $request->validate([
+        'buscar' => ['nullable', 'string', 'max:100'],
 
-        $buscar = trim($request->input('buscar', ''));
+        'oficios' => ['nullable', 'array'],
+        'oficios.*' => ['integer', 'exists:oficios,id'],
 
-        $profesionales = Profesional::with(['user', 'oficios'])
-            ->withCount('resenas')
-            ->withAvg('resenas', 'puntaje')
-            ->when($buscar, function ($query) use ($buscar) {
-                $query->whereHas('user', function ($q) use ($buscar) {
-                    $q->where('usuario', 'LIKE', "%{$buscar}%");
-                });
-            })
-            ->get();
+        'localidades' => ['nullable', 'array'],
+        'localidades.*' => ['string', 'max:100'],
 
-        return response()->json([
-            'html' => view('partials.tarjetas', compact('profesionales'))->render(),
-        ]);
+        'puntajes' => ['nullable', 'array'],
+        'puntajes.*' => ['integer', 'between:1,5'],
+    ]);
+
+    $buscar = trim($request->input('buscar', ''));
+    $oficios = $request->input('oficios', []);
+    $localidades = $request->input('localidades', []);
+    $puntajes = $request->input('puntajes', []);
+
+    $profesionales = Profesional::with(['user', 'oficios'])
+        ->withCount('resenas')
+        ->withAvg('resenas', 'puntaje')
+
+        // Buscar por nombre
+        ->when($buscar !== '', function ($query) use ($buscar) {
+            $query->whereHas('user', function ($q) use ($buscar) {
+                $q->where('usuario', 'LIKE', "%{$buscar}%");
+            });
+        })
+
+        // Filtrar por oficio
+        ->when(!empty($oficios), function ($query) use ($oficios) {
+
+            $query->whereHas('oficios', function ($q) use ($oficios) {
+                $q->whereIn('oficios.id', $oficios);
+            });
+
+        })
+
+        // Filtrar por localidad
+        ->when(!empty($localidades), function ($query) use ($localidades) {
+
+            $query->whereIn('ciudad', $localidades);
+
+        })
+
+        ->get();
+
+    // Filtrar por puntuación minima
+    if (!empty($puntajes)) {
+
+        $puntajeMinimo = min($puntajes);
+
+        $profesionales = $profesionales->filter(function ($profesional) use ($puntajeMinimo) {
+
+            return $profesional->resenas_avg_puntaje !== null
+                && $profesional->resenas_avg_puntaje >= $puntajeMinimo;
+
+        })->values();
+
     }
 
-    /**
-     * Segun el oficio
-     */
-    public function filtrarOficio(Request $request){
-    
-        $request->validate([
-            'oficio' => ['required', 'integer', 'exists:oficios,id'],
-        ]);
-
-        $oficio = $request->input('oficio');
-
-        $profesionales = Profesional::with(['user', 'oficios'])
-            ->withCount('resenas')
-            ->withAvg('resenas', 'puntaje')
-            ->whereHas('oficios', function ($query) use ($oficio) {
-                $query->where('oficios.id', $oficio);
-            })
-            ->get();
-
-        return response()->json([
-            'html' => view('partials.tarjetas', compact('profesionales'))->render()
-        ]);
-    }
+    return response()->json([
+        'html' => view(
+            'partials.tarjetas',
+            compact('profesionales')
+        )->render()
+    ]);
+}
 }
