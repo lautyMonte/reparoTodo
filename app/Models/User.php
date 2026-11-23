@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Collection;
 
 /**para chatify*/
 use Chatify\Traits\InteractsWithChatify;
@@ -46,6 +47,36 @@ class User extends Authenticatable
     public function notificaciones(): HasMany
     {
         return $this->hasMany(Notificacion::class);
+    }
+
+    // Cuantas cosas le estan esperando a este usuario segun su rol:
+    // profesional = solicitudes por aceptar o rechazar, y aceptadas a las que les falta el presupuesto
+    // cliente = presupuestos que tiene que aceptar o rechazar
+    public function pendientesDeRespuesta(): int
+    {
+        $cantidad = 0;
+
+        if ($this->tipo === 'profesional' && $this->profesional) {
+            $cantidad = $this->profesional->solicitudes()->whereIn('estado', ['pendiente', 'aceptada'])->count();
+        }
+
+        if ($this->tipo === 'cliente') {
+            $cantidad = $this->solicitudes()->where('estado', 'presupuestada')->count();
+        }
+
+        return $cantidad;
+    }
+
+    // Cuantas notificaciones todavia no leyo
+    public function notificacionesSinLeer(): int
+    {
+        return $this->notificaciones()->where('leida', false)->count();
+    }
+
+    // Sus notificaciones mas nuevas (por defecto 5)
+    public function ultimasNotificaciones(int $cantidad = 5): Collection
+    {
+        return $this->notificaciones()->latest()->take($cantidad)->get();
     }
 
     public function urlImagen(?string $ruta): ?string

@@ -1,18 +1,11 @@
 @forelse ($profesionales as $profesional)
-
-            {{-- Foto: la que subio el usuario; si no tiene, un avatar de ejemplo segun su id --}}
-            @php
-                $foto = $profesional->user->urlImagen($profesional->user->imagen)
-                    ?? asset('img/avatares/avatar-' . (($profesional->id - 1) % 5 + 1) . '.svg');
-            @endphp
-
             <div class="col-md-6 col-xl-4">
                 <article class="card tarjeta-profesional h-100">
                     <div class="card-body d-flex flex-column p-3">
 
                         {{-- Fila de arriba: foto + nombre + oficios --}}
                         <div class="d-flex gap-3">
-                            <img class="avatar-lista" src="{{ $foto }}" alt="Foto de {{ $profesional->user->usuario }}">
+                            <img class="avatar-lista" src="{{ $profesional->user->avatar() }}" alt="Foto de {{ $profesional->user->usuario }}">
 
                             <div class="flex-grow-1">
                                 <h2 class="nombre-profesional">

@@ -3,8 +3,6 @@
 @section('contenido')
     @php
         $usuario = $profesional->user;
-        $foto    = $usuario->urlImagen($usuario->imagen)
-            ?? asset('img/avatares/avatar-' . (($profesional->id - 1) % 5 + 1) . '.svg');
     @endphp
 
     <div class="solicitud-contenedor">
@@ -19,7 +17,7 @@
 
                 {{-- A quien le pedis el trabajo --}}
                 <div class="solicitud-destinatario">
-                    <img src="{{ $foto }}" alt="Foto de {{ $usuario->usuario }}">
+                    <img src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->usuario }}">
                     <div>
                         <div class="text-secondary small">Vas a solicitar un trabajo a</div>
                         <h1 class="h5 mb-1">{{ $usuario->usuario }}</h1>

@@ -28,8 +28,8 @@
                         </a>
                     </li>
                     @auth
+                        @php $pendientes = auth()->user()->pendientesDeRespuesta(); @endphp
                         @if (auth()->user()->tipo === 'profesional' && auth()->user()->profesional)
-                            @php $pendientes = auth()->user()->profesional->solicitudes()->whereIn('estado', ['pendiente', 'aceptada'])->count(); @endphp
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('solicitud.*') ? 'active' : '' }}" href="{{ route('solicitud.index') }}">
                                     <i data-lucide="inbox"></i> Mi bandeja
@@ -38,11 +38,10 @@
                             </li>
                         @endif
                         @if (auth()->user()->tipo === 'cliente')
-                            @php $porResponder = auth()->user()->solicitudes()->where('estado', 'presupuestada')->count(); @endphp
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('solicitud.cliente.*') ? 'active' : '' }}" href="{{ route('solicitud.cliente.index') }}">
                                     <i data-lucide="inbox"></i> Mis solicitudes
-                                    <span class="nav-numero {{ $porResponder === 0 ? 'd-none' : '' }}" id="bandeja-numero">{{ $porResponder }}</span>
+                                    <span class="nav-numero {{ $pendientes === 0 ? 'd-none' : '' }}" id="bandeja-numero">{{ $pendientes }}</span>
                                 </a>
                             </li>
                         @endif
@@ -73,8 +72,8 @@
                     @auth
                         {{-- Campanita de notificaciones --}}
                         @php
-                            $notificaciones = auth()->user()->notificaciones()->latest()->take(5)->get();
-                            $sinLeer = auth()->user()->notificaciones()->where('leida', false)->count();
+                            $notificaciones = auth()->user()->ultimasNotificaciones();
+                            $sinLeer = auth()->user()->notificacionesSinLeer();
                             $titulosNotif = [
                                 'solicitud_nueva' => 'Nueva solicitud de trabajo.',
                                 'solicitud_aceptada' => 'Solicitud aceptada.',

@@ -59,7 +59,7 @@ class ProfesionalController extends Controller
     ]);
     }
 
-    public function show(int $id): View
+    public function show(Request $request, int $id): View
     {
        $profesional = Profesional::with('user', 'oficios', 'resenas.user')
             ->withAvg('resenas', 'puntaje')
@@ -70,6 +70,10 @@ class ProfesionalController extends Controller
             'profesional' => $profesional,
             'titulo' => $profesional->user->usuario,
             'modelo' => new Profesional(),
+            // Cuantas resenas hay de cada puntaje (para las barras)
+            'conteo' => $profesional->resenas->countBy('puntaje'),
+            // Si quien esta mirando es el dueño del perfil
+            'esDuenio' => $request->user() !== null && $request->user()->id === $profesional->user_id,
         ]);
     }
 
