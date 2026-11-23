@@ -22,7 +22,7 @@
             <p class="text-secondary mb-0">Revisá lo que te piden los clientes y respondé desde acá.</p>
         </div>
 
-        <div id="aviso-nuevas" class="alert alert-warning text-center d-none" data-pendientes="{{ $conteo->get('pendiente', 0) }}">
+        <div id="aviso-nuevas" class="alert alert-warning text-center d-none" data-pendientes="{{ $conteo->get('pendiente', 0) + $conteo->get('aceptada', 0) }}">
             Llegaron solicitudes nuevas. <a href="{{ request()->fullUrl() }}" class="alert-link">Actualizar</a>
         </div>
 
@@ -34,6 +34,7 @@
                     <a href="{{ route('solicitud.index') }}" class="bandeja-filtro {{ $estado === null ? 'activo' : '' }}">Todas {{ $total }}</a>
                     <a href="{{ route('solicitud.index', ['estado' => 'pendiente']) }}" class="bandeja-filtro {{ $estado === 'pendiente' ? 'activo' : '' }}">Pendientes {{ $conteo->get('pendiente', 0) }}</a>
                     <a href="{{ route('solicitud.index', ['estado' => 'aceptada']) }}" class="bandeja-filtro {{ $estado === 'aceptada' ? 'activo' : '' }}">Aceptadas {{ $conteo->get('aceptada', 0) }}</a>
+                    <a href="{{ route('solicitud.index', ['estado' => 'presupuestada']) }}" class="bandeja-filtro {{ $estado === 'presupuestada' ? 'activo' : '' }}">Presupuestadas {{ $conteo->get('presupuestada', 0) }}</a>
                 </div>
 
                 @forelse ($lista as $solicitud)
@@ -56,7 +57,7 @@
                         </div>
                     </a>
                 @empty
-                    <p class="bandeja-vacia">No hay solicitudes en esta vista.</p>
+                    <p class="bandeja-vacia">No hay solicitudes para mostrar.</p>
                 @endforelse
             </div>
 
@@ -114,11 +115,17 @@
                                     </form>
                                     <button type="button" class="btn btn-rechazar fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRechazar"><i data-lucide="x"></i> Rechazar</button>
                                 @endif
+                                @if ($seleccionada->estado === 'aceptada')
+                                    <a href="{{ route('presupuesto.create', $seleccionada->id) }}" class="btn btn-accent fw-semibold"><i data-lucide="file-text"></i> Armar presupuesto</a>
+                                @endif
                             </div>
                             <a href="{{ route('contacto') }}" class="btn btn-soporte"><i data-lucide="life-buoy"></i> Soporte</a>
                         </div>
                         @if ($seleccionada->estado === 'pendiente')
                             <p class="bandeja-ayuda">Si aceptás, vas a armar el presupuesto para el cliente. Si rechazás, la solicitud se elimina para ambos y {{ $seleccionada->cliente->usuario }} recibe un aviso.</p>
+                        @endif
+                        @if ($seleccionada->estado === 'aceptada')
+                            <p class="bandeja-ayuda">Aceptaste esta solicitud. Armá el presupuesto para que {{ $seleccionada->cliente->usuario }} decida si lo acepta.</p>
                         @endif
                     </div>
                 @else

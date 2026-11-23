@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Solicitud extends Model
 {
@@ -39,6 +40,12 @@ class Solicitud extends Model
     public function fotos(): HasMany
     {
         return $this->hasMany(SolicitudFoto::class);
+    }
+
+    // Una solicitud tiene un presupuesto (1:1)
+    public function presupuesto(): HasOne
+    {
+        return $this->hasOne(Presupuesto::class);
     }
 
     protected function casts(): array

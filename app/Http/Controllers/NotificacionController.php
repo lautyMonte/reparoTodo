@@ -23,7 +23,9 @@ class NotificacionController extends Controller
 
         $pendientes = 0;
         if ($usuario->tipo === 'profesional' && $usuario->profesional) {
-            $pendientes = $usuario->profesional->solicitudes()->where('estado', 'pendiente')->count();
+            $pendientes = $usuario->profesional->solicitudes()->whereIn('estado', ['pendiente', 'aceptada'])->count();
+        } elseif ($usuario->tipo === 'cliente') {
+            $pendientes = $usuario->solicitudes()->where('estado', 'presupuestada')->count();
         }
 
         return response()->json([

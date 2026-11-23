@@ -129,7 +129,7 @@ class SolicitudController extends Controller
 
         // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
         $estado = $request->query('estado');
-        if (! in_array($estado, ['pendiente', 'aceptada'], true)) {
+        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada'], true)) {
             $estado = null;
         }
         $lista = $estado === null ? $todas : $todas->where('estado', $estado);
@@ -141,6 +141,68 @@ class SolicitudController extends Controller
             'estado' => $estado,
             'conteo' => $todas->countBy('estado'),
             'total' => $todas->count(),
+        ]);
+    }
+
+    /** Bandeja del cliente (se abre la solicitud mas nueva) */
+    public function indexCliente(Request $request): View|RedirectResponse
+    {
+        return $this->bandejaCliente($request, null);
+    }
+
+    /** Bandeja del cliente con una solicitud puntual abierta */
+    public function showCliente(Request $request, int $id): View|RedirectResponse
+    {
+        return $this->bandejaCliente($request, $id);
+    }
+
+    /** Arma la bandeja del cliente: la lista de sus solicitudes y el detalle de la elegida */
+    private function bandejaCliente(Request $request, ?int $id): View|RedirectResponse
+    {
+        // Las rechazadas no se muestran: para el cliente tambien es como si se hubieran borrado
+        $todas = $request->user()->solicitudes()
+            ->where('estado', '!=', 'rechazada')
+            ->with(['profesional.user', 'presupuesto', 'fotos'])
+            ->latest()
+            ->get();
+
+        // Si no pidio ninguna en particular, se abre la mas nueva
+        $seleccionada = $id === null ? $todas->first() : $todas->firstWhere('id', $id);
+
+        // Si pidio una que no es suya o que ya no esta, vuelve a la bandeja con un aviso
+        if ($id !== null && $seleccionada === null) {
+            return redirect()
+                ->route('solicitud.cliente.index')
+                ->with('error', 'Esa solicitud no existe o ya no está disponible.');
+        }
+
+        // Al abrirla, sus notificaciones quedan leidas
+        if ($seleccionada !== null) {
+            $request->user()->notificaciones()
+                ->where('solicitud_id', $seleccionada->id)
+                ->update(['leida' => true]);
+        }
+
+        // Ids de las solicitudes que todavia tienen novedades sin leer (se marcan en la lista)
+        $conNovedades = $request->user()->notificaciones()
+            ->where('leida', false)
+            ->pluck('solicitud_id');
+
+        // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
+        $estado = $request->query('estado');
+        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada'], true)) {
+            $estado = null;
+        }
+        $lista = $estado === null ? $todas : $todas->where('estado', $estado);
+
+        return view('solicitud.index-cliente', [
+            'titulo' => 'Mis solicitudes',
+            'lista' => $lista,
+            'seleccionada' => $seleccionada,
+            'estado' => $estado,
+            'conteo' => $todas->countBy('estado'),
+            'total' => $todas->count(),
+            'conNovedades' => $conNovedades,
         ]);
     }
 

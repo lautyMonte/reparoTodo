@@ -6,6 +6,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\PresupuestoController;
 use Illuminate\Support\Facades\Route;
 
 // Pagina de inicio (home): muestra los profesionales destacados (los de mejores resenas)
@@ -39,6 +40,10 @@ Route::get('/profesional/{id}', [ProfesionalController::class, 'show'])->whereNu
 Route::middleware('cliente')->group(function () {
     Route::get('/profesional/{id}/solicitar', [SolicitudController::class, 'create'])->whereNumber('id')->name('solicitud.create');
     Route::post('/profesional/{id}/solicitar', [SolicitudController::class, 'store'])->whereNumber('id')->name('solicitud.store');
+    Route::get('/mis-solicitudes', [SolicitudController::class, 'indexCliente'])->name('solicitud.cliente.index');
+    Route::get('/mis-solicitudes/{id}', [SolicitudController::class, 'showCliente'])->whereNumber('id')->name('solicitud.cliente.show');
+    Route::post('/mis-solicitudes/{id}/presupuesto/aceptar', [PresupuestoController::class, 'aceptar'])->whereNumber('id')->name('presupuesto.aceptar');
+    Route::post('/mis-solicitudes/{id}/presupuesto/rechazar', [PresupuestoController::class, 'rechazar'])->whereNumber('id')->name('presupuesto.rechazar');
 });
 
 Route::middleware('profesional')->group(function () {
@@ -46,6 +51,8 @@ Route::middleware('profesional')->group(function () {
     Route::get('/bandeja/{id}', [SolicitudController::class, 'show'])->whereNumber('id')->name('solicitud.show');
     Route::post('/bandeja/{id}/aceptar', [SolicitudController::class, 'aceptar'])->whereNumber('id')->name('solicitud.aceptar');
     Route::post('/bandeja/{id}/rechazar', [SolicitudController::class, 'rechazar'])->whereNumber('id')->name('solicitud.rechazar');
+    Route::get('/bandeja/{id}/presupuesto', [PresupuestoController::class, 'create'])->whereNumber('id')->name('presupuesto.create');
+    Route::post('/bandeja/{id}/presupuesto', [PresupuestoController::class, 'store'])->whereNumber('id')->name('presupuesto.store');
 });
 
 // Notificaciones: para cualquier usuario con sesion iniciada

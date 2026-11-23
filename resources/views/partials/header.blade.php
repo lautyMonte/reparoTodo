@@ -29,11 +29,20 @@
                     </li>
                     @auth
                         @if (auth()->user()->tipo === 'profesional' && auth()->user()->profesional)
-                            @php $pendientes = auth()->user()->profesional->solicitudes()->where('estado', 'pendiente')->count(); @endphp
+                            @php $pendientes = auth()->user()->profesional->solicitudes()->whereIn('estado', ['pendiente', 'aceptada'])->count(); @endphp
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('solicitud.*') ? 'active' : '' }}" href="{{ route('solicitud.index') }}">
                                     <i data-lucide="inbox"></i> Mi bandeja
                                     <span class="nav-numero {{ $pendientes === 0 ? 'd-none' : '' }}" id="bandeja-numero">{{ $pendientes }}</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->tipo === 'cliente')
+                            @php $porResponder = auth()->user()->solicitudes()->where('estado', 'presupuestada')->count(); @endphp
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('solicitud.cliente.*') ? 'active' : '' }}" href="{{ route('solicitud.cliente.index') }}">
+                                    <i data-lucide="inbox"></i> Mis solicitudes
+                                    <span class="nav-numero {{ $porResponder === 0 ? 'd-none' : '' }}" id="bandeja-numero">{{ $porResponder }}</span>
                                 </a>
                             </li>
                         @endif
@@ -70,7 +79,18 @@
                                 'solicitud_nueva' => 'Nueva solicitud de trabajo.',
                                 'solicitud_aceptada' => 'Solicitud aceptada.',
                                 'solicitud_rechazada' => 'Solicitud rechazada.',
+                                'presupuesto_nuevo' => 'Nuevo presupuesto.',
+                                'presupuesto_aceptado' => 'Presupuesto aceptado.',
+                                'presupuesto_rechazado' => 'Presupuesto rechazado.',
                             ];
+                            // A que solicitud lleva cada tipo. Los rechazos no estan: esa solicitud ya no se ve, y van a la lista
+                            $destinos = [
+                                'solicitud_nueva' => 'solicitud.show',
+                                'presupuesto_aceptado' => 'solicitud.show',
+                                'solicitud_aceptada' => 'solicitud.cliente.show',
+                                'presupuesto_nuevo' => 'solicitud.cliente.show',
+                            ];
+                            $lista = auth()->user()->tipo === 'profesional' ? 'solicitud.index' : 'solicitud.cliente.index';
                         @endphp
                         <div class="dropdown">
                             <button class="btn-campana" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notificaciones">
@@ -93,7 +113,7 @@
                                 </div>
 
                                 @forelse ($notificaciones as $notificacion)
-                                    <a href="{{ $notificacion->tipo === 'solicitud_nueva' && $notificacion->solicitud_id ? route('solicitud.show', $notificacion->solicitud_id) : '#' }}" class="notif-item {{ $notificacion->leida ? '' : 'nueva' }}">
+                                    <a href="{{ isset($destinos[$notificacion->tipo]) && $notificacion->solicitud_id ? route($destinos[$notificacion->tipo], $notificacion->solicitud_id) : route($lista) }}" class="notif-item {{ $notificacion->leida ? '' : 'nueva' }}">
                                         <div class="notif-icono"><i data-lucide="inbox"></i></div>
                                         <div>
                                             <div class="notif-texto"><strong>{{ $titulosNotif[$notificacion->tipo] ?? 'Novedad.' }}</strong> {{ $notificacion->mensaje }}</div>
