@@ -1,7 +1,9 @@
 @extends('layouts.app', ['titulo' => 'Crear cuenta'])
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/create.css') }}">
 @endpush
+
 @section('contenido')
     <div class="contenedor-titulos">
         <h1 class="titulo">Crear Cuenta</h1>
@@ -85,6 +87,7 @@
     <br>
     <p class="subtitulo">Ya tienes una cuenta? <a href="{{ route('usuario.registro') }}">Inicia sesión</a></p>
 @endsection
+
 @push('scripts')
     <script src="{{ asset('js/registro.js') }}"></script>
     <script src="{{ asset('js/ciudades.js') }}" defer></script>
