@@ -60,7 +60,15 @@
                         
                         @foreach ($oficios as $oficio)
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="oficios[]" value="{{ $oficio->id }}" id="oficio-{{ $oficio->id }}">
+
+                                <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="oficios[]"
+                                value="{{ $oficio->id }}"
+                                id="oficio-{{ $oficio->id }}"
+                                @checked(in_array($oficio->id, $oficiosSeleccionados))
+                                >
 
                                 <label class="form-check-label" for="oficio-{{ $oficio->id }}">
                                     {{ $oficio->tipo }}

@@ -33,11 +33,25 @@ class ProfesionalController extends Controller
     //         'modelo' => new Profesional()
     //     ]);
     // }
-    public function index()
+    public function index(Request $request)
     {
+
+    //valida ids recibidos por URL
+    $datos = $request->validate([
+        'oficios' => ['sometimes', 'array'],
+        'oficios.*' => ['integer', 'exists:oficios,id'],
+    ]);
+
+    $oficiosSeleccionados = $datos['oficios'] ?? [];
+
     $profesionales = Profesional::with('user', 'oficios')
              ->withAvg('resenas', 'puntaje')
              ->withCount('resenas')
+             ->when($oficiosSeleccionados, function ($query) use ($oficiosSeleccionados) {
+                $query->whereHas('oficios', function ($q) use ($oficiosSeleccionados) {
+                    $q->whereIn('oficios.id', $oficiosSeleccionados);
+                });
+             })
              ->orderByDesc('resenas_avg_puntaje')
              ->orderByDesc('resenas_count')
              ->get();
@@ -53,7 +67,8 @@ class ProfesionalController extends Controller
     return view('profesional.index', compact(
         'profesionales',
         'oficios',
-        'localidades'
+        'localidades',
+        'oficiosSeleccionados'
     ) + [
         'titulo' => 'Buscar profesional'
     ]);

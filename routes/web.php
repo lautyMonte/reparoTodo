@@ -7,7 +7,9 @@ use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PresupuestoController;
+use App\Http\Controllers\OficioController;
 use Illuminate\Support\Facades\Route;
+
 
 // Pagina de inicio (home): muestra los profesionales destacados (los de mejores resenas)
 Route::get('/', [ProfesionalController::class, 'destacados'])->name('inicio');
@@ -18,6 +20,8 @@ Route::post('/ingresar',[UsuarioController::class,'verifica'])->name('usuario.ve
 Route::get('/salir',[UsuarioController::class,'salir'])->name('usuario.salir');
 Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create');
 Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
+Route::get('/oficios', [OficioController::class, 'index'])
+    ->name('oficio.index');
 
 // Mostrar formulario de contacto
 Route::view('/contacto', 'contacto')->name('contacto');

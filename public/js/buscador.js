@@ -113,18 +113,39 @@ document.addEventListener('DOMContentLoaded', () => {
         realizarBusqueda(true);
     });
 
-    // Limpiar filtros y nombre
+    // Limpiar filtros
     botonLimpiar.addEventListener('click', () => {
 
-        formularioFiltros.reset();
+        // Desmarcar todos los checkboxes
+        formularioFiltros.querySelectorAll('input[type="checkbox"]')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
 
-        
+        // Eliminar los parámetros de oficios de la URL
+        const url = new URL(window.location.href);
 
+        for (const parametro of [...url.searchParams.keys()]) {
+            if (parametro === 'oficios' || parametro.startsWith('oficios[')) {
+                url.searchParams.delete(parametro);
+            }
+        }
+
+        // Actualizar la URL sin recargar la página
+        window.history.replaceState(
+            window.history.state,
+            '',
+            url.pathname + url.search + url.hash
+        );
+
+        // Actualizar contador y resultados
         actualizarContadorFiltros();
 
         clearTimeout(temporizador);
         realizarBusqueda(true);
     });
+
+
 
     // Actualizar cantidad de filtros seleccionados
     function actualizarContadorFiltros() {

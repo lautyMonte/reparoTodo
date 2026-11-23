@@ -20,7 +20,7 @@
                 <div class="slide-rt" style="background-image: url('{{ asset('img/home/slide-cliente.avif') }}')">
                     <div class="slide-contenido">
                         <h1>¿Qué necesitás reparar hoy?</h1>
-                        <a href="{{ route('profesional.index') }}" class="btn btn-accent btn-lg fw-bold px-5">Busco profesional</a>
+                        <a href="{{ route('oficio.index') }}" class="btn btn-accent btn-lg fw-bold px-5">Busco profesional</a>
                     </div>
                 </div>
             </div>
@@ -241,7 +241,7 @@
             <div class="carousel-item active">
                 <div class="slide-cta">
                     <h2>¿Listo para empezar?</h2>
-                    <a href="{{ route('profesional.index') }}" class="btn btn-accent fw-bold px-5">Buscar profesional</a>
+                    <a href="{{ route('oficio.index') }}" class="btn btn-accent fw-bold px-5">Buscar profesional</a>
                 </div>
             </div>
             <div class="carousel-item">
