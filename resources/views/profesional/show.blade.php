@@ -185,11 +185,4 @@
             </section>
         </div>
     </div>
-
-    {{-- El duenio ve su bandeja de mensajes. El chat con un cliente se va a abrir recien al aceptar el presupuesto --}}
-    @auth
-        @if ($esDuenio)
-            @include('chatify.box')
-        @endif
-    @endauth
 @endsection

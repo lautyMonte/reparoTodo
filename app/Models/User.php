@@ -78,6 +78,38 @@ class User extends Authenticatable
     {
         return $this->notificaciones()->latest()->take($cantidad)->get();
     }
+    
+    // Las personas con las que puede chatear ahora: las del otro lado de sus solicitudes en estado en_chat
+    public function contactosDeChat(): Collection
+    {
+        $contactos = new Collection();
+
+        if ($this->tipo === 'cliente') {
+            $contactos = User::whereHas('profesional.solicitudes', function ($consulta) {
+                $consulta->where('cliente_id', $this->id)->where('estado', 'en_chat');
+            })->get();
+        }
+
+        if ($this->tipo === 'profesional' && $this->profesional) {
+            $contactos = User::whereHas('solicitudes', function ($consulta) {
+                $consulta->where('profesional_id', $this->profesional->id)->where('estado', 'en_chat');
+            })->get();
+        }
+
+        return $contactos;
+    }
+
+    // Si puede chatear con esa persona (solo si tienen una solicitud en chat entre los dos)
+    public function puedeChatearCon(User $otro): bool
+    {
+        return $this->contactosDeChat()->contains('id', $otro->id);
+    }
+
+    // Si tiene al menos una conversacion en curso (para mostrar o no el boton de mensajes)
+    public function tieneChats(): bool
+    {
+        return $this->contactosDeChat()->isNotEmpty();
+    }
 
     public function urlImagen(?string $ruta): ?string
     {
@@ -115,24 +147,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**Funciones para utilizar chatify */
-
-    /**
- * Iniciar o recuperar una conversación directa.
- */
-    public function iniciarConversacion(User $destinatario)
-    {
-        return $this->conversationWith($destinatario);
-    }
-
-/**
- * Enviar un mensaje a otro usuario.
- */
-    public function enviarMensaje(User $destinatario, string $mensaje)
-    {
-        return $this->sendMessageTo($destinatario, $mensaje);
     }
 
     /**

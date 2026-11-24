@@ -665,7 +665,7 @@ img.avatar-rt { object-fit: cover; }
 .bandeja-item.borde-pendiente:hover, .bandeja-item.borde-pendiente.activa { border-left-color: var(--rt-naranja); }
 .bandeja-item.borde-aceptada:hover, .bandeja-item.borde-aceptada.activa { border-left-color: #2e7d4f; }
 .bandeja-item.borde-presupuestada:hover, .bandeja-item.borde-presupuestada.activa { border-left-color: #2f6fb5; }
-.bandeja-item.borde-en_chat:hover, .bandeja-item.borde-en_chat.activa { border-left-color: var(--rt-azul); }
+.bandeja-item.borde-en_chat:hover, .bandeja-item.borde-en_chat.activa { border-left-color: #6f4bb8; }
 .bandeja-avatar {
     flex: 0 0 40px;
     width: 40px;
@@ -695,6 +695,7 @@ img.avatar-rt { object-fit: cover; }
 .estado-pendiente { background: #fde9d0; color: #8a4a06; }
 .estado-aceptada { background: #d9f0e1; color: #1c6b3a; }
 .estado-presupuestada { background: #dce9f7; color: #1f4f8a; }
+.estado-en_chat { background: #e9e1f6; color: #4b2f86; }
 
 /* Detalle de la solicitud */
 .bandeja-detalle { display: flex; flex-direction: column; }
