@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Ciudad;
 use Illuminate\Database\Seeder;
 
 class ProfesionalSeeder extends Seeder
@@ -12,45 +13,50 @@ class ProfesionalSeeder extends Seeder
      */
     public function run(): void
     {
-        //primero busca al usuario que le corresponde ese correo y despues crea al profesional, para que coincida con el id_user (1aM)
-        $esteban = User::where('email', 'esteban@mail.com')->first()
-            ->profesional()->updateOrCreate([], 
-            [
-                'provincia' => 'Neuquen',
-                'ciudad' => 'Neuquen',
-            ]);
+        // CREACIÓN DE LOS PROFESIONALES
 
-        $armando = User::where('email', 'armando@mail.com')->first()
-            ->profesional()->updateOrCreate([], 
-            [
-                'provincia' => 'Rio Negro',
-                'ciudad' => 'General Roca',
-            ]);
+        $esteban = User::where('email', 'esteban@mail.com')->firstOrFail()
+            ->profesional()->updateOrCreate([], []);
 
-        $lujan = User::where('email', 'lujan@mail.com')->first()
-            ->profesional()->updateOrCreate([], [
-            'provincia' => 'Rio Negro',
-            'ciudad' => 'Cipolletti',
-        ]);
+        $armando = User::where('email', 'armando@mail.com')->firstOrFail()
+            ->profesional()->updateOrCreate([], []);
 
-        $matias = User::where('email', 'matias@mail.com')->first()
-            ->profesional()->updateOrCreate([], [
-            'provincia' => 'Rio Negro',
-            'ciudad' => 'Cipolletti',
-        ]);
+        $lujan = User::where('email', 'lujan@mail.com')->firstOrFail()
+            ->profesional()->updateOrCreate([], []);
 
-        $salgado = User::where('email', 'salgado@mail.com')->first()
-            ->profesional()->updateOrCreate([], [
-            'provincia' => 'Neuquen',
-            'ciudad' => 'Plottier',
-        ]);
+        $matias = User::where('email', 'matias@mail.com')->firstOrFail()
+            ->profesional()->updateOrCreate([], []);
 
-        // Para que los profesionales que cargamos, tengan las profesiones que queremos especificamente por el id del oficio (MaN)
-        $esteban->oficios()->sync([2,3]);// Electricista y gasista
-        $armando->oficios()->sync([1,2]);// Plomero y electricista
-        $lujan->oficios()->sync([1]);// Plomero
-        $matias->oficios()->sync([2,1]);// Electricista y plomero
-        $salgado->oficios()->sync([3]);// Gasista
-       
+        $salgado = User::where('email', 'salgado@mail.com')->firstOrFail()
+            ->profesional()->updateOrCreate([], []);
+
+
+        // ASIGNACIÓN DE OFICIOS (N:M)
+
+        $esteban->oficios()->sync([2, 3]);
+        $armando->oficios()->sync([1, 2]);
+        $lujan->oficios()->sync([1]);
+        $matias->oficios()->sync([2, 1]);
+        $salgado->oficios()->sync([3]);
+
+
+        // OBTENER LOS IDS DE LAS CIUDADES
+
+        $neuquen = Ciudad::where('nombre', 'Neuquén')->firstOrFail()->id;
+
+        $generalRoca = Ciudad::where('nombre', 'General Roca')->firstOrFail()->id;
+
+        $cipolletti = Ciudad::where('nombre', 'Cipolletti')->firstOrFail()->id;
+
+        $plottier = Ciudad::where('nombre', 'Plottier')->firstOrFail()->id;
+
+
+        // ASIGNACIÓN DE CIUDADES (N:M)
+
+        $esteban->ciudades()->sync([$neuquen]);
+        $armando->ciudades()->sync([$generalRoca]);
+        $lujan->ciudades()->sync([$cipolletti]);
+        $matias->ciudades()->sync([$cipolletti]);
+        $salgado->ciudades()->sync([$plottier]);
     }
 }

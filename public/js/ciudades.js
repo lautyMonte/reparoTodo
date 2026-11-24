@@ -1,32 +1,82 @@
-const provincia = document.getElementById('provincia');
-const ciudad = document.getElementById('ciudad');
 
-const ciudades = {
-    nqn: ['Centenario', 'Neuquén', 'Plottier', 'San Martín de los Andes'],
-    rn: ['Bariloche', 'Cinco Saltos', 'Cipolletti', 'General Roca', ]
-};
+document.addEventListener("DOMContentLoaded", () => {
 
-provincia.addEventListener('change', function () {
+    const provincia = document.getElementById('provincia');
+    const ciudad = document.getElementById('ciudad');
+    const tipo = document.getElementById('tipo');
 
-    ciudad.innerHTML = '<option value="">Seleccionar ciudad</option>';
+    const selectorProvincia = provincia.tomselect;
+    const selectorCiudad = ciudad.tomselect;
 
-    const provinciaSeleccionada = provincia.value;
+    function actualizarCiudades(restaurar = false) {
 
-    if (provinciaSeleccionada !== '') {
+        // Obtener los IDs de las provincias seleccionadas
+        const provinciasSeleccionadas = selectorProvincia.getValue();
 
-        ciudad.disabled = false;
+        // Recuperar las ciudades seleccionadas anteriormente
+        const ciudadesSeleccionadas = restaurar
+            ? ciudadesAnteriores.map(String)
+            : selectorCiudad.getValue();
 
-        ciudades[provinciaSeleccionada].forEach(function (nombreCiudad) {
+        // Obtener las ciudades disponibles
+        const ciudadesDisponibles = [];
 
-            const opcion = document.createElement('option');
+        provinciasDB.forEach(provincia => {
 
-            opcion.value = nombreCiudad;
-            opcion.textContent = nombreCiudad;
+            if (provinciasSeleccionadas.includes(String(provincia.id))) {
 
-            ciudad.appendChild(opcion);
+                ciudadesDisponibles.push(...provincia.ciudades);
+
+            }
+
         });
 
-    } else {
-        ciudad.disabled = true;
+        // Limpiar el selector de ciudades
+        selectorCiudad.clear();
+        selectorCiudad.clearOptions();
+
+        // Agregar las ciudades disponibles
+        ciudadesDisponibles.forEach(ciudad => {
+
+            selectorCiudad.addOption({
+                value: String(ciudad.id),
+                text: ciudad.nombre
+            });
+
+        });
+
+        // Obtener los IDs de las ciudades disponibles
+        const idsDisponibles = ciudadesDisponibles.map(ciudad =>
+            String(ciudad.id)
+        );
+
+        // Conservar las ciudades que siguen estando disponibles
+        const ciudadesValidas = ciudadesSeleccionadas.filter(ciudad =>
+            idsDisponibles.includes(ciudad)
+        );
+
+        selectorCiudad.setValue(ciudadesValidas);
+
+        // Habilitar o deshabilitar el selector
+        if (provinciasSeleccionadas.length > 0 && tipo.value === 'profesional') {
+
+            selectorCiudad.enable();
+
+        } else {
+
+            selectorCiudad.disable();
+
+        }
+
+        selectorCiudad.refreshOptions(false);
     }
+
+    // Actualizar las ciudades cuando cambian las provincias
+    provincia.addEventListener('change', () => {
+        actualizarCiudades();
+    });
+
+    // Estado inicial y recuperación de datos anteriores
+    actualizarCiudades(true);
+
 });

@@ -27,6 +27,7 @@
 
     {{-- CSS de Tom Select para Bootstrap 5 --}}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.7.0/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
 
     <link rel="stylesheet" href="{{ asset('css/reparotodo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">

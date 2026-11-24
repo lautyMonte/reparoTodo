@@ -11,8 +11,10 @@
     <div id="carrusel-inicio" class="carousel slide carrusel-rt mb-5" data-bs-ride="carousel">
 
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carrusel-inicio" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Para clientes"></button>
-            <button type="button" data-bs-target="#carrusel-inicio" data-bs-slide-to="1" aria-label="Para profesionales"></button>
+            <button type="button" data-bs-target="#carrusel-inicio" data-bs-slide-to="0" class="active" aria-current="true"
+                aria-label="Para clientes"></button>
+            <button type="button" data-bs-target="#carrusel-inicio" data-bs-slide-to="1"
+                aria-label="Para profesionales"></button>
         </div>
 
         <div class="carousel-inner">
@@ -20,7 +22,8 @@
                 <div class="slide-rt" style="background-image: url('{{ asset('img/home/slide-cliente.avif') }}')">
                     <div class="slide-contenido">
                         <h1>¿Qué necesitás reparar hoy?</h1>
-                        <a href="{{ route('oficio.index') }}" class="btn btn-accent btn-lg fw-bold px-5">Busco profesional</a>
+                        <a href="{{ route('oficio.index') }}" class="btn btn-accent btn-lg fw-bold px-5">Busco
+                            profesional</a>
                     </div>
                 </div>
             </div>
@@ -65,7 +68,8 @@
                     <div class="card-body">
                         <span class="icono-circulo mb-3"><i data-lucide="badge-percent"></i></span>
                         <h3 class="h6">Sin comisiones</h3>
-                        <p class="small text-muted mb-0">El pago se acuerda directo entre cliente y profesional, sin intermediarios.</p>
+                        <p class="small text-muted mb-0">El pago se acuerda directo entre cliente y profesional, sin
+                            intermediarios.</p>
                     </div>
                 </div>
             </div>
@@ -114,7 +118,8 @@
                         <div>
                             <h3 class="h6 mb-1">Elegí o completá</h3>
                             <p class="small mb-1"><strong>Cliente:</strong> elegí el oficio y al profesional.</p>
-                            <p class="small mb-0"><strong>Profesional:</strong> completá tu perfil con tus oficios y tu zona.</p>
+                            <p class="small mb-0"><strong>Profesional:</strong> completá tu perfil con tus oficios y tu
+                                zona.</p>
                         </div>
                     </div>
                 </div>
@@ -125,8 +130,10 @@
                         <span class="numero-paso">3</span>
                         <div>
                             <h3 class="h6 mb-1">Conectate</h3>
-                            <p class="small mb-1"><strong>Cliente:</strong> contactá al profesional y recibí su presupuesto.</p>
-                            <p class="small mb-0"><strong>Profesional:</strong> recibí pedidos y enviale tu presupuesto al cliente.</p>
+                            <p class="small mb-1"><strong>Cliente:</strong> contactá al profesional y recibí su presupuesto.
+                            </p>
+                            <p class="small mb-0"><strong>Profesional:</strong> recibí pedidos y enviale tu presupuesto al
+                                cliente.</p>
                         </div>
                     </div>
                 </div>
@@ -147,13 +154,16 @@
                             <span class="etiqueta-destacado mb-3"><i data-lucide="star"></i> Destacado</span>
 
                             @if ($url = $destacado->user->urlImagen($destacado->user->imagen))
-                                <img class="avatar-rt mx-auto mb-2" src="{{ $url }}" alt="Foto de {{ $destacado->user->usuario }}">
+                                <img class="avatar-rt mx-auto mb-2" src="{{ $url }}"
+                                    alt="Foto de {{ $destacado->user->usuario }}">
                             @else
-                                <div class="avatar-rt mx-auto mb-2">{{ mb_strtoupper(mb_substr($destacado->user->usuario, 0, 1)) }}</div>
+                                <div class="avatar-rt mx-auto mb-2">
+                                    {{ mb_strtoupper(mb_substr($destacado->user->usuario, 0, 1)) }}</div>
                             @endif
 
                             <h3 class="h5 mb-1">
-                                <a href="{{ route('profesional.show', $destacado->id) }}" class="stretched-link text-reset text-decoration-none">{{ $destacado->user->usuario }}</a>
+                                <a href="{{ route('profesional.show', $destacado->id) }}"
+                                    class="stretched-link text-reset text-decoration-none">{{ $destacado->user->usuario }}</a>
                             </h3>
 
                             <p class="estrellas small mb-2">
@@ -168,7 +178,10 @@
                                 @endforeach
                             </div>
 
-                            <p class="small text-muted mb-0"><i data-lucide="map-pin"></i> {{ $destacado->ciudad }}, {{ $destacado->provincia }}</p>
+                            <p class="small text-muted mb-0">
+                                <i data-lucide="map-pin"></i>
+                                {{ $destacado->ciudades->pluck('nombre')->join(', ') }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -189,13 +202,15 @@
 
             <div class="col-lg-6">
                 <h2>Así te ven los clientes</h2>
-                <p class="mb-4">Tu perfil es tu vidriera: mostrá lo que sabés hacer y dónde trabajás para que te encuentren y te contacten.</p>
+                <p class="mb-4">Tu perfil es tu vidriera: mostrá lo que sabés hacer y dónde trabajás para que te
+                    encuentren y te contacten.</p>
 
                 <ul class="list-unstyled lista-check mb-4">
                     <li><span class="check-rt"><i data-lucide="check"></i></span> Tu nombre, tu foto y tus oficios</li>
                     <li><span class="check-rt"><i data-lucide="check"></i></span> Tu zona de trabajo</li>
                     <li><span class="check-rt"><i data-lucide="check"></i></span> Las reseñas de tus clientes</li>
-                    <li><span class="check-rt"><i data-lucide="check"></i></span> Un botón para que te contacten directo</li>
+                    <li><span class="check-rt"><i data-lucide="check"></i></span> Un botón para que te contacten directo
+                    </li>
                 </ul>
 
                 <a href="{{ $urlOfrecer }}" class="btn btn-accent btn-lg fw-bold px-5">Ofrecer servicios</a>
@@ -219,7 +234,8 @@
                         </div>
 
                         <p class="small text-muted mb-1"><i data-lucide="map-pin"></i> Cipolletti, Río Negro</p>
-                        <p class="small text-body mb-3">Instalaciones eléctricas, reparaciones de plomería y cambio de cerraduras en toda la zona.</p>
+                        <p class="small text-body mb-3">Instalaciones eléctricas, reparaciones de plomería y cambio de
+                            cerraduras en toda la zona.</p>
 
                         <div class="btn btn-accent w-100 fw-bold pe-none">Contactar</div>
                     </div>
@@ -233,8 +249,10 @@
     <div id="carrusel-cta" class="carousel slide carrusel-cta" data-bs-ride="carousel" data-bs-interval="6000">
 
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carrusel-cta" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Buscar profesional"></button>
-            <button type="button" data-bs-target="#carrusel-cta" data-bs-slide-to="1" aria-label="Ofrecer servicios"></button>
+            <button type="button" data-bs-target="#carrusel-cta" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Buscar profesional"></button>
+            <button type="button" data-bs-target="#carrusel-cta" data-bs-slide-to="1"
+                aria-label="Ofrecer servicios"></button>
         </div>
 
         <div class="carousel-inner">

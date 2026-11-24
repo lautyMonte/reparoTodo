@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('profesionales', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->unique();
-            $table->string('provincia');
-            $table->string('ciudad');
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ciudad;
 use App\Models\Oficio;
 use App\Models\Profesional;
 use Illuminate\Http\Request;
@@ -12,66 +13,74 @@ class ProfesionalController extends Controller
     /** Listado de profesionales del buscador (con los oficios elegidos ya marcados) */
     public function index(Request $request)
     {
+        // Valida ids recibidos por URL
+        $datos = $request->validate([
+            'oficios' => ['sometimes', 'array'],
+            'oficios.*' => ['integer', 'exists:oficios,id'],
+        ]);
 
-    //valida ids recibidos por URL
-    $datos = $request->validate([
-        'oficios' => ['sometimes', 'array'],
-        'oficios.*' => ['integer', 'exists:oficios,id'],
-    ]);
+        $oficiosSeleccionados = $datos['oficios'] ?? [];
 
-    $oficiosSeleccionados = $datos['oficios'] ?? [];
-
-    $profesionales = Profesional::with('user', 'oficios')
-             ->withAvg('resenas', 'puntaje')
-             ->withCount('resenas')
-             ->when($oficiosSeleccionados, function ($query) use ($oficiosSeleccionados) {
+        $profesionales = Profesional::with('user', 'oficios', 'ciudades.provincia')
+            ->withAvg('resenas', 'puntaje')
+            ->withCount('resenas')
+            ->when($oficiosSeleccionados, function ($query) use ($oficiosSeleccionados) {
                 $query->whereHas('oficios', function ($q) use ($oficiosSeleccionados) {
                     $q->whereIn('oficios.id', $oficiosSeleccionados);
                 });
-             })
-             ->orderByDesc('resenas_avg_puntaje')
-             ->orderByDesc('resenas_count')
-             ->get();
+            })
+            ->orderByDesc('resenas_avg_puntaje')
+            ->orderByDesc('resenas_count')
+            ->get();
 
-    $oficios = Oficio::orderBy('tipo')->get();
+        $oficios = Oficio::orderBy('tipo')->get();
 
-    $localidades = Profesional::whereNotNull('ciudad')
-        ->where('ciudad', '!=', '')
-        ->distinct()
-        ->orderBy('ciudad')
-        ->pluck('ciudad');
+        // Obtener las ciudades que tienen profesionales asociados
+        $localidades = Ciudad::whereHas('profesionales')
+            ->distinct()
+            ->orderBy('nombre')
+            ->pluck('nombre');
 
-    return view('profesional.index', compact(
-        'profesionales',
-        'oficios',
-        'localidades',
-        'oficiosSeleccionados'
-    ) + [
-        'titulo' => 'Buscar profesional'
-    ]);
+        return view('profesional.index', compact(
+            'profesionales',
+            'oficios',
+            'localidades',
+            'oficiosSeleccionados'
+        ) + [
+            'titulo' => 'Buscar profesional',
+        ]);
     }
 
     public function show(Request $request, int $id): View
     {
-       $profesional = Profesional::with('user', 'oficios', 'resenas.user')
+        $profesional = Profesional::with(
+            'user',
+            'oficios',
+            'resenas.user',
+            'ciudades.provincia'
+        )
             ->withAvg('resenas', 'puntaje')
             ->withCount('resenas')
             ->findOrFail($id);
 
         return view('profesional.show', [
             'profesional' => $profesional,
-            'titulo' => $profesional->user->usuario,
-            'modelo' => new Profesional(),
+            'titulo' => $profesional->user->nombreCompleto(),
+            'modelo' => new Profesional,
+
             // Cuantas resenas hay de cada puntaje (para las barras)
             'conteo' => $profesional->resenas->countBy('puntaje'),
+
             // Si quien esta mirando es el dueño del perfil
-            'esDuenio' => $request->user() !== null && $request->user()->id === $profesional->user_id,
+            'esDuenio' => $request->user() !== null
+                && $request->user()->id === $profesional->user_id,
         ]);
     }
 
     /** Home: muestra los 3 profesionales con mejor promedio de resenas */
-    public function destacados(): View {
-        $destacados = Profesional::with('user', 'oficios')
+    public function destacados(): View
+    {
+        $destacados = Profesional::with('user', 'oficios', 'ciudades.provincia')
             ->withAvg('resenas', 'puntaje')
             ->withCount('resenas')
             ->has('resenas')
@@ -87,77 +96,83 @@ class ProfesionalController extends Controller
     }
 
     /**
-     * Buscara a los profesionales por su nombre, oficio, localidad o puntuacion 
+     * Buscara a los profesionales por su nombre, oficio, localidad o puntuacion
      * (tambien funciona si es todo junto)
      */
-   public function filtrar(Request $request)
-{
-    $request->validate([
-        'buscar' => ['nullable', 'string', 'max:100'],
+    public function filtrar(Request $request)
+    {
+        $request->validate([
+            'buscar' => ['nullable', 'string', 'max:100'],
 
-        'oficios' => ['nullable', 'array'],
-        'oficios.*' => ['integer', 'exists:oficios,id'],
+            'oficios' => ['nullable', 'array'],
+            'oficios.*' => ['integer', 'exists:oficios,id'],
 
-        'localidades' => ['nullable', 'array'],
-        'localidades.*' => ['string', 'max:100'],
+            'localidades' => ['nullable', 'array'],
+            'localidades.*' => ['string', 'max:100'],
 
-        'puntajes' => ['nullable', 'array'],
-        'puntajes.*' => ['integer', 'between:1,5'],
-    ]);
+            'puntajes' => ['nullable', 'array'],
+            'puntajes.*' => ['integer', 'between:1,5'],
+        ]);
 
-    $buscar = trim($request->input('buscar', ''));
-    $oficios = $request->input('oficios', []);
-    $localidades = $request->input('localidades', []);
-    $puntajes = $request->input('puntajes', []);
+        $buscar = trim($request->input('buscar', ''));
+        $oficios = $request->input('oficios', []);
+        $localidades = $request->input('localidades', []);
+        $puntajes = $request->input('puntajes', []);
 
-    $profesionales = Profesional::with(['user', 'oficios'])
-        ->withCount('resenas')
-        ->withAvg('resenas', 'puntaje')
+        $profesionales = Profesional::with([
+            'user',
+            'oficios',
+            'ciudades.provincia',
+        ])
+            ->withCount('resenas')
+            ->withAvg('resenas', 'puntaje')
 
-        // Buscar por nombre
-        ->when($buscar !== '', function ($query) use ($buscar) {
-            $query->whereHas('user', function ($q) use ($buscar) {
-                $q->where('usuario', 'LIKE', "%{$buscar}%");
-            });
-        })
+            // Buscar por nombre
+            ->when($buscar !== '', function ($query) use ($buscar) {
+                $query->whereHas('user', function ($q) use ($buscar) {
+                    $q->where('usuario', 'LIKE', "%{$buscar}%");
+                });
+            })
 
-        // Filtrar por oficio
-        ->when(!empty($oficios), function ($query) use ($oficios) {
+            // Filtrar por oficio
+            ->when(! empty($oficios), function ($query) use ($oficios) {
 
-            $query->whereHas('oficios', function ($q) use ($oficios) {
-                $q->whereIn('oficios.id', $oficios);
-            });
+                $query->whereHas('oficios', function ($q) use ($oficios) {
+                    $q->whereIn('oficios.id', $oficios);
+                });
 
-        })
+            })
 
-        // Filtrar por localidad
-        ->when(!empty($localidades), function ($query) use ($localidades) {
+            // Filtrar por localidad
+            ->when(! empty($localidades), function ($query) use ($localidades) {
 
-            $query->whereIn('ciudad', $localidades);
+                $query->whereHas('ciudades', function ($q) use ($localidades) {
+                    $q->whereIn('ciudades.nombre', $localidades);
+                });
 
-        })
+            })
 
-        ->get();
+            ->get();
 
-    // Filtrar por puntuación minima
-    if (!empty($puntajes)) {
+        // Filtrar por puntuación minima
+        if (! empty($puntajes)) {
 
-        $puntajeMinimo = min($puntajes);
+            $puntajeMinimo = min($puntajes);
 
-        $profesionales = $profesionales->filter(function ($profesional) use ($puntajeMinimo) {
+            $profesionales = $profesionales->filter(function ($profesional) use ($puntajeMinimo) {
 
-            return $profesional->resenas_avg_puntaje !== null
-                && $profesional->resenas_avg_puntaje >= $puntajeMinimo;
+                return $profesional->resenas_avg_puntaje !== null
+                    && $profesional->resenas_avg_puntaje >= $puntajeMinimo;
 
-        })->values();
+            })->values();
 
+        }
+
+        return response()->json([
+            'html' => view(
+                'partials.tarjetas',
+                compact('profesionales')
+            )->render(),
+        ]);
     }
-
-    return response()->json([
-        'html' => view(
-            'partials.tarjetas',
-            compact('profesionales')
-        )->render()
-    ]);
-}
 }

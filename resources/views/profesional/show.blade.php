@@ -2,9 +2,9 @@
 
 @section('contenido')
     @php
-        $usuario  = $profesional->user;
+        $usuario = $profesional->user;
         $promedio = $profesional->resenas_avg_puntaje;
-        $total    = $profesional->resenas_count;
+        $total = $profesional->resenas_count;
     @endphp
 
     <div class="detalle-pagina">
@@ -22,13 +22,14 @@
                     <div class="detalle-tapa"></div>
                     <div class="detalle-lateral-cuerpo">
                         <img class="detalle-foto" src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->usuario }}">
-                        <h1 class="h3 mb-2">{{ $usuario->usuario }}</h1>
+                        <h1 class="h3 mb-2">{{ $usuario->nombreCompleto() }}</h1>
 
                         <span class="pill-valoracion puntaje">
                             <i data-lucide="star"></i>
                             @if ($total > 0)
                                 <strong>{{ number_format($promedio, 1, ',', '.') }}</strong>
-                                <span class="text-secondary">({{ $total }} {{ $total === 1 ? 'reseña' : 'reseñas' }})</span>
+                                <span class="text-secondary">({{ $total }}
+                                    {{ $total === 1 ? 'reseña' : 'reseñas' }})</span>
                             @else
                                 <span class="text-secondary">Sin reseñas</span>
                             @endif
@@ -40,10 +41,11 @@
                             @if ($esDuenio)
                                 <p class="text-secondary small mb-0">Así ven tu perfil los clientes.</p>
                             @elseif (auth()->check() && auth()->user()->tipo === 'cliente')
-                                <a href="{{ route('solicitud.create', $profesional->id) }}" class="btn btn-accent btn-detalle w-100">
+                                <a href="{{ route('solicitud.create', $profesional->id) }}"
+                                    class="btn btn-accent btn-detalle w-100">
                                     <i data-lucide="briefcase"></i> Solicitar trabajo
                                 </a>
-                            @elseif (! auth()->check())
+                            @elseif (!auth()->check())
                                 <a href="{{ route('usuario.registro') }}" class="btn btn-accent btn-detalle w-100">
                                     <i data-lucide="briefcase"></i> Solicitar trabajo
                                 </a>
@@ -57,13 +59,17 @@
             <section class="col-lg-8">
 
                 <div class="detalle-tabs" role="tablist">
-                    <button type="button" class="detalle-tab active" id="tab-info" data-bs-toggle="tab" data-bs-target="#panel-info" role="tab" aria-controls="panel-info" aria-selected="true">
+                    <button type="button" class="detalle-tab active" id="tab-info" data-bs-toggle="tab"
+                        data-bs-target="#panel-info" role="tab" aria-controls="panel-info" aria-selected="true">
                         <i data-lucide="info"></i> <span>Información</span>
                     </button>
-                    <button type="button" class="detalle-tab" id="tab-trabajos" data-bs-toggle="tab" data-bs-target="#panel-trabajos" role="tab" aria-controls="panel-trabajos" aria-selected="false">
+                    <button type="button" class="detalle-tab" id="tab-trabajos" data-bs-toggle="tab"
+                        data-bs-target="#panel-trabajos" role="tab" aria-controls="panel-trabajos"
+                        aria-selected="false">
                         <i data-lucide="hammer"></i> <span>Trabajos</span>
                     </button>
-                    <button type="button" class="detalle-tab" id="tab-resenas" data-bs-toggle="tab" data-bs-target="#panel-resenas" role="tab" aria-controls="panel-resenas" aria-selected="false">
+                    <button type="button" class="detalle-tab" id="tab-resenas" data-bs-toggle="tab"
+                        data-bs-target="#panel-resenas" role="tab" aria-controls="panel-resenas" aria-selected="false">
                         <i data-lucide="message-square"></i> <span>Reseñas</span>
                     </button>
                 </div>
@@ -71,15 +77,25 @@
                 <div class="tab-content detalle-tarjeta">
 
                     {{-- INFORMACION --}}
-                    <div class="tab-pane fade show active detalle-pane" id="panel-info" role="tabpanel" aria-labelledby="tab-info">
+                    <div class="tab-pane fade show active detalle-pane" id="panel-info" role="tabpanel"
+                        aria-labelledby="tab-info">
                         <div class="dato-info">
                             <i data-lucide="map-pin"></i>
-                            <span>{{ $profesional->ciudad }} • {{ $profesional->provincia }}</span>
+                            <span>
+                                @foreach ($profesional->ciudades as $ciudad)
+                                    {{ $ciudad->nombre }}, {{ $ciudad->provincia->nombre }}
+
+                                    @if (!$loop->last)
+                                        •
+                                    @endif
+                                @endforeach
+                            </span>
                         </div>
 
                         <div class="dato-info">
                             <i data-lucide="calendar-days"></i>
-                            <span>Miembro desde {{ $profesional->created_at->locale('es')->translatedFormat('F \d\e Y') }}</span>
+                            <span>Miembro desde
+                                {{ $profesional->created_at->locale('es')->translatedFormat('F \d\e Y') }}</span>
                         </div>
 
                         {{-- Estos 2 datos aparecen cuando existan las columnas (pantalla ofrecer servicios) --}}
@@ -109,13 +125,15 @@
                     </div>
 
                     {{-- TRABAJOS --}}
-                    <div class="tab-pane fade detalle-pane text-center" id="panel-trabajos" role="tabpanel" aria-labelledby="tab-trabajos">
+                    <div class="tab-pane fade detalle-pane text-center" id="panel-trabajos" role="tabpanel"
+                        aria-labelledby="tab-trabajos">
                         <i data-lucide="hammer" class="text-secondary mb-2"></i>
                         <p class="text-secondary mb-0">Todavía no hay trabajos publicados.</p>
                     </div>
 
                     {{-- RESENAS --}}
-                    <div class="tab-pane fade detalle-pane" id="panel-resenas" role="tabpanel" aria-labelledby="tab-resenas">
+                    <div class="tab-pane fade detalle-pane" id="panel-resenas" role="tabpanel"
+                        aria-labelledby="tab-resenas">
 
                         @if ($total > 0)
                             <div class="resumen-resenas">
@@ -123,10 +141,12 @@
                                     <div class="resumen-numero">{{ number_format($promedio, 1, ',', '.') }}</div>
                                     <div class="my-2">
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <i data-lucide="star" class="{{ $i <= round($promedio) ? 'estrella-llena' : 'estrella-vacia' }}"></i>
+                                            <i data-lucide="star"
+                                                class="{{ $i <= round($promedio) ? 'estrella-llena' : 'estrella-vacia' }}"></i>
                                         @endfor
                                     </div>
-                                    <small class="text-secondary">{{ $total }} {{ $total === 1 ? 'reseña' : 'reseñas' }}</small>
+                                    <small class="text-secondary">{{ $total }}
+                                        {{ $total === 1 ? 'reseña' : 'reseñas' }}</small>
                                 </div>
 
                                 <div>
@@ -134,7 +154,8 @@
                                         @php $cantidad = $conteo[$estrellas] ?? 0; @endphp
                                         <div class="fila-barra">
                                             <span>{{ $estrellas }} ★</span>
-                                            <div class="barra-fondo"><span style="width: {{ round($cantidad * 100 / $total) }}%"></span></div>
+                                            <div class="barra-fondo"><span
+                                                    style="width: {{ round(($cantidad * 100) / $total) }}%"></span></div>
                                             <span>{{ $cantidad }}</span>
                                         </div>
                                     @endforeach
@@ -146,21 +167,24 @@
                         <div class="filtro-estrellas">
                             <button type="button" class="btn-filtro-estrella activo">Todas</button>
                             @foreach ([5, 4, 3, 2, 1] as $estrellas)
-                                <button type="button" class="btn-filtro-estrella">{{ $estrellas }} <i data-lucide="star"></i></button>
+                                <button type="button" class="btn-filtro-estrella">{{ $estrellas }} <i
+                                        data-lucide="star"></i></button>
                             @endforeach
                         </div>
 
                         @forelse ($profesional->resenas as $resena)
                             <div class="tarjeta-resena">
-                                <div class="inicial-resena">{{ mb_strtoupper(mb_substr($resena->user->usuario, 0, 1)) }}</div>
+                                <div class="inicial-resena">{{ mb_strtoupper(mb_substr($resena->user->nombreCompleto(), 0, 1)) }}
+                                </div>
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-start">
-                                        <strong>{{ $resena->user->usuario }}</strong>
+                                        <strong>{{ $resena->user->nombreCompleto() }}</strong>
                                         <small class="text-secondary">{{ $resena->created_at->format('d/m/Y') }}</small>
                                     </div>
                                     <div class="my-1">
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <i data-lucide="star" class="{{ $i <= $resena->puntaje ? 'estrella-llena' : 'estrella-vacia' }}"></i>
+                                            <i data-lucide="star"
+                                                class="{{ $i <= $resena->puntaje ? 'estrella-llena' : 'estrella-vacia' }}"></i>
                                         @endfor
                                     </div>
                                     @if ($resena->comentario)
