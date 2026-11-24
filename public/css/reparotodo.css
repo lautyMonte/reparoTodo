@@ -546,6 +546,62 @@ img.avatar-rt { object-fit: cover; }
 .estrella-llena { color: var(--rt-naranja); }
 .estrella-vacia { color: #c8ccd2; }
 
+/* ===== Eliminación de reseñas ===== */
+
+/* Alinear el botón a la derecha */
+.resena-acciones {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+}
+
+/* Botón de eliminación */
+.btn-eliminar-resena {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+
+    background: #fff;
+    color: var(--rt-azul);
+    border: 1px solid rgba(29, 53, 87, 0.25);
+    border-radius: 10px;
+
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    transition: all 0.2s ease;
+}
+
+.btn-eliminar-resena:hover {
+    background: #fff1ee;
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.btn-eliminar-resena .lucide {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Modal de eliminación */
+.modal-eliminar-resena .modal-content {
+    background: #fff;
+    border: 1px solid rgba(29, 53, 87, 0.15);
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(29, 53, 87, 0.18);
+}
+
+.modal-eliminar-resena h4 {
+    color: var(--rt-azul);
+}
+
+.modal-resena-icono {
+    width: 56px;
+    height: 56px;
+    color: #c0392b;
+}
+
 @media (max-width: 575.98px) {
     .resumen-resenas { grid-template-columns: 1fr; gap: 1rem; }
     .detalle-tab span { display: none; }

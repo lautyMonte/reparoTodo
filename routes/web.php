@@ -8,6 +8,7 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\OficioController;
+use App\Http\Controllers\ResenaController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -56,6 +57,11 @@ Route::middleware('profesional')->group(function () {
     Route::get('/bandeja/{id}/presupuesto', [PresupuestoController::class, 'create'])->whereNumber('id')->name('presupuesto.create');
     Route::post('/bandeja/{id}/presupuesto', [PresupuestoController::class, 'store'])->whereNumber('id')->name('presupuesto.store');
 });
+
+
+Route::delete('/resenas/{resena}', [ResenaController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('resenas.destroy');
 
 // Notificaciones: para cualquier usuario con sesion iniciada
 Route::middleware('auth')->group(function () {
