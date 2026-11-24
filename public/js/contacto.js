@@ -34,5 +34,5 @@ const mensaje = document.getElementById("mensaje");
 const contador = document.getElementById("contador");
 
 mensaje.addEventListener("input", () => {
-    contador.textContent = `${mensaje.value.length} / 240 caracteres`;
+    contador.textContent = `${mensaje.value.length} / 230 caracteres`;
 });
