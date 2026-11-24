@@ -240,15 +240,6 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content text-center p-4">
 
-<<<<<<< HEAD
-    {{-- El duenio ve su bandeja de mensajes. El chat con un cliente se va a abrir recien al aceptar el presupuesto --}}
-    @auth
-        @if ($esDuenio)
-            @include('chatify.box')
-        @endif
-    @endauth
-@endsection
-=======
                     <div class="modal-body">
 
                         <i data-lucide="circle-alert" class="modal-resena-icono mb-3"></i>
@@ -296,4 +287,3 @@
         </div>
     @endif
 @endsection
->>>>>>> b59f6332eb865709896a98ce07647394fe4c4f63
