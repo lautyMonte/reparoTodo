@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="{{ asset('css/reparotodo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
     <link rel="stylesheet" href="{{ asset('css/box.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/edit.css') }}">
 
     @stack('styles')
 

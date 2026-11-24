@@ -6,6 +6,9 @@ use App\Models\Oficio;
 use App\Models\Profesional;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ProfesionalController extends Controller
 {
@@ -160,4 +163,81 @@ class ProfesionalController extends Controller
         )->render()
     ]);
 }
+
+    public function edit(Request $request)
+    {
+        $usuario = $request->user();
+
+        $profesional = $usuario->profesional()->with('oficios')->firstOrFail();
+
+        Gate::authorize('update', $profesional);
+
+        $oficios = Oficio::all();
+
+        return view('perfil.edit', compact('usuario','profesional','oficios'));
+    }
+
+    public function update(Request $request)
+    {
+        $usuario = $request->user();
+
+        $profesional = $usuario->profesional()->firstOrFail();
+
+        Gate::authorize('update', $profesional);
+
+        $validated = $request->validate([
+
+        // Datos del usuario
+        'usuario' => ['required','string','max:20',
+                    Rule::unique('users', 'usuario')->ignore($usuario->id),
+            ],
+            'nombre' => ['required', 'string', 'max:50'],
+            'apellido' => ['required', 'string', 'max:50'],
+            'telefono' => ['required', 'string', 'max:16'],
+            'email' => ['required','email',
+                    Rule::unique('users', 'email')->ignore($usuario->id),
+            ],
+            'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
+
+        // Datos profesionales
+        'ciudad' => ['required', 'string', 'max:100'],
+
+        'provincia' => ['required', 'string', 'max:100'],
+
+        // Oficios
+        'oficios' => ['required', 'array', 'min:1'],
+
+        'oficios.*' => ['required','integer','distinct','exists:oficios,id'],
+        ]);
+
+        DB::transaction(function () use ($request, $usuario,$profesional,$validated) 
+        {
+
+        // Datos del usuario
+        $datosUsuario = ['usuario' => $validated['usuario'],
+                  'nombre'=> $validated['nombre'],
+                  'apellido'=> $validated['apellido'],
+                  'telefono'=> $validated['telefono'] ?? null,
+                  'email' => $validated['email']
+        ];
+
+        if ($request->hasFile('imagen')) {
+            $datosUsuario['imagen'] = $request->file('imagen')->store('perfil', 'public');
+        }
+        
+
+        $usuario->update($datosUsuario);
+
+        // Datos del profesional
+        $profesional->update([
+            'ciudad' => $validated['ciudad'],
+            'provincia' => $validated['provincia']
+        ]);
+
+        // Actualizar oficios
+        $profesional->oficios()->sync($validated['oficios']);
+    });
+
+    return redirect()->route('profesional.edit')->with('success', 'Perfil profesional actualizado correctamente.');
+    }
 }

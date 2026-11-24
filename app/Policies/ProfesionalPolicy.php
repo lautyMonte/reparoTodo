@@ -8,9 +8,9 @@ use Illuminate\Auth\Access\Response;
 
 class ProfesionalPolicy
 {
-    // /**si se quiere modificar los datos del profesional, deberia estar en un can dentro del blade perfil de profesional */
-    // public function updateProfesional(User $user, Profesional $profesional): boolean
-    // {
-    //     return $user->id === $profesional->user_id;
-    // }
+    public function update(User $usuario, Profesional $profesional)
+    {
+        return $usuario->tipo === 'profesional'
+            && $profesional->user_id === $usuario->id;
+    }
 }

@@ -145,6 +145,13 @@
                             <a class="btn btn-outline-light" href="{{ route('profesional.show', auth()->user()->profesional->id) }}">Mi perfil</a>
                         @endif
 
+                        {{-- Editar perfil para clientes --}}
+                        @if (auth()->user()->tipo === 'cliente')
+                            <a class="btn btn-outline-light" href="{{ route('usuario.edit') }}">
+                                <i data-lucide="pencil"></i> Editar perfil
+                            </a>
+                        @endif
+
                         <a class="btn btn-accent" href="{{ route('usuario.salir') }}">
                             <i data-lucide="log-out"></i> Cerrar sesión
                         </a>
