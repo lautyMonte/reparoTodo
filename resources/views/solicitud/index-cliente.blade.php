@@ -31,6 +31,7 @@
                     <a href="{{ route('solicitud.cliente.index', ['estado' => 'pendiente']) }}" class="bandeja-filtro {{ $estado === 'pendiente' ? 'activo' : '' }}">Pendientes {{ $conteo->get('pendiente', 0) }}</a>
                     <a href="{{ route('solicitud.cliente.index', ['estado' => 'aceptada']) }}" class="bandeja-filtro {{ $estado === 'aceptada' ? 'activo' : '' }}">Aceptadas {{ $conteo->get('aceptada', 0) }}</a>
                     <a href="{{ route('solicitud.cliente.index', ['estado' => 'presupuestada']) }}" class="bandeja-filtro {{ $estado === 'presupuestada' ? 'activo' : '' }}">Presupuestadas {{ $conteo->get('presupuestada', 0) }}</a>
+                    <a href="{{ route('solicitud.cliente.index', ['estado' => 'en_chat']) }}" class="bandeja-filtro {{ $estado === 'en_chat' ? 'activo' : '' }}">En chat {{ $conteo->get('en_chat', 0) }}</a>
                 </div>
 
                 @forelse ($lista as $solicitud)
@@ -81,24 +82,6 @@
 
                         <h2 class="h4 mb-0">{{ $seleccionada->titulo }}</h2>
 
-                        @if ($seleccionada->presupuesto)
-                            <div class="presu-tarjeta">
-                                <div class="presu-titulo"><i data-lucide="file-text"></i> Presupuesto recibido</div>
-                                <div class="presu-datos">
-                                    <div>
-                                        <div class="presu-etiqueta">Monto total</div>
-                                        <div class="presu-valor">${{ number_format($seleccionada->presupuesto->monto, 0, ',', '.') }}</div>
-                                    </div>
-                                    <div>
-                                        <div class="presu-etiqueta">Plazo estimado</div>
-                                        <div class="presu-valor">{{ $seleccionada->presupuesto->plazo_dias }} {{ $seleccionada->presupuesto->plazo_dias === 1 ? 'día' : 'días' }}</div>
-                                    </div>
-                                </div>
-                                <div class="presu-etiqueta mt-3">Detalle</div>
-                                <p class="mb-0">{{ $seleccionada->presupuesto->detalle }}</p>
-                            </div>
-                        @endif
-
                         @if ($seleccionada->zona || $seleccionada->fecha_deseada)
                             <div class="bandeja-datos">
                                 @if ($seleccionada->zona)
@@ -111,6 +94,13 @@
                         @endif
 
                         <p class="bandeja-descripcion">{{ $seleccionada->descripcion }}</p>
+
+                        @if ($seleccionada->presupuesto)
+                            @include('partials.presupuesto', [
+                                'presupuesto' => $seleccionada->presupuesto,
+                                'encabezado' => $seleccionada->estado === 'en_chat' ? 'Presupuesto aceptado' : 'Presupuesto recibido',
+                            ])
+                        @endif
 
                         @if ($seleccionada->fotos->isNotEmpty())
                             <div class="bandeja-subtitulo">Fotos adjuntas ({{ $seleccionada->fotos->count() }})</div>
@@ -135,6 +125,14 @@
                                     </form>
                                     <button type="button" class="btn btn-rechazar fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRechazar"><i data-lucide="x"></i> Rechazar</button>
                                 @endif
+                                @if ($seleccionada->estado === 'en_chat')
+                                    <button type="button" class="btn btn-accent fw-semibold btn-abrir-chat"
+                                            data-usuario-id="{{ $seleccionada->profesional->user->id }}"
+                                            data-nombre="{{ $seleccionada->profesional->user->usuario }}"
+                                            data-avatar="{{ $seleccionada->profesional->user->avatar() }}">
+                                        <i data-lucide="message-circle"></i> Abrir chat
+                                    </button>
+                                @endif
                             </div>
                             <a href="{{ route('contacto') }}" class="btn btn-soporte"><i data-lucide="life-buoy"></i> Soporte</a>
                         </div>
@@ -144,6 +142,8 @@
                             <p class="bandeja-ayuda">{{ $seleccionada->profesional->user->usuario }} aceptó tu solicitud y te va a enviar un presupuesto.</p>
                         @elseif ($seleccionada->estado === 'presupuestada')
                             <p class="bandeja-ayuda">Si aceptás, se abre el chat con {{ $seleccionada->profesional->user->usuario }} para coordinar el trabajo. Si rechazás, el presupuesto se elimina para ambos y {{ $seleccionada->profesional->user->usuario }} recibe un aviso.</p>
+                        @elseif ($seleccionada->estado === 'en_chat')
+                            <p class="bandeja-ayuda">Aceptaste el presupuesto. Ya podés hablar con {{ $seleccionada->profesional->user->usuario }} por el chat para coordinar el trabajo.</p>
                         @endif
                     </div>
                 @else

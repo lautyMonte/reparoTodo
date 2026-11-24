@@ -4,7 +4,8 @@
     @php
         $usuario = $profesional->user;
         $promedio = $profesional->resenas_avg_puntaje;
-        $total = $profesional->resenas_count;
+        $total    = $profesional->resenas_count;
+        $resenaPropia = $profesional->resenas->firstWhere('user_id', auth()->id());
     @endphp
 
     <div class="detalle-pagina">
@@ -190,6 +191,20 @@
                                     @if ($resena->comentario)
                                         <p class="mb-0">{{ $resena->comentario }}</p>
                                     @endif
+                                    {{-- Solo el autor puede eliminar su reseña --}}
+                                    @if (auth()->id() === $resena->user_id)
+                                        <div class="resena-acciones">
+                                            <button
+                                                type="button"
+                                                class="btn btn-eliminar-resena"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEliminarResena"
+                                            >
+                                                <i data-lucide="trash-2"></i>
+                                                Eliminar reseña
+                                            </button>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @empty
@@ -209,7 +224,19 @@
             </section>
         </div>
     </div>
+    {{-- Modal de confirmación para eliminar reseña --}}
+    @if ($resenaPropia)
+        <div
+            class="modal fade modal-eliminar-resena"
+            id="modalEliminarResena"
+            tabindex="-1"
+            aria-labelledby="modalEliminarResenaLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center p-4">
 
+<<<<<<< HEAD
     {{-- El duenio ve su bandeja de mensajes. El chat con un cliente se va a abrir recien al aceptar el presupuesto --}}
     @auth
         @if ($esDuenio)
@@ -217,3 +244,52 @@
         @endif
     @endauth
 @endsection
+=======
+                    <div class="modal-body">
+
+                        <i data-lucide="circle-alert" class="modal-resena-icono mb-3"></i>
+
+                        <h4 id="modalEliminarResenaLabel">
+                            ¿Eliminar tu reseña?
+                        </h4>
+
+                        <p class="text-secondary mt-3">
+                            Tu comentario y puntuación se eliminarán
+                            definitivamente del perfil del profesional.
+                        </p>
+
+                        <p class="fw-semibold">
+                            Esta acción no se puede deshacer.
+                        </p>
+
+                        <form
+                            action="{{ route('resenas.destroy', $resenaPropia) }}"
+                            method="POST"
+                            class="d-flex justify-content-center flex-wrap gap-2 mt-4"
+                        >
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="button"
+                                class="btn btn-cancelar"
+                                data-bs-dismiss="modal"
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="btn btn-rechazar-confirmar"
+                            >
+                                Sí, eliminar reseña
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endsection
+>>>>>>> b59f6332eb865709896a98ce07647394fe4c4f63

@@ -1,217 +1,278 @@
-
+// Chat flotante de ReparoTodo: lista de conversaciones, conversacion abierta y envio de mensajes
 document.addEventListener('DOMContentLoaded', () => {
 
     const widget = document.getElementById('chat-widget');
 
+    // Si la persona no tiene conversaciones, el widget ni se dibuja en la pagina
     if (!widget) return;
 
-    const API = widget.dataset.api;
+    // Direccion de las conversaciones (la escribe Blade en el atributo data-url-conversaciones)
+    const direccion = widget.dataset.urlConversaciones;
+    const token = document.querySelector('meta[name="csrf-token"]').content;
 
-    const panel = document.getElementById('chat-panel');
-    const toggle = document.getElementById('chat-toggle');
-    const close = document.getElementById('chat-close');
-
-    const nombre = document.getElementById('chat-name');
+    // Las piezas del widget
+    const botonMensajes = document.getElementById('chat-boton');
+    const ventana = document.getElementById('chat-ventana');
+    const vistaLista = document.getElementById('chat-vista-lista');
+    const vistaConversacion = document.getElementById('chat-vista-conversacion');
+    const lista = document.getElementById('chat-lista');
+    const volver = document.getElementById('chat-volver');
     const avatar = document.getElementById('chat-avatar');
+    const nombre = document.getElementById('chat-nombre');
+    const mensajes = document.getElementById('chat-mensajes');
+    const formulario = document.getElementById('chat-formulario');
+    const texto = document.getElementById('chat-texto');
 
-    const mensajes = document.getElementById('chat-messages');
-    const formulario = document.getElementById('chat-form');
-    const input = document.getElementById('chat-input');
-    const enviar = document.getElementById('chat-send');
+    let personaActual = null;    // id de la persona con la que se esta hablando (null = ninguna)
+    let cantidadMostrada = -1;   // cuantos mensajes hay dibujados (-1 = todavia ninguno)
+    let temporizador = null;     // el setInterval que actualiza los mensajes
 
-    let conversacionActual = null;
-    let temporizador = null;
+    // ---------- Abrir y cerrar ----------
 
-    toggle.addEventListener('click', () => {
-        panel.hidden = !panel.hidden;
-    });
-
-    close.addEventListener('click', () => {
-        panel.hidden = true;
-    });
-
-    async function peticion(ruta, opciones = {}) {
-    const respuesta = await fetch(`${API}${ruta}`, {
-        ...opciones,
-        credentials: 'same-origin',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            ...opciones.headers
-        }
-    });
-
-    const texto = await respuesta.text();
-    let resultado = {};
-
-    try {
-        resultado = texto ? JSON.parse(texto) : {};
-    } catch {
-        resultado = { mensaje: texto };
+    function abrirVentana() {
+        ventana.hidden = false;
+        botonMensajes.hidden = true;
+        mostrarLista();
     }
 
-    if (!respuesta.ok) {
-        throw new Error(
-            resultado.message ||
-            resultado.mensaje ||
-            `Error HTTP ${respuesta.status}`
-        );
+    function cerrarVentana() {
+        ventana.hidden = true;
+        botonMensajes.hidden = false;
+        detenerActualizacion();
+        personaActual = null;
     }
 
-    return resultado;
-}
+    function mostrarLista() {
+        detenerActualizacion();
+        personaActual = null;
+        vistaConversacion.hidden = true;
+        vistaLista.hidden = false;
+        cargarLista();
+    }
 
-    // Se ejecuta desde el botón del perfil profesional.
-   window.iniciarChat = async function (idUsuario, nombreUsuario) {
-    panel.hidden = false;
+    function abrirConversacion(id, nombrePersona, fotoPersona) {
+        personaActual = id;
+        cantidadMostrada = -1;
+        nombre.textContent = nombrePersona;
+        avatar.src = fotoPersona;
+        mensajes.innerHTML = '';
+        vistaLista.hidden = true;
+        vistaConversacion.hidden = false;
 
-    nombre.textContent = nombreUsuario;
-    avatar.textContent = nombreUsuario.charAt(0).toUpperCase();
+        cargarMensajes();
 
-    mensajes.replaceChildren();
-
-    const cargando = document.createElement('p');
-    cargando.textContent = 'Abriendo conversación...';
-    mensajes.appendChild(cargando);
-
-    input.disabled = true;
-    enviar.disabled = true;
-
-    try {
-        // Crear o recuperar la conversación directa.
-        const resultado = await peticion('/conversations/direct', {
-            method: 'POST',
-            body: JSON.stringify({
-                user_id: Number(idUsuario)
-            })
-        });
-
-        console.log('Respuesta al iniciar conversación:', resultado);
-
-        // Guardar el ID REAL de la conversación.
-        conversacionActual = resultado.data?.id;
-
-        if (!conversacionActual) {
-            throw new Error('Chatify no devolvió el ID de la conversación.');
-        }
-
-        await cargarMensajes();
-
-        input.disabled = false;
-        enviar.disabled = false;
-        input.focus();
-
-        clearInterval(temporizador);
+        // Mientras la conversacion esta abierta, se buscan mensajes nuevos cada 5 segundos
+        detenerActualizacion();
         temporizador = setInterval(cargarMensajes, 5000);
 
-    } catch (error) {
-        mensajes.textContent = 'No se pudo abrir la conversación.';
-        console.error('Error al iniciar:', error);
-
-        input.disabled = false;
-        enviar.disabled = false;
-    }
-};
-
-
-function ordenarMensajes(mensajes) {
-    return [...mensajes].sort((a, b) => {
-        const fechaA = Date.parse(a.attributes?.created_at);
-        const fechaB = Date.parse(b.attributes?.created_at);
-
-        return fechaA - fechaB;
-    });
-}
-
-    
-async function cargarMensajes() {
-    const resultado = await peticion(
-    `/conversations/${conversacionActual}/messages`
-);
-
-mensajes.replaceChildren();
-
-ordenarMensajes(resultado.data ?? []).forEach(mensaje => {
-
-    const burbuja = document.createElement('div');
-
-    const idEmisor =
-        mensaje.relationships?.sender?.data?.id;
-
-    const contenido =
-        mensaje.attributes?.body ?? '';
-
-    burbuja.className =
-        'chat-message ' +
-        (String(idEmisor) === String(widget.dataset.user)
-            ? 'sent'
-            : 'received');
-
-    burbuja.textContent = contenido;
-
-    mensajes.appendChild(burbuja);
-});
-
-mensajes.scrollTop = mensajes.scrollHeight;
-}
-
-
-async function enviarMensaje(texto) {
-
-    console.log('Conversación seleccionada:', conversacionActual);
-console.log('Usuario que envía:', widget.dataset.user);
-console.log('Texto:', texto);
-    if (!conversacionActual) {
-        throw new Error('No hay una conversación seleccionada.');
+        texto.focus();
     }
 
-    const resultado = await peticion(
-        `/conversations/${conversacionActual}/messages`,
-        {
-            method: 'POST',
-            body: JSON.stringify({
-                body: texto
-            })
+    function detenerActualizacion() {
+        clearInterval(temporizador);
+    }
+
+    // ---------- Formato de fechas ----------
+
+    // Hora de un mensaje, por ejemplo 19:58
+    function formatearHora(fecha) {
+        return new Date(fecha).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Para la lista: la hora si es de hoy y el dia y mes si es de otro dia
+    function formatearFecha(fecha) {
+        if (!fecha) return '';
+
+        const mensaje = new Date(fecha);
+
+        if (mensaje.toDateString() === new Date().toDateString()) {
+            return formatearHora(fecha);
         }
-    );
 
-    console.log('Mensaje enviado:', resultado);
-
-    await cargarMensajes();
-}
-
-
-formulario.addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const texto = input.value.trim();
-
-    if (!texto) return;
-
-    try {
-        await enviarMensaje(texto);
-        input.value = '';
-    } catch (error) {
-        console.error('Error al enviar el mensaje:', error);
+        return mensaje.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
     }
-});
 
-    // Detectar cuando se presiona Contactar profesional
-document.addEventListener('click', (evento) => {
+    // ---------- Lista de conversaciones ----------
 
-    const boton = evento.target.closest('.btn-contactar');
+    async function cargarLista() {
+        try {
+            const respuesta = await fetch(direccion, {
+                headers: { 'Accept': 'application/json' }
+            });
 
-    if (!boton) return;
+            if (!respuesta.ok) {
+                throw new Error('Error HTTP');
+            }
 
-    const idUsuario = boton.dataset.userId;
-    const nombreUsuario = boton.dataset.userName;
+            const datos = await respuesta.json();
 
-    console.log('Profesional seleccionado:', idUsuario, nombreUsuario);
+            lista.innerHTML = '';
 
-    window.iniciarChat(idUsuario, nombreUsuario);
+            if (datos.conversaciones.length === 0) {
+                lista.innerHTML = '<p class="chat-vacio">Todavía no tenés conversaciones.</p>';
+                return;
+            }
 
-});
+            datos.conversaciones.forEach(conversacion => {
+                lista.appendChild(crearFila(conversacion));
+            });
 
+        } catch (error) {
+            lista.innerHTML = '<p class="chat-vacio">No se pudieron cargar las conversaciones.</p>';
+        }
+    }
+
+    // Arma la fila de una conversacion en la lista
+    function crearFila(conversacion) {
+        const fila = document.createElement('button');
+        fila.type = 'button';
+        fila.className = 'chat-contacto';
+
+        const foto = document.createElement('img');
+        foto.src = conversacion.avatar;
+        foto.alt = '';
+
+        const cuerpo = document.createElement('div');
+        cuerpo.className = 'chat-contacto-cuerpo';
+
+        const arriba = document.createElement('div');
+        arriba.className = 'chat-contacto-nombre';
+
+        const quien = document.createElement('span');
+        quien.textContent = conversacion.nombre;
+
+        const cuando = document.createElement('small');
+        cuando.textContent = formatearFecha(conversacion.fecha);
+
+        arriba.appendChild(quien);
+        arriba.appendChild(cuando);
+
+        const ultimo = document.createElement('div');
+        ultimo.className = 'chat-contacto-ultimo';
+        ultimo.textContent = conversacion.ultimo_mensaje || 'Todavía no hay mensajes';
+
+        cuerpo.appendChild(arriba);
+        cuerpo.appendChild(ultimo);
+
+        fila.appendChild(foto);
+        fila.appendChild(cuerpo);
+
+        fila.addEventListener('click', () => {
+            abrirConversacion(conversacion.usuario_id, conversacion.nombre, conversacion.avatar);
+        });
+
+        return fila;
+    }
+
+    // ---------- Conversacion abierta ----------
+
+    async function cargarMensajes() {
+        if (personaActual === null) return;
+
+        const id = personaActual;
+
+        try {
+            const respuesta = await fetch(`${direccion}/${id}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (!respuesta.ok) {
+                throw new Error('Error HTTP');
+            }
+
+            const datos = await respuesta.json();
+
+            // Si mientras cargaba la persona volvio a la lista o eligio otra, no se dibuja nada
+            if (id !== personaActual) return;
+
+            dibujarMensajes(datos.mensajes);
+
+        } catch (error) {
+            if (mensajes.children.length === 0) {
+                mensajes.innerHTML = '<p class="chat-vacio">No se pudieron cargar los mensajes.</p>';
+            }
+        }
+    }
+
+    function dibujarMensajes(listaDeMensajes) {
+        // Si no hay mensajes nuevos, no se vuelve a dibujar
+        if (listaDeMensajes.length === cantidadMostrada) return;
+
+        cantidadMostrada = listaDeMensajes.length;
+        mensajes.innerHTML = '';
+
+        if (listaDeMensajes.length === 0) {
+            mensajes.innerHTML = '<p class="chat-vacio">Todavía no hay mensajes. ¡Escribí el primero!</p>';
+            return;
+        }
+
+        listaDeMensajes.forEach(mensaje => {
+            const burbuja = document.createElement('div');
+            burbuja.className = mensaje.mio ? 'chat-burbuja mio' : 'chat-burbuja otro';
+            burbuja.textContent = mensaje.texto;
+
+            const hora = document.createElement('small');
+            hora.textContent = formatearHora(mensaje.creado);
+            burbuja.appendChild(hora);
+
+            mensajes.appendChild(burbuja);
+        });
+
+        // Deja visible el ultimo mensaje
+        mensajes.scrollTop = mensajes.scrollHeight;
+    }
+
+    // ---------- Enviar un mensaje ----------
+
+    formulario.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const mensaje = texto.value.trim();
+
+        if (mensaje === '' || personaActual === null) return;
+
+        try {
+            const respuesta = await fetch(`${direccion}/${personaActual}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({ mensaje: mensaje })
+            });
+
+            if (!respuesta.ok) {
+                throw new Error('Error HTTP');
+            }
+
+            texto.value = '';
+            cargarMensajes();
+
+        } catch (error) {
+            const aviso = document.createElement('p');
+            aviso.className = 'chat-vacio';
+            aviso.textContent = 'No se pudo enviar el mensaje. Probá de nuevo.';
+            mensajes.appendChild(aviso);
+        }
+    });
+
+    // ---------- Botones ----------
+
+    botonMensajes.addEventListener('click', abrirVentana);
+
+    document.querySelectorAll('.chat-cerrar').forEach(boton => {
+        boton.addEventListener('click', cerrarVentana);
+    });
+
+    volver.addEventListener('click', mostrarLista);
+
+    // Boton "Abrir chat" de la bandeja: abre la ventana directo en la conversacion con esa persona
+    document.querySelectorAll('.btn-abrir-chat').forEach(boton => {
+        boton.addEventListener('click', () => {
+            ventana.hidden = false;
+            botonMensajes.hidden = true;
+            abrirConversacion(Number(boton.dataset.usuarioId), boton.dataset.nombre, boton.dataset.avatar);
+        });
+    });
 });

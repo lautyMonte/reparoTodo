@@ -1,134 +1,74 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User;
 
-use Chatify\Models\Conversation;
+use App\Models\User;
+use Chatify\Models\Message;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
-     /**
-     * Iniciar o recuperar una conversación.
-     */
-    public function iniciar(Request $request, User $destinatario)
+    /** Lista de conversaciones del usuario (las personas con las que tiene una solicitud en chat) */
+    public function index(Request $request): JsonResponse
     {
-        $emisor = $request->user();
+        $usuario = $request->user();
 
-        abort_if($emisor->id === $destinatario->id, 403);
+        $conversaciones = $usuario->contactosDeChat()->map(function ($otro) use ($usuario) {
+            $ultimo = $usuario->conversationWith($otro)->messages()->latest()->first();
 
-        $this->validarParticipantes($emisor, $destinatario);
+            return [
+                'usuario_id' => $otro->id,
+                'nombre' => $otro->usuario,
+                'avatar' => $otro->avatar(),
+                'ultimo_mensaje' => $ultimo?->body,
+                'fecha' => $ultimo?->created_at,
+            ];
+        })->sortByDesc('fecha')->values();
 
-        $conversacion = $emisor->iniciarConversacion($destinatario);
-
-        return response()->json([
-            'conversacion' => $conversacion,
-        ]);
+        return response()->json(['conversaciones' => $conversaciones]);
     }
 
-    /**
-     * Enviar un mensaje.
-     */
-    public function enviar(Request $request, User $destinatario)
+    /** Muestra la conversacion con una persona: sus mensajes, del mas viejo al mas nuevo */
+    public function show(Request $request, User $destinatario): JsonResponse
+    {
+        $usuario = $request->user();
+
+        abort_unless($usuario->puedeChatearCon($destinatario), 403, 'No podés chatear con esta persona.');
+
+        $mensajes = $usuario->conversationWith($destinatario)
+            ->messages()
+            ->oldest()
+            ->get()
+            ->map(fn ($mensaje) => $this->datosDelMensaje($mensaje, $usuario));
+
+        return response()->json(['mensajes' => $mensajes]);
+    }
+
+    /** Guarda un mensaje nuevo en la conversacion con una persona */
+    public function store(Request $request, User $destinatario): JsonResponse
     {
         $datos = $request->validate([
-            'mensaje' => 'required|string|max:2000',
+            'mensaje' => ['required', 'string', 'max:2000'],
         ]);
 
-        $emisor = $request->user();
+        $usuario = $request->user();
 
-        abort_if($emisor->id === $destinatario->id, 403);
+        abort_unless($usuario->puedeChatearCon($destinatario), 403, 'No podés chatear con esta persona.');
 
-        $this->validarParticipantes($emisor, $destinatario);
+        $mensaje = $usuario->sendMessageTo($destinatario, $datos['mensaje']);
 
-        // Comprobar que la conversación ya exista
-        $conversacion = $this->buscarConversacion(
-            $emisor,
-            $destinatario
-        );
-
-        abort_unless($conversacion, 404,
-            'No existe una conversación iniciada.'
-        );
-
-        $resultado = $emisor->enviarMensaje(
-            $destinatario,
-            $datos['mensaje']
-        );
-
-        return response()->json([
-            'mensaje' => 'Mensaje enviado correctamente',
-            'resultado' => $resultado,
-        ]);
+        return response()->json($this->datosDelMensaje($mensaje, $usuario));
     }
 
-    /**
-     * Recuperar el historial de mensajes.
-     */
-    public function mensajes(Request $request,User $destinatario)
+    /** Arma los datos de un mensaje para el JSON: texto, si es del usuario y cuando se envio */
+    private function datosDelMensaje(Message $mensaje, User $usuario): array
     {
-        $emisor = $request->user();
-
-        abort_if($emisor->id === $destinatario->id, 403);
-
-        $this->validarParticipantes($emisor, $destinatario);
-
-        // Buscar la conversación existente
-        $conversacion = $this->buscarConversacion(
-            $emisor,
-            $destinatario
-        );
-
-        abort_unless($conversacion, 404,
-            'No existe una conversación entre estos usuarios.'
-        );
-
-        // Recuperar todos los mensajes ordenados cronológicamente
-        $mensajes = $conversacion->messages()
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return response()->json([
-            'conversacion' => $conversacion->id,
-            'mensajes' => $mensajes,
-        ]);
-    }
-
-    /**
-     * Buscar una conversación directa existente.
-     */
-    private function buscarConversacion(
-        User $usuario,
-        User $destinatario
-    ): ?Conversation {
-
-        return Conversation::query()
-            ->direct()
-            ->whereHas('participants', function ($query) use ($usuario) {
-                $query->where('user_id', $usuario->id);
-            })
-            ->whereHas('participants', function ($query) use ($destinatario) {
-                $query->where('user_id', $destinatario->id);
-            })
-            ->with('messages')
-            ->first();
-    }
-
-    /**
-     * Validar los tipos de usuarios.
-     */
-    private function validarParticipantes(
-        User $emisor,
-        User $destinatario
-    ): void {
-
-        $tiposValidos =
-            ($emisor->tipo === 'cliente' &&
-             $destinatario->tipo === 'profesional')
-            ||
-            ($emisor->tipo === 'profesional' &&
-             $destinatario->tipo === 'cliente');
-
-        abort_unless($tiposValidos, 403);
+        return [
+            'id' => $mensaje->id,
+            'texto' => $mensaje->body,
+            'mio' => (int) $mensaje->user_id === $usuario->id,
+            'creado' => $mensaje->created_at,
+        ];
     }
 }

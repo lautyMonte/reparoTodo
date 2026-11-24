@@ -35,6 +35,7 @@
                     <a href="{{ route('solicitud.index', ['estado' => 'pendiente']) }}" class="bandeja-filtro {{ $estado === 'pendiente' ? 'activo' : '' }}">Pendientes {{ $conteo->get('pendiente', 0) }}</a>
                     <a href="{{ route('solicitud.index', ['estado' => 'aceptada']) }}" class="bandeja-filtro {{ $estado === 'aceptada' ? 'activo' : '' }}">Aceptadas {{ $conteo->get('aceptada', 0) }}</a>
                     <a href="{{ route('solicitud.index', ['estado' => 'presupuestada']) }}" class="bandeja-filtro {{ $estado === 'presupuestada' ? 'activo' : '' }}">Presupuestadas {{ $conteo->get('presupuestada', 0) }}</a>
+                    <a href="{{ route('solicitud.index', ['estado' => 'en_chat']) }}" class="bandeja-filtro {{ $estado === 'en_chat' ? 'activo' : '' }}">En chat {{ $conteo->get('en_chat', 0) }}</a>
                 </div>
 
                 @forelse ($lista as $solicitud)
@@ -92,6 +93,13 @@
 
                         <p class="bandeja-descripcion">{{ $seleccionada->descripcion }}</p>
 
+                        @if ($seleccionada->presupuesto)
+                            @include('partials.presupuesto', [
+                                'presupuesto' => $seleccionada->presupuesto,
+                                'encabezado' => $seleccionada->estado === 'en_chat' ? 'Presupuesto aceptado' : 'Presupuesto enviado',
+                            ])
+                        @endif
+
                         @if ($seleccionada->fotos->isNotEmpty())
                             <div class="bandeja-subtitulo">Fotos adjuntas ({{ $seleccionada->fotos->count() }})</div>
                             <div class="bandeja-fotos">
@@ -118,6 +126,14 @@
                                 @if ($seleccionada->estado === 'aceptada')
                                     <a href="{{ route('presupuesto.create', $seleccionada->id) }}" class="btn btn-accent fw-semibold"><i data-lucide="file-text"></i> Armar presupuesto</a>
                                 @endif
+                                @if ($seleccionada->estado === 'en_chat')
+                                    <button type="button" class="btn btn-accent fw-semibold btn-abrir-chat"
+                                            data-usuario-id="{{ $seleccionada->cliente->id }}"
+                                            data-nombre="{{ $seleccionada->cliente->usuario }}"
+                                            data-avatar="{{ $seleccionada->cliente->avatar() }}">
+                                        <i data-lucide="message-circle"></i> Abrir chat
+                                    </button>
+                                @endif
                             </div>
                             <a href="{{ route('contacto') }}" class="btn btn-soporte"><i data-lucide="life-buoy"></i> Soporte</a>
                         </div>
@@ -126,6 +142,9 @@
                         @endif
                         @if ($seleccionada->estado === 'aceptada')
                             <p class="bandeja-ayuda">Aceptaste esta solicitud. Armá el presupuesto para que {{ $seleccionada->cliente->usuario }} decida si lo acepta.</p>
+                        @endif
+                        @if ($seleccionada->estado === 'en_chat')
+                            <p class="bandeja-ayuda">{{ $seleccionada->cliente->usuario }} aceptó tu presupuesto. Ya pueden hablar por el chat para coordinar el trabajo.</p>
                         @endif
                     </div>
                 @else

@@ -102,7 +102,7 @@ class SolicitudController extends Controller
         // Las rechazadas no se muestran: para el profesional es como si se hubieran borrado
         $todas = $profesional->solicitudes()
             ->where('estado', '!=', 'rechazada')
-            ->with(['cliente', 'fotos'])
+            ->with(['cliente', 'fotos', 'presupuesto'])
             ->latest()
             ->get();
 
@@ -129,7 +129,7 @@ class SolicitudController extends Controller
 
         // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
         $estado = $request->query('estado');
-        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada'], true)) {
+        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada', 'en_chat'], true)) {
             $estado = null;
         }
         $lista = $estado === null ? $todas : $todas->where('estado', $estado);
@@ -190,7 +190,7 @@ class SolicitudController extends Controller
 
         // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
         $estado = $request->query('estado');
-        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada'], true)) {
+        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada', 'en_chat'], true)) {
             $estado = null;
         }
         $lista = $estado === null ? $todas : $todas->where('estado', $estado);
