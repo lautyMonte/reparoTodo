@@ -27,6 +27,13 @@
                             <i data-lucide="search"></i> Buscar profesional
                         </a>
                     </li>
+                    {{-- Catálogo de oficios --}}
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('oficio.index') ? 'active' : '' }}"
+                        href="{{ route('oficio.index') }}">
+                            <i data-lucide="layout-grid"></i> Oficios
+                        </a>
+                    </li>
                     @auth
                         @php $pendientes = auth()->user()->pendientesDeRespuesta(); @endphp
                         @if (auth()->user()->tipo === 'profesional' && auth()->user()->profesional)

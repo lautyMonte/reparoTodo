@@ -1,48 +1,57 @@
 
-/* Contenedor principal del catálogo */
+/* ==========================================
+   CATÁLOGO DE OFICIOS - REPAROTODO
+   ========================================== */
+
+/* Contenedor principal */
 .catalogo-oficios {
     max-width: 900px;
     margin: 0 auto;
 }
 
-/* Encabezado */
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
 .catalogo-encabezado {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
     margin-bottom: 24px;
 }
 
+/* Botón Volver */
+.catalogo-encabezado .btn {
+    justify-self: start;
+}
+
+/* Título */
 .catalogo-encabezado h1 {
     margin: 0;
     font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
+
     color: var(--rt-azul);
+    text-align: center;
 }
 
-.catalogo-volver {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    background: #ffffff;
-    border-radius: 50%;
-    color: var(--rt-azul);
-    text-decoration: none;
-}
+/* ==========================================
+   CUADRÍCULA DE OFICIOS
+   ========================================== */
 
-/* Cuadrícula de oficios */
 .catalogo-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
 }
 
-/* Tarjetas */
+/* ==========================================
+   TARJETAS DE OFICIOS
+   ========================================== */
+
 .tarjeta-oficio {
     min-height: 165px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -50,6 +59,7 @@
     gap: 16px;
 
     padding: 20px 12px;
+
     background-color: #ffffff;
     border: 1px solid #c4cdd8;
     border-radius: 15px;
@@ -58,23 +68,30 @@
     text-align: center;
     text-decoration: none;
 
-    transition: transform 0.2s ease,
-                border-color 0.2s ease,
-                box-shadow 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+/* Íconos Lucide */
 .tarjeta-oficio svg {
     width: 70px;
     height: 70px;
     stroke-width: 1.7;
 }
 
+/* Nombre del oficio */
 .tarjeta-oficio span {
     font-size: 1.05rem;
     font-weight: 400;
 }
 
-/* Interacción */
+/* ==========================================
+   INTERACCIONES
+   ========================================== */
+
+/* Efecto al pasar el cursor */
 .tarjeta-oficio:hover {
     transform: translateY(-3px);
     border-color: var(--rt-azul);
@@ -82,19 +99,50 @@
     color: var(--rt-azul);
 }
 
+/* Accesibilidad con teclado */
 .tarjeta-oficio:focus-visible {
     outline: 3px solid var(--rt-naranja);
     outline-offset: 3px;
 }
 
-/* Tablet */
+/* ==========================================
+   RESPONSIVE - TABLETS
+   Desde 600 px
+   ========================================== */
+
 @media (min-width: 600px) {
     .catalogo-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
-/* Escritorio */
+/* ==========================================
+   RESPONSIVE - ENCABEZADO
+   Desde 768 px
+   ========================================== */
+
+@media (min-width: 768px) {
+    .catalogo-encabezado {
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+    }
+
+    .catalogo-encabezado .btn {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .catalogo-encabezado h1 {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE - ESCRITORIO
+   Desde 992 px
+   ========================================== */
+
 @media (min-width: 992px) {
     .catalogo-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -105,7 +153,11 @@
     }
 }
 
-/* Celulares pequeños */
+/* ==========================================
+   RESPONSIVE - CELULARES PEQUEÑOS
+   Hasta 380 px
+   ========================================== */
+
 @media (max-width: 380px) {
     .catalogo-grid {
         gap: 12px;
@@ -122,7 +174,10 @@
     }
 }
 
-/* Usuarios que prefieren menos animaciones */
+/* ==========================================
+   ACCESIBILIDAD - MOVIMIENTO REDUCIDO
+   ========================================== */
+
 @media (prefers-reduced-motion: reduce) {
     .tarjeta-oficio {
         transition: none;

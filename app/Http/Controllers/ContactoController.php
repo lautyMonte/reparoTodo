@@ -26,7 +26,7 @@ class ContactoController extends Controller
                 ]),
             ],
             'asunto' => ['required_if:motivo,otro', 'nullable', 'string', 'max:150'],
-            'mensaje' => ['required', 'string', 'max:5000'],
+            'mensaje' => ['required', 'string', 'max:230'],
         ]);
 
         // Definir el asunto
