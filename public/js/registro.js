@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // La ciudad requiere una provincia seleccionada
             if (campo.id === 'ciudad') {
-                habilitado = esProfesional && provincia.tomselect.getValue().length > 0;
+                habilitado = esProfesional && provincia.selectedOptions.length > 0;
             }
 
             campo.disabled = !habilitado;

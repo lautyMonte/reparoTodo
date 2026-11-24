@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ciudad;
 use App\Models\Oficio;
 use App\Models\Profesional;
+use App\Models\Provincia;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -183,13 +184,15 @@ class ProfesionalController extends Controller
     {
         $usuario = $request->user();
 
-        $profesional = $usuario->profesional()->with('oficios')->firstOrFail();
+        $profesional = $usuario->profesional()->with('oficios', 'ciudades')->firstOrFail();
 
         Gate::authorize('update', $profesional);
 
         $oficios = Oficio::all();
 
-        return view('perfil.edit', compact('usuario','profesional','oficios'));
+        $provincias = Provincia::with('ciudades')->orderBy('nombre')->get();
+
+        return view('perfil.edit', compact('usuario', 'profesional', 'oficios', 'provincias'));
     }
 
     public function update(Request $request)
@@ -214,10 +217,10 @@ class ProfesionalController extends Controller
             ],
             'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
 
-        // Datos profesionales
-        'ciudad' => ['required', 'string', 'max:100'],
+        // Ciudades donde trabaja
+        'ciudades' => ['required', 'array', 'min:1'],
 
-        'provincia' => ['required', 'string', 'max:100'],
+        'ciudades.*' => ['required', 'integer', 'distinct', 'exists:ciudades,id'],
 
         // Oficios
         'oficios' => ['required', 'array', 'min:1'],
@@ -243,11 +246,8 @@ class ProfesionalController extends Controller
 
         $usuario->update($datosUsuario);
 
-        // Datos del profesional
-        $profesional->update([
-            'ciudad' => $validated['ciudad'],
-            'provincia' => $validated['provincia']
-        ]);
+        // Actualizar ciudades
+        $profesional->ciudades()->sync($validated['ciudades']);
 
         // Actualizar oficios
         $profesional->oficios()->sync($validated['oficios']);

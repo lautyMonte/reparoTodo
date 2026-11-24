@@ -77,14 +77,23 @@
 
         {{-- Datos exclusivos del profesional --}}
         @if ($profesional)
+            @php
+                $ciudadesElegidas = old('ciudades', $profesional->ciudades->pluck('id')->all());
+            @endphp
+
             <div class="campo">
-                <label for="ciudad" class="form-label"><i data-lucide="map-pin"></i>Ubicación</label>
-                <div class="fila">
-                    <input type="text" name="ciudad" id="ciudad" class="form-control" placeholder="Ciudad"
-                           value="{{ old('ciudad', $profesional->ciudad) }}" required>
-                    <input type="text" name="provincia" id="provincia" class="form-control" placeholder="Provincia"
-                           value="{{ old('provincia', $profesional->provincia) }}" required>
-                </div>
+                <span class="form-label"><i data-lucide="map-pin"></i>Ciudades donde trabajás</span>
+
+                @foreach ($provincias as $provincia)
+                    <small class="text-secondary d-block mt-2">{{ $provincia->nombre }}</small>
+                    <div class="oficios">
+                        @foreach ($provincia->ciudades as $ciudad)
+                            <input type="checkbox" name="ciudades[]" id="ciudad-{{ $ciudad->id }}"
+                                   value="{{ $ciudad->id }}" @checked(in_array($ciudad->id, $ciudadesElegidas))>
+                            <label for="ciudad-{{ $ciudad->id }}" class="chip">{{ $ciudad->nombre }}</label>
+                        @endforeach
+                    </div>
+                @endforeach
             </div>
 
             @if ($oficios)

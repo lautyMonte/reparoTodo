@@ -58,41 +58,47 @@
 
             <label for="especialidad">Tus especialidades</label>
 
-            <select id="especialidad" name="especialidad[]" class="tom-select" multiple required>
+            <div>
+                <select id="especialidad" name="especialidad[]" class="tom-select" multiple required>
 
-                <option value="">Seleccionar especialidades</option>
+                    <option value="">Seleccionar especialidades</option>
 
-                @foreach ($oficios as $oficio)
-                    <option value="{{ $oficio->id }}" @selected(in_array($oficio->id, (array) old('especialidad', [])))>
-                        {{ $oficio->tipo }}
-                    </option>
-                @endforeach
+                    @foreach ($oficios as $oficio)
+                        <option value="{{ $oficio->id }}" @selected(in_array($oficio->id, (array) old('especialidad', [])))>
+                            {{ $oficio->tipo }}
+                        </option>
+                    @endforeach
 
-            </select>
+                </select>
+            </div>
 
 
             <label for="provincia">Provincias en las que realizas servicios</label>
 
-            <select id="provincia" name="provincia[]" class="tom-select" multiple required>
+            <div>
+                <select id="provincia" name="provincia[]" class="tom-select" multiple required>
 
-                <option value="">Seleccionar provincias</option>
+                    <option value="">Seleccionar provincias</option>
 
-                @foreach ($provincias as $provincia)
-                    <option value="{{ $provincia->id }}" @selected(in_array($provincia->id, (array) old('provincia', [])))>
-                        {{ $provincia->nombre }}
-                    </option>
-                @endforeach
+                    @foreach ($provincias as $provincia)
+                        <option value="{{ $provincia->id }}" @selected(in_array($provincia->id, (array) old('provincia', [])))>
+                            {{ $provincia->nombre }}
+                        </option>
+                    @endforeach
 
-            </select>
+                </select>
+            </div>
 
 
             <label for="ciudad">Ciudades en las que realizas servicios</label>
+            
+            <div>
+                <select id="ciudad" name="ciudad[]" class="tom-select" multiple disabled required>
 
-            <select id="ciudad" name="ciudad[]" class="tom-select" multiple disabled required>
+                    <option value="">Seleccionar ciudades</option>
 
-                <option value="">Seleccionar ciudades</option>
-
-            </select>
+                </select>
+            </div>
 
         </div>
 
@@ -108,8 +114,6 @@
 @endsection
 
 @push('scripts')
-
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 
     <script>
         const provinciasDB = {{ Illuminate\Support\Js::from($provincias) }};
