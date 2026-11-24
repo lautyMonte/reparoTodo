@@ -17,6 +17,7 @@ use Illuminate\Validation\ValidationException; // Contraseña
 // Usuario logueado
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class UsuarioController extends Controller
 {
