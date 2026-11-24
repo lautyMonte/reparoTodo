@@ -38,14 +38,11 @@
             </div>
 
             <label for="avatar" class="avatar" title="Cambiar foto">
-                 <img src="{{ $usuario->imagen ? (str_starts_with($usuario->imagen, 'img/avatares/') 
-                                ? asset($usuario->imagen)
-                                : Storage::url($usuario->imagen))
-                                : asset('img/avatares/avatar-1.svg') }}"
+                 <img src="{{$usuario->avatar()}}"
                             alt="Foto de {{ $usuario->usuario }}" id="preview-avatar">
                         <i data-lucide="pencil"></i>
             </label>
-            <input type="file" name="imagen" id="avatar" accept="image/jpg/png" hidden>
+            <input type="file" name="imagen" id="avatar" accept="image/jpeg,image/png,image/jpg" hidden>
         </div>
 
         {{-- Datos de users --}}

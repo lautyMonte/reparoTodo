@@ -256,7 +256,7 @@ class UsuarioController extends Controller
             'email' => ['required','email',
                     Rule::unique('users', 'email')->ignore($usuario->id),
             ],
-            'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
+            'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png'])->max('2mb')],
         ]);
 
         $datos = ['usuario' => $validated['usuario'],
@@ -266,7 +266,7 @@ class UsuarioController extends Controller
                   'email' => $validated['email']];
 
         if ($request->hasFile('imagen')) {
-            $datosUsuario['imagen'] = $request->file('imagen')->store('perfil', 'public');
+            $datos['imagen'] = $request->file('imagen')->store('perfil', 'public');
         }
 
         $usuario->update($datos);
