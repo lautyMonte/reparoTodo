@@ -1,173 +1,212 @@
+/* ===== Chat flotante de ReparoTodo ===== */
 
-/* .chat-widget {
+/* Boton flotante "Mensajes" (naranja con texto azul acero para que se vea tambien sobre el footer) */
+.chat-boton {
     position: fixed;
-    right: 25px;
-    bottom: 210px;
-    z-index: 9999;
-    font-family: Arial, sans-serif;
-} */
-
-.chat-toggle {
-    background: #1877f2;
-    color: white;
-    padding: 14px 22px;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 3px 12px #0003;
-}
-
-.chat-panel {
-    position: absolute;
-    right: 0;
-    bottom: 65px;
-    width: 340px;
-    height: 440px;
-    background: white;
-    border-radius: 13px;
-    box-shadow: 0 4px 25px #0003;
-    overflow: hidden;
-    flex-direction: column;
-}
-
-.chat-panel:not([hidden]) {
+    right: 28px;
+    bottom: 24px;
+    z-index: 1030;
     display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--rt-naranja);
+    color: var(--rt-azul);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(29, 53, 87, 0.35);
+}
+.chat-boton:hover { background: var(--rt-naranja-oscuro); }
+.chat-boton[hidden] { display: none; }
+.chat-boton .lucide { width: 1.25rem; height: 1.25rem; }
+
+/* Ventana del chat */
+.chat-ventana {
+    position: fixed;
+    right: 28px;
+    bottom: 24px;
+    z-index: 1030;
+    width: 360px;
+    height: 540px;
+    max-height: calc(100vh - 48px);
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(29, 53, 87, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(29, 53, 87, 0.28);
+}
+.chat-ventana:not([hidden]) { display: flex; }
+
+/* Cada vista (lista / conversacion) ocupa toda la ventana */
+.chat-vista { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.chat-vista[hidden] { display: none; }
+
+/* Encabezado azul acero */
+.chat-cab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    background: var(--rt-azul);
+    color: #fff;
+}
+.chat-cab-centrado { justify-content: center; text-align: center; }
+.chat-cab button {
+    display: flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+}
+.chat-cab .lucide { width: 1.3rem; height: 1.3rem; }
+.chat-cab-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    object-fit: cover;
+}
+.chat-titulo { font-family: 'Montserrat', sans-serif; font-weight: 700; line-height: 1.2; }
+.chat-subtitulo { font-size: 0.78rem; line-height: 1.3; opacity: 0.85; }
+.chat-cerrar { margin-left: auto; }
+.chat-cab-centrado .chat-cerrar {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    margin-left: 0;
+    transform: translateY(-50%);
 }
 
- .chat-header {
-    background: #1877f2;
-    color: white;
-    padding: 14px;
+/* Lista de conversaciones */
+.chat-lista-cuerpo { flex: 1; overflow-y: auto; background: #fff; }
+.chat-contacto {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 0;
+    border-bottom: 1px solid rgba(29, 53, 87, 0.1);
+    background: #fff;
+    text-align: left;
+}
+.chat-contacto:hover { background: var(--rt-crema); }
+.chat-contacto img { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; }
+.chat-contacto-cuerpo { flex: 1; min-width: 0; }
+.chat-contacto-nombre {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-} 
+    gap: 0.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--rt-azul);
+}
+.chat-contacto-nombre small {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+}
+.chat-contacto-ultimo {
+    overflow: hidden;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.chat-vacio { padding: 1.5rem 1rem; text-align: center; color: var(--bs-secondary-color); }
 
-.chat-widget {
-    position: fixed;
-    right: 25px;
-    bottom: 210px;
-    z-index: 9999;
-    font-family: Arial, sans-serif;
-    pointer-events: auto;
+/* Pie de la lista: fondo blanco y una linea de separacion marcada */
+.chat-pie {
+    padding: 0.8rem 1rem;
+    border-top: 2px solid rgba(29, 53, 87, 0.4);
+    background: #fff;
+    font-size: 0.82rem;
+    text-align: center;
+    color: var(--bs-secondary-color);
 }
 
-#chat-input {
-    pointer-events: auto;
-    position: relative;
-    z-index: 10000;
-    background: white;
-    color: black;
-}
-
-.chat-user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.chat-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: white;
-    color: #1877f2;
-    display: grid;
-    place-items: center;
-    font-weight: bold;
-}
-
-.chat-header small {
-    display: block;
-    margin-top: 4px;
-    opacity: .8;
-}
-
-.chat-header button {
-    background: transparent;
-    color: white;
-    border: none;
-    font-size: 25px;
-    cursor: pointer;
-}
-
-.chat-messages {
+/* Mensajes */
+.chat-mensajes {
     flex: 1;
-    overflow-y: auto;
-    padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    background: #f7f8fa;
+    gap: 0.6rem;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--rt-crema);
 }
-
-.chat-message {
+.chat-burbuja {
     max-width: 80%;
-    padding: 10px 13px;
+    padding: 0.55rem 0.8rem;
     border-radius: 14px;
+    font-size: 0.92rem;
+    line-height: 1.35;
     overflow-wrap: anywhere;
 }
-
-.chat-message.sent {
+.chat-burbuja small { display: block; margin-top: 0.15rem; font-size: 0.68rem; opacity: 0.7; }
+.chat-burbuja.mio {
     align-self: flex-end;
-    background: #1877f2;
-    color: white;
+    background: var(--rt-azul);
+    color: #fff;
+    border-bottom-right-radius: 4px;
 }
-
-.chat-message.received {
+.chat-burbuja.otro {
     align-self: flex-start;
-    background: #e4e6eb;
+    background: #fff;
     color: #222;
+    border: 1px solid rgba(29, 53, 87, 0.12);
+    border-bottom-left-radius: 4px;
 }
 
-.chat-empty {
-    text-align: center;
-    color: #888;
-    margin: auto;
-    font-size: 13px;
-}
-
-.chat-form {
+/* Formulario para escribir */
+.chat-formulario {
     display: flex;
-    gap: 8px;
-    padding: 12px;
-    border-top: 1px solid #eee;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid rgba(29, 53, 87, 0.12);
+    background: #fff;
 }
-
-.chat-form input {
+.chat-formulario input {
     flex: 1;
     min-width: 0;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 10px 13px;
-    outline: none;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid rgba(29, 53, 87, 0.25);
+    border-radius: 999px;
+    font-family: inherit;
+    outline: 0;
 }
-
-.chat-form button {
-    border: none;
-    background: #1877f2;
-    color: white;
+.chat-formulario input:focus { border-color: var(--rt-azul); }
+.chat-formulario button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 0;
     border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    cursor: pointer;
+    background: var(--rt-naranja);
+    color: var(--rt-azul);
+}
+.chat-formulario button:hover { background: var(--rt-naranja-oscuro); }
+.chat-formulario .lucide { width: 1.15rem; height: 1.15rem; }
+
+/* Foco visible con el teclado */
+.chat-boton:focus-visible,
+.chat-cab button:focus-visible,
+.chat-contacto:focus-visible,
+.chat-formulario button:focus-visible {
+    outline: 3px solid var(--rt-naranja);
+    outline-offset: 2px;
 }
 
-.chat-form button:disabled {
-    opacity: .5;
-}
-
+/* Celulares: la ventana ocupa casi todo el ancho */
 @media (max-width: 480px) {
-    .chat-widget {
-        right: 10px;
-        bottom: 10px;
-    }
-
-    .chat-panel {
-        position: fixed;
-        inset: auto 10px 75px 10px;
-        width: auto;
-        height: min(440px, 70vh);
-    }
+    .chat-boton { right: 14px; bottom: 14px; }
+    .chat-ventana { left: 10px; right: 10px; bottom: 10px; width: auto; height: min(540px, 80vh); }
 }

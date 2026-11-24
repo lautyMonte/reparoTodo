@@ -17,7 +17,7 @@
         @csrf
 
 
-        <input type="hidden" name="tipo" id="tipo" value="cliente">
+        <input type="hidden" name="tipo" id="tipo" value="{{ old('tipo', 'cliente') }}">
 
         <div class="campo">
             <label for="usuario">Usuario</label>
@@ -52,36 +52,50 @@
                 title="Solo números y espacios (entre 8 y 15). Podés empezar con +">
         </div>
 
-        <!--Campo exclusivo del profesional!-->
+
+        <!-- Campos exclusivos del profesional -->
         <div class="campo" id="campos-profesional" hidden>
+
             <label for="especialidad">Tus especialidades</label>
-            {{-- <input type="text" name="especialidad" id="especialidad" value="{{ old('especialidad') }}"
-                placeholder="Electricista"> --}}
-            <select id="especialidad" name="especialidad" required>
-                <option value="">Seleccionar especialidad</option>
+
+            <select id="especialidad" name="especialidad[]" class="tom-select" multiple required>
+
+                <option value="">Seleccionar especialidades</option>
 
                 @foreach ($oficios as $oficio)
-                    <option value="{{ $oficio->id }}" @selected(old('especialidad') == $oficio->id)>
+                    <option value="{{ $oficio->id }}" @selected(in_array($oficio->id, (array) old('especialidad', [])))>
                         {{ $oficio->tipo }}
                     </option>
                 @endforeach
+
             </select>
 
 
-            <label for="provincia">Provincia en la que realizas servicios</label>
-            {{-- <input type="text" name="provincia" id="provincia" value="{{old ('provincia')}}" placeholder="Rio Negro"> --}}
-            <select id="provincia" name="provincia" required>
-                <option value="">Seleccionar provincia</option>
-                <option value="nqn">Neuquén</option>
-                <option value="rn">Río Negro</option>
+            <label for="provincia">Provincias en las que realizas servicios</label>
+
+            <select id="provincia" name="provincia[]" class="tom-select" multiple required>
+
+                <option value="">Seleccionar provincias</option>
+
+                @foreach ($provincias as $provincia)
+                    <option value="{{ $provincia->id }}" @selected(in_array($provincia->id, (array) old('provincia', [])))>
+                        {{ $provincia->nombre }}
+                    </option>
+                @endforeach
+
             </select>
 
-            <label for="ciudad">Ciudad en la que realizas servicios</label>
-            {{-- <input type="text" name="ciudad" id="ciudad" value="{{old ('ciudad')}}" placeholder="Cipolletti"> --}}
-            <select id="ciudad" name="ciudad" data-ciudad-anterior="{{ old('ciudad') }}" disabled required>
-                <option value="">Seleccionar ciudad</option>
+
+            <label for="ciudad">Ciudades en las que realizas servicios</label>
+
+            <select id="ciudad" name="ciudad[]" class="tom-select" multiple disabled required>
+
+                <option value="">Seleccionar ciudades</option>
+
             </select>
+
         </div>
+
 
         <div class="terminos">
             <input type="checkbox" name="terminos" id="terminos" required>
@@ -94,6 +108,15 @@
 @endsection
 
 @push('scripts')
+
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
+    <script>
+        const provinciasDB = {{ Illuminate\Support\Js::from($provincias) }};
+        const ciudadesAnteriores = {{ Illuminate\Support\Js::from((array) old('ciudad', [])) }};
+    </script>
+
     <script src="{{ asset('js/registro.js') }}"></script>
     <script src="{{ asset('js/ciudades.js') }}" defer></script>
+
 @endpush

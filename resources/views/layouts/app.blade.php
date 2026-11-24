@@ -27,12 +27,11 @@
 
     {{-- CSS de Tom Select para Bootstrap 5 --}}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.7.0/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
 
     <link rel="stylesheet" href="{{ asset('css/reparotodo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/box.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/edit.css') }}">
-
+    
     @stack('styles')
 
     {{--
@@ -63,6 +62,13 @@
 
     {{-- Footer compartido por todas las páginas --}}
     @include('partials.footer')
+
+    {{-- Chat flotante: solo para quien tiene conversaciones en curso --}}
+    @auth
+        @if (auth()->user()->tieneChats())
+            @include('chatify.index')
+        @endif
+    @endauth
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {{-- Lucide: librería de íconos del Style Tile --}}

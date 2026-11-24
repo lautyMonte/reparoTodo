@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ciudad;
 use App\Models\Oficio;
 use App\Models\Profesional;
+use App\Models\Provincia;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-// para manejar la autenticacion de usuarios
-use Illuminate\Support\Facades\Hash; // contraseña
-use Illuminate\Validation\Rule; // usuario logueado
+use Illuminate\Support\Facades\Hash;
+// Para manejar la autenticacion de usuarios
+use Illuminate\Validation\ValidationException; // Contraseña
+// Usuario logueado
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
 
@@ -51,11 +54,13 @@ class UsuarioController extends Controller
 
     public function create(): View
     {
-        // return view('usuario.create');
         $oficios = Oficio::orderBy('tipo')->get();
+
+        $provincias = Provincia::with('ciudades')->orderBy('nombre')->get();
 
         return view('usuario.create', [
             'oficios' => $oficios,
+            'provincias' => $provincias,
         ]);
     }
 
@@ -114,15 +119,6 @@ class UsuarioController extends Controller
             ]);
 
         } else {
-            $ciudades = [
-                'nqn' => ['Centenario', 'Neuquén', 'Plottier', 'San Martín de los Andes'],
-                'rn' => ['Bariloche', 'Cinco Saltos', 'Cipolletti', 'General Roca'],
-            ];
-
-            $provinciaSeleccionada = $request->input('provincia');
-
-            $ciudadesPermitidas = is_string($provinciaSeleccionada) ? ($ciudades[$provinciaSeleccionada] ?? []) : [];
-            
             // Para registrar un profesional
             $validated = $request->validate([
                 'usuario' => ['required', 'string', 'max:20', 'unique:users,usuario'],
@@ -133,11 +129,12 @@ class UsuarioController extends Controller
                 'password' => ['required', 'string', 'min:8', 'max:20'],
                 'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
                 'imagen' => ['nullable', 'image'],
-                'especialidad' => ['required', 'exists:oficios,id'],
-                'provincia' => ['required', 'in:nqn,rn'],
-                'ciudad' => ['required', 'string', 'max:100',
-                    Rule::in($ciudades[$request->input('provincia')] ?? []),
-                ],
+                'especialidad' => ['required', 'array', 'min:1'],
+                'especialidad.*' => ['required', 'integer', 'distinct', 'exists:oficios,id'],
+                'provincia' => ['required', 'array', 'min:1'],
+                'provincia.*' => ['required', 'integer', 'distinct', 'exists:provincias,id'],
+                'ciudad' => ['required', 'array', 'min:1'],
+                'ciudad.*' => ['required', 'integer', 'distinct', 'exists:ciudades,id'],
 
             ], [
                 'usuario.required' => 'El usuario es obligatorio',
@@ -157,14 +154,39 @@ class UsuarioController extends Controller
                 'password.max' => 'La contraseña es demasiado larga',
                 'password_confirmation.required' => 'Debe confirmar su contraseña',
                 'password_confirmation.same' => 'Las contraseñas no coinciden',
-                'especialidad.required' => 'La especialidad es obligatoria',
-                'provincia.required' => 'La provincia es obligatoria',
-                'ciudad.required' => 'La ciudad es obligatoria',
-                'ciudad.in' => 'La ciudad no pertenece a la provincia seleccionada',
+                'especialidad.required' => 'Debe seleccionar al menos una especialidad',
+                'especialidad.array' => 'Las especialidades deben enviarse como un arreglo',
+                'especialidad.min' => 'Debe seleccionar al menos una especialidad',
+                'especialidad.*.required' => 'La especialidad es obligatoria',
+                'especialidad.*.integer' => 'La especialidad seleccionada no es válida',
+                'especialidad.*.distinct' => 'No puede seleccionar especialidades repetidas',
+                'especialidad.*.exists' => 'La especialidad seleccionada no existe',
+                'provincia.required' => 'Debe seleccionar al menos una provincia',
+                'provincia.array' => 'Las provincias deben enviarse como un arreglo',
+                'provincia.min' => 'Debe seleccionar al menos una provincia',
+                'provincia.*.required' => 'La provincia es obligatoria',
+                'provincia.*.integer' => 'La provincia seleccionada no es válida',
+                'provincia.*.distinct' => 'No puede seleccionar provincias repetidas',
+                'provincia.*.exists' => 'La provincia seleccionada no existe',
+                'ciudad.required' => 'Debe seleccionar al menos una ciudad',
+                'ciudad.array' => 'Las ciudades deben enviarse como un arreglo',
+                'ciudad.min' => 'Debe seleccionar al menos una ciudad',
+                'ciudad.*.required' => 'La ciudad es obligatoria',
+                'ciudad.*.integer' => 'La ciudad seleccionada no es válida',
+                'ciudad.*.distinct' => 'No puede seleccionar ciudades repetidas',
+                'ciudad.*.exists' => 'La ciudad seleccionada no existe',
             ]);
-            $provincias = ['nqn' => 'Neuquén', 'rn' => 'Río Negro'];
+            $ciudadesValidas = Ciudad::whereIn('id', $validated['ciudad'])
+                ->whereIn('provincia_id', $validated['provincia'])
+                ->count();
 
-            DB::transaction(function () use ($validated, $provincias) {
+            if ($ciudadesValidas !== count($validated['ciudad'])) {
+                throw ValidationException::withMessages([
+                    'ciudad' => 'Las ciudades deben pertenecer a las provincias seleccionadas',
+                ]);
+            }
+
+            DB::transaction(function () use ($validated) {
 
                 $usuario = User::create([
                     'usuario' => $validated['usuario'],
@@ -177,13 +199,17 @@ class UsuarioController extends Controller
                     'tipo' => 'profesional',
                 ]);
 
-                $profesional = $usuario->profesional()->create([
-                    'provincia' => $provincias[$validated['provincia']],
-                    'ciudad' => $validated['ciudad'],
-                ]);
+                // Crear el profesional asociado al usuario
+                $profesional = $usuario->profesional()->create([]);
 
+                // Asociar los oficios seleccionados
                 $profesional->oficios()->attach($validated['especialidad']);
+
+                // Asociar las ciudades seleccionadas
+                $profesional->ciudades()->attach($validated['ciudad']);
+
             });
+
         }
 
         return redirect()->route('usuario.registro');

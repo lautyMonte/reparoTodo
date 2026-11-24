@@ -8,6 +8,7 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\OficioController;
+use App\Http\Controllers\ResenaController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -62,26 +63,28 @@ Route::middleware('profesional')->group(function () {
     Route::put('/mi-perfil/actualizar', [ProfesionalController::class, 'update'])->name('profesional.update');
 });
 
+
+Route::delete('/resenas/{resena}', [ResenaController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('resenas.destroy');
+
 // Notificaciones: para cualquier usuario con sesion iniciada
 Route::middleware('auth')->group(function () {
     Route::post('/notificaciones/leer', [NotificacionController::class, 'leerTodas'])->name('notificacion.leer');
     Route::get('/notificaciones/resumen', [NotificacionController::class, 'resumen'])->name('notificacion.resumen');
 });
 
-// Para los chats
+// Para los chats: solo entre personas con una solicitud en chat
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
 
-    // Iniciar conversación
-    Route::post('/iniciar/{destinatario}', [ChatController::class, 'iniciar'])
-        ->name('iniciar');
+    // Lista de conversaciones del usuario
+    Route::get('/conversaciones', [ChatController::class, 'index'])->name('index');
 
-    // Enviar mensaje
-    Route::post('/enviar/{destinatario}', [ChatController::class, 'enviar'])
-        ->name('enviar');
+    // Mensajes de la conversacion con una persona
+    Route::get('/conversaciones/{destinatario}', [ChatController::class, 'show'])->name('show');
 
-    // Recuperar historial
-    Route::get('/mensajes/{destinatario}', [ChatController::class, 'mensajes'])
-        ->name('mensajes');
+    // Enviar un mensaje a esa persona
+    Route::post('/conversaciones/{destinatario}', [ChatController::class, 'store'])->name('store');
 
 });
 

@@ -25,7 +25,8 @@
                 <ul class="list-unstyled footer-links mb-0">
                     <li><a href="{{ route('inicio') }}">Inicio</a></li>
                     <li><a href="{{ route('profesional.index') }}">Buscar profesional</a></li>
-                    <li><a href="{{ route('inicio') }}#como-funciona">Cómo funciona</a></li>
+                    <li><a href="{{ route('oficio.index') }}">Oficios</a></li>
+                    <li><a href="{{ route('inicio') }}#como-funciona">Cómo funciona?</a></li>
                 </ul>
             </div>
 

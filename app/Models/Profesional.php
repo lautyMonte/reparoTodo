@@ -10,11 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Profesional extends Model
 {
     protected $table = 'profesionales';
-    
-    protected $fillable = [
-        'provincia',
-        'ciudad',
-    ];
+
+    protected $fillable = [];
 
     // Relacion muchos a muchos con oficios
     public function oficios(): BelongsToMany
@@ -28,7 +25,8 @@ class Profesional extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function resenas(): HasMany {
+    public function resenas(): HasMany
+    {
         return $this->hasMany(Resena::class);
     }
 
@@ -36,5 +34,11 @@ class Profesional extends Model
     public function solicitudes(): HasMany
     {
         return $this->hasMany(Solicitud::class);
+    }
+
+    // Un profesional tiene muchas ciudades
+    public function ciudades(): BelongsToMany
+    {
+        return $this->belongsToMany(Ciudad::class)->withTimestamps();
     }
 }
