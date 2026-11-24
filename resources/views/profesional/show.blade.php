@@ -3,12 +3,8 @@
 @section('contenido')
     @php
         $usuario  = $profesional->user;
-        $foto     = $usuario->urlImagen($usuario->imagen)
-            ?? asset('img/avatares/avatar-' . (($profesional->id - 1) % 5 + 1) . '.svg');
         $promedio = $profesional->resenas_avg_puntaje;
         $total    = $profesional->resenas_count;
-        $conteo   = $profesional->resenas->countBy('puntaje');
-        $esDuenio = auth()->check() && auth()->id() === $usuario->id;
     @endphp
 
     <div class="detalle-pagina">
@@ -25,7 +21,7 @@
                 <div class="detalle-tarjeta detalle-lateral">
                     <div class="detalle-tapa"></div>
                     <div class="detalle-lateral-cuerpo">
-                        <img class="detalle-foto" src="{{ $foto }}" alt="Foto de {{ $usuario->usuario }}">
+                        <img class="detalle-foto" src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->usuario }}">
                         <h1 class="h3 mb-2">{{ $usuario->usuario }}</h1>
 
                         <span class="pill-valoracion puntaje">

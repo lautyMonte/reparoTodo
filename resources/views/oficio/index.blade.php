@@ -11,14 +11,14 @@
 
     {{-- Encabezado --}}
     <div class="catalogo-encabezado">
-        <a href="{{ route('inicio') }}"
-           class="catalogo-volver"
-           aria-label="Volver al inicio">
-            <i data-lucide="arrow-left"></i>
+        <a href="{{ url()->previous() }}"
+        class="btn btn-accent btn-barra fw-semibold">
+            <i data-lucide="arrow-left"></i> Volver
         </a>
 
         <h1>Seleccionar oficio</h1>
     </div>
+
 
     {{-- Catálogo --}}
     <div class="catalogo-grid">
@@ -29,7 +29,6 @@
                 'Carpintería' => ['Carpintero', 'hammer'],
                 'Cerrajería' => ['Cerrajero', 'key-round'],
                 'Electricidad' => ['Electricista', 'zap'],
-                'Electridad' => ['Electricista', 'zap'],
                 'Fletes' => ['Fletero', 'truck'],
                 'Gas' => ['Gasista', 'flame'],
                 'Pintura' => ['Pintor', 'paint-roller'],

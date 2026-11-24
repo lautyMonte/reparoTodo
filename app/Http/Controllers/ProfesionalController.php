@@ -1,38 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User;
+
 use App\Models\Oficio;
 use App\Models\Profesional;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Hash;
 
 class ProfesionalController extends Controller
 {
-
-    public function __construct(
-        
-    ) {
-    }
-
-    /** Mostrar listado de todos los profesionales*/
-    //  public function index(): View
-    // {                                  // Deben tener el nombre de la funcion que hace la conexion entre usuarios y oficios de un profesional
-    //     $profesionales = Profesional::with('user', 'oficios')
-    //         ->withAvg('resenas', 'puntaje')
-    //         ->withCount('resenas')
-    //         ->orderByDesc('resenas_avg_puntaje')
-    //         ->orderByDesc('resenas_count')
-    //         ->get();
-
-    //     return view('profesional.index',[
-    //         'profesionales'=>$profesionales,
-    //         'titulo' => 'Buscar profesional',
-    //         'modelo' => new Profesional()
-    //     ]);
-    // }
+    /** Listado de profesionales del buscador (con los oficios elegidos ya marcados) */
     public function index(Request $request)
     {
 
@@ -74,7 +51,7 @@ class ProfesionalController extends Controller
     ]);
     }
 
-    public function show(int $id): View
+    public function show(Request $request, int $id): View
     {
        $profesional = Profesional::with('user', 'oficios', 'resenas.user')
             ->withAvg('resenas', 'puntaje')
@@ -85,6 +62,10 @@ class ProfesionalController extends Controller
             'profesional' => $profesional,
             'titulo' => $profesional->user->usuario,
             'modelo' => new Profesional(),
+            // Cuantas resenas hay de cada puntaje (para las barras)
+            'conteo' => $profesional->resenas->countBy('puntaje'),
+            // Si quien esta mirando es el dueño del perfil
+            'esDuenio' => $request->user() !== null && $request->user()->id === $profesional->user_id,
         ]);
     }
 
