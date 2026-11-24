@@ -37,8 +37,7 @@
 }
 
 .campo input,
-.campo select,
-textarea {
+.campo select {
     height: 45px;
     padding: 0 16px;
     border: 1px solid #20395d;
@@ -56,12 +55,19 @@ textarea {
     color: #71809a;
 }
 
-.campo input:focus {
+.campo input:focus,
+#mensaje:focus,
+.campo select:focus {
     border: 2px solid #f58b22;
 }
 
+#mensaje {
+    width: 30%;
+    min-height: 150px;
+    resize: vertical;
+}
 .campo select, option {
-    color: #000000;
+    color: #2B2D31;
 }
 
 /* BOTÓN ENVIAR */

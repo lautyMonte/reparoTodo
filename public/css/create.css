@@ -57,6 +57,10 @@
     gap: 4px;
 }
 
+.campo[hidden] {
+    display: none;
+}
+
 .campo label {
     font-size: 17px;
     font-weight: 500;
@@ -83,12 +87,13 @@
     color: #71809a;
 }
 
-.campo input:focus {
+.campo input:focus,
+.campo select:focus {
     border: 2px solid #f58b22;
 }
 
 .campo select, option {
-    color: #000000;
+    color: #2B2D31;
 }
 
 
@@ -109,7 +114,7 @@
 
 .terminos label {
     font-size: 15px;
-    color: #333;
+    color: #2B2D31;
 }
 
 /* BOTÓN CREAR CUENTA */
@@ -136,4 +141,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .form-registro {
+        width: 60%;
+    }
+
+    .tipo-cuenta {
+        width: 70%;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-registro {
+        width: 90%;
+    }
+
+    .tipo-cuenta {
+        width: 90%;
+        font-size: 15px;
+    }
+
+    .titulo {
+        font-size: 32px;
+    }
 }

@@ -34,6 +34,6 @@
 
             <button type="submit" class="btn-login">Iniciar sesion</button>
 
-            <p class="subtitulo">¿Todavia no tenés cuenta?<a href="{{ route('usuario.create') }}"> Registrate</a></p>
+            <p class="subtitulo">¿Todavia no tenés cuenta? <a href="{{ route('usuario.create') }}">Registrate</a></p>
         </form>
 @endsection

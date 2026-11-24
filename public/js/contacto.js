@@ -28,3 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
+// Muestra la cantidad de caracteres del mensaje
+const mensaje = document.getElementById("mensaje");
+const contador = document.getElementById("contador");
+
+mensaje.addEventListener("input", () => {
+    contador.textContent = `${mensaje.value.length} / 240 caracteres`;
+});

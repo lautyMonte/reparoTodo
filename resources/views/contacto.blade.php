@@ -41,7 +41,8 @@
             <input type="text" name="asunto" id="asunto" value="{{ old('asunto') }}" placeholder="Motivo consulta"
                 required>
         </div>
-        <textarea class="mensaje" id="mensaje" name="mensaje" placeholder="Contanos tu consulta" rows="10" cols="47" required>{{ old('mensaje') }}</textarea>
+        <textarea class="mensaje" id="mensaje" name="mensaje" placeholder="Contanos tu consulta" maxlength="230" required>{{ old('mensaje') }}</textarea>
+        <small id="contador">0 / 230 caracteres</small>
         <button type="submit" class="btn-enviar">Enviar mensaje</button>
     </form>
     @if (session('exito'))

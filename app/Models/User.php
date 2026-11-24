@@ -1,34 +1,40 @@
 <?php
 
 namespace App\Models;
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Chatify\Traits\InteractsWithChatify;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+/**para chatify*/
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
-/**para chatify*/
-use Chatify\Traits\InteractsWithChatify;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 #[Hidden(['password', 'remember_token'])]
 
 class User extends Authenticatable
 {
-    /**para chatify*/
-    use InteractsWithChatify;
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-    
+
+    /**para chatify*/
+    use InteractsWithChatify;
+
     protected $fillable = [
-        'usuario', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password'
+        'usuario', 'nombre', 'apellido', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password',
     ];
 
+    // Obtener el nombre completo del usuario
+    public function nombreCompleto(): string
+    {
+        return trim($this->nombre.' '.$this->apellido);
+    }
 
     // Porque el profesional solo puede tener un usuario
     public function profesional(): HasOne
@@ -65,13 +71,11 @@ class User extends Authenticatable
             ?? asset('img/avatares/avatar-'.(($this->id - 1) % 5 + 1).'.svg');
     }
 
-
     #[Scope]
     protected function sinImagen(Builder $query): void
     {
-        $query->whereNull("imagen");
+        $query->whereNull('imagen');
     }
-
 
     /**
      * Get the attributes that should be cast.
@@ -89,26 +93,26 @@ class User extends Authenticatable
     /**Funciones para utilizar chatify */
 
     /**
- * Iniciar o recuperar una conversación directa.
- */
+     * Iniciar o recuperar una conversación directa.
+     */
     public function iniciarConversacion(User $destinatario)
     {
         return $this->conversationWith($destinatario);
     }
 
-/**
- * Enviar un mensaje a otro usuario.
- */
+    /**
+     * Enviar un mensaje a otro usuario.
+     */
     public function enviarMensaje(User $destinatario, string $mensaje)
     {
         return $this->sendMessageTo($destinatario, $mensaje);
     }
 
     /**
-     * Para que chatify interpretar a usuario como nombre del usuario en vez de name
+     * Para que Chatify utilice el nombre completo del usuario.
      */
     public function getNameAttribute(): ?string
     {
-        return $this->usuario;
+        return $this->nombreCompleto();
     }
 }

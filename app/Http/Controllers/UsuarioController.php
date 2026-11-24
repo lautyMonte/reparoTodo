@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 // para manejar la autenticacion de usuarios
 use Illuminate\Support\Facades\Hash; // contraseña
-use Illuminate\View\View; // usuario logueado
+use Illuminate\Validation\Rule; // usuario logueado
+use Illuminate\View\View;
 
 class UsuarioController extends Controller
 {
@@ -40,7 +41,8 @@ class UsuarioController extends Controller
         if ($usuario && Hash::check($datos['password'], $usuario->password)) {
             Auth::login($usuario);
             $request->session()->regenerate();
-            return redirect()->route('inicio')->with('exito', 'Hola, '.$usuario->usuario);
+
+            return redirect()->route('inicio')->with('exito', 'Hola, '.$usuario->nombreCompleto());
         } else {
             return back()->with('error', 'Usuario o contraseña incorrectos')->withInput();
         }
@@ -58,31 +60,51 @@ class UsuarioController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // aca iria la validacion de un nuevo usuario
-        // para saber si el usuario que se creo ya exist
-        $usuario = User::where('usuario', $request['usuario'])->first();
-        if ($usuario) {
-            return redirect()->route('usuario.create')->with('error', 'usuario ya existente');
-        }
+        // Validar el tipo de cuenta y los términos y condiciones
+        $request->validate([
+            'tipo' => ['required', 'in:cliente,profesional'],
+            'terminos' => ['required', 'accepted'],
+        ], [
+            'tipo.required' => 'Debe seleccionar un tipo de cuenta',
+            'tipo.in' => 'El tipo de cuenta no es válido',
+            'terminos.required' => 'Debe aceptar los términos y condiciones',
+            'terminos.accepted' => 'Debe aceptar los términos y condiciones',
+        ]);
+
         if ($request->tipo === 'cliente') {
             $validated = $request->validate([
-                'usuario' => ['required', 'string', 'max:20'],
-                'email' => ['required', 'string', 'max:1000'],
+                'usuario' => ['required', 'string', 'max:20', 'unique:users,usuario'],
+                'nombre' => ['required', 'string', 'max:50'],
+                'apellido' => ['required', 'string', 'max:50'],
+                'email' => ['required', 'email', 'max:255', 'unique:users,email'],
                 'password' => ['required', 'string', 'min:8', 'max:20'],
                 'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
                 'telefono' => ['required', 'regex:/^\+?[0-9 ]{8,15}$/'],
                 'imagen' => ['nullable', 'image'],
             ], [
                 'usuario.required' => 'El usuario es obligatorio',
-                'telefono.required' => 'El telefono es obligatorio',
+                'usuario.unique' => 'El nombre de usuario ya está registrado',
+                'usuario.max' => 'El nombre de usuario es demasiado largo',
+                'nombre.required' => 'El nombre es obligatorio',
+                'nombre.max' => 'El nombre es demasiado largo',
+                'apellido.required' => 'El apellido es obligatorio',
+                'apellido.max' => 'El apellido es demasiado largo',
+                'telefono.required' => 'El teléfono es obligatorio',
+                'telefono.regex' => 'Ingrese un número de teléfono válido',
                 'email.required' => 'El email es obligatorio',
+                'email.email' => 'Ingrese un correo electrónico válido',
+                'email.unique' => 'El correo electrónico ya está registrado',
                 'password.required' => 'La contraseña es obligatoria',
-                'password.min' => 'La contraseña es muy corta',
-                'password.max' => 'La contraseña es muy larga',
+                'password.min' => 'La contraseña es demasiado corta',
+                'password.max' => 'La contraseña es demasiado larga',
+                'password_confirmation.required' => 'Debe confirmar su contraseña',
+                'password_confirmation.same' => 'Las contraseñas no coinciden',
             ]);
 
             User::create([
                 'usuario' => $validated['usuario'],
+                'nombre' => $validated['nombre'],
+                'apellido' => $validated['apellido'],
                 'email' => $validated['email'],
                 'telefono' => $validated['telefono'],
                 'password' => Hash::make($validated['password']),
@@ -91,27 +113,53 @@ class UsuarioController extends Controller
             ]);
 
         } else {
-            // para ingresar un profesional
+            $ciudades = [
+                'nqn' => ['Centenario', 'Neuquén', 'Plottier', 'San Martín de los Andes'],
+                'rn' => ['Bariloche', 'Cinco Saltos', 'Cipolletti', 'General Roca'],
+            ];
+
+            $provinciaSeleccionada = $request->input('provincia');
+
+            $ciudadesPermitidas = is_string($provinciaSeleccionada) ? ($ciudades[$provinciaSeleccionada] ?? []) : [];
+            
+            // Para registrar un profesional
             $validated = $request->validate([
-                'usuario' => ['required', 'string', 'max:20'],
-                'email' => ['required', 'string', 'max:1000'],
-                'telefono' => ['nullable', 'regex:/^\+?[0-9 ]{8,15}$/'],
+                'usuario' => ['required', 'string', 'max:20', 'unique:users,usuario'],
+                'nombre' => ['required', 'string', 'max:50'],
+                'apellido' => ['required', 'string', 'max:50'],
+                'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+                'telefono' => ['required', 'regex:/^\+?[0-9 ]{8,15}$/'],
                 'password' => ['required', 'string', 'min:8', 'max:20'],
                 'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
                 'imagen' => ['nullable', 'image'],
                 'especialidad' => ['required', 'exists:oficios,id'],
                 'provincia' => ['required', 'in:nqn,rn'],
-                'ciudad' => ['required', 'string', 'max:100'],
+                'ciudad' => ['required', 'string', 'max:100',
+                    Rule::in($ciudades[$request->input('provincia')] ?? []),
+                ],
 
             ], [
                 'usuario.required' => 'El usuario es obligatorio',
-                'telefono.required' => 'El telefono es obligatorio',
+                'usuario.unique' => 'El nombre de usuario ya está registrado',
+                'usuario.max' => 'El nombre de usuario es demasiado largo',
+                'nombre.required' => 'El nombre es obligatorio',
+                'nombre.max' => 'El nombre es demasiado largo',
+                'apellido.required' => 'El apellido es obligatorio',
+                'apellido.max' => 'El apellido es demasiado largo',
+                'telefono.required' => 'El teléfono es obligatorio',
+                'telefono.regex' => 'Ingrese un número de teléfono válido',
                 'email.required' => 'El email es obligatorio',
+                'email.email' => 'Ingrese un correo electrónico válido',
+                'email.unique' => 'El correo electrónico ya está registrado',
                 'password.required' => 'La contraseña es obligatoria',
-                'password.min' => 'La contraseña es muy corta',
+                'password.min' => 'La contraseña es demasiado corta',
+                'password.max' => 'La contraseña es demasiado larga',
+                'password_confirmation.required' => 'Debe confirmar su contraseña',
+                'password_confirmation.same' => 'Las contraseñas no coinciden',
                 'especialidad.required' => 'La especialidad es obligatoria',
                 'provincia.required' => 'La provincia es obligatoria',
                 'ciudad.required' => 'La ciudad es obligatoria',
+                'ciudad.in' => 'La ciudad no pertenece a la provincia seleccionada',
             ]);
             $provincias = ['nqn' => 'Neuquén', 'rn' => 'Río Negro'];
 
@@ -119,7 +167,9 @@ class UsuarioController extends Controller
 
                 $usuario = User::create([
                     'usuario' => $validated['usuario'],
-                    'telefono' => null,
+                    'nombre' => $validated['nombre'],
+                    'apellido' => $validated['apellido'],
+                    'telefono' => $validated['telefono'],
                     'email' => $validated['email'],
                     'password' => Hash::make($validated['password']),
                     'imagen' => null,
