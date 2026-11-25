@@ -6,7 +6,7 @@
 
 @section('contenido')
 
-<div class="container mt-4">
+<div class="container mt-4" id="contenedor-perfil">
     <h2 class="titulo">Editar perfil</h2>
 
     {{--Cambiarlo por partials errores-validacion.blade--}}
@@ -16,16 +16,7 @@
         </div>
     @endif
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
+    
     <form action="{{ $profesional ? route('profesional.update'): route('usuario.update') }}" method="POST" enctype="multipart/form-data" class="form-perfil">
 
         @csrf
@@ -34,7 +25,7 @@
         {{-- Portada + avatar (clickeables, sin íconos de lápiz) --}}
         <div class="perfil-header">
             <div for="portada" class="portada">
-                <img src="{{ $usuario->portada_url ?? asset('img/portada/portada-default.jpg') }}" alt="Portada">
+                <img src="{{ asset('img/portada/portada-default.jpg') }}" alt="Portada">
             </div>
 
             <label for="avatar" class="avatar" title="Cambiar foto">
@@ -80,10 +71,16 @@
             <div class="campo">
                 <label for="ciudad" class="form-label"><i data-lucide="map-pin"></i>Ubicación</label>
                 <div class="fila">
-                    <input type="text" name="ciudad" id="ciudad" class="form-control" placeholder="Ciudad"
-                           value="{{ old('ciudad', $profesional->ciudad) }}" required>
-                    <input type="text" name="provincia" id="provincia" class="form-control" placeholder="Provincia"
-                           value="{{ old('provincia', $profesional->provincia) }}" required>
+                    <select id="provincia" name="provincia[]" class="tom-select" multiple required>
+                        @foreach ($provincias as $provincia)
+                            <option value="{{ $provincia->id }}" @selected(in_array( $provincia->id, old('provincia', $provinciasSeleccionadas) ))>
+                                {{ $provincia->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <select id="ciudad" name="ciudad[]" class="tom-select" multiple required>
+                    </select>
+                    
                 </div>
             </div>
 
@@ -125,4 +122,17 @@
 
     });
 </script>
+@push('scripts')
+
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
+    <script>
+        const provinciasDB = @js($provincias);
+        const ciudadesAnteriores = @js(old('ciudad', $ciudadesAnteriores));
+    </script>
+
+    <script src="{{ asset('js/registro.js') }}"></script>
+    <script src="{{ asset('js/ciudades.js') }}" defer></script>
+
+@endpush
 @endsection

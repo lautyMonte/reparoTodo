@@ -237,6 +237,7 @@ class UsuarioController extends Controller
             'usuario' => $usuario,
             'profesional' => null,
             'oficios' => null,
+            'provincias'=>null, 
         ]);
     }
 

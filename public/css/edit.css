@@ -3,19 +3,31 @@
     --naranja: #f28c28;
     --fondo: #f5f1e8;
 }
-
-.editar-perfil {
-    max-width: 480px;
+#contenedor-perfil {
+    width: 100%;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 16px;
-    background: var(--fondo);
+    padding: 2px 20px 40px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* Título */
 .titulo {
     color: var(--navy);
-    font-weight: 700;
-    font-size: 1.4rem;
-    margin-bottom: 12px;
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+/* Formulario */
+.form-perfil {
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
 }
 
 /* Portada + avatar */
@@ -75,6 +87,7 @@
     box-shadow: 0 0 0 3px rgba(242, 140, 40, .2);
 }
 
+/*Podria quitarlos*/
 .fila { display: flex; gap: 10px; }
 .fila .form-control { flex: 1; min-width: 0; }
 
