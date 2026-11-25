@@ -134,7 +134,13 @@ class ProfesionalController extends Controller
             // Buscar por nombre
             ->when($buscar !== '', function ($query) use ($buscar) {
                 $query->whereHas('user', function ($q) use ($buscar) {
-                    $q->where('usuario', 'LIKE', "%{$buscar}%");
+                    // Cada palabra escrita tiene que estar en el nombre o en el apellido
+                    foreach (explode(' ', $buscar) as $palabra) {
+                        $q->where(function ($subconsulta) use ($palabra) {
+                            $subconsulta->where('nombre', 'LIKE', "%{$palabra}%")
+                                ->orWhere('apellido', 'LIKE', "%{$palabra}%");
+                        });
+                    }
                 });
             })
 

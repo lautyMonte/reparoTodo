@@ -6,7 +6,7 @@
                 {{-- Fila de arriba: foto + nombre + oficios --}}
                 <div class="d-flex gap-3">
                     <img class="avatar-lista" src="{{ $profesional->user->avatar() }}"
-                        alt="Foto de {{ $profesional->user->usuario }}">
+                        alt="Foto de {{ $profesional->user->nombreCompleto() }}">
 
                     <div class="flex-grow-1">
                         <h2 class="nombre-profesional">

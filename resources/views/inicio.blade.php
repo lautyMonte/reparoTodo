@@ -155,15 +155,15 @@
 
                             @if ($url = $destacado->user->urlImagen($destacado->user->imagen))
                                 <img class="avatar-rt mx-auto mb-2" src="{{ $url }}"
-                                    alt="Foto de {{ $destacado->user->usuario }}">
+                                    alt="Foto de {{ $destacado->user->nombreCompleto() }}">
                             @else
                                 <div class="avatar-rt mx-auto mb-2">
-                                    {{ mb_strtoupper(mb_substr($destacado->user->usuario, 0, 1)) }}</div>
+                                    {{ mb_strtoupper(mb_substr($destacado->user->nombreCompleto(), 0, 1)) }}</div>
                             @endif
 
                             <h3 class="h5 mb-1">
                                 <a href="{{ route('profesional.show', $destacado->id) }}"
-                                    class="stretched-link text-reset text-decoration-none">{{ $destacado->user->usuario }}</a>
+                                    class="stretched-link text-reset text-decoration-none">{{ $destacado->user->nombreCompleto() }}</a>
                             </h3>
 
                             <p class="estrellas small mb-2">

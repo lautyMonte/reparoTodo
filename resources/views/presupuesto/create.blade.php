@@ -13,10 +13,10 @@
 
                 {{-- A quien le mandas el presupuesto y por que trabajo --}}
                 <div class="solicitud-destinatario">
-                    <img src="{{ $solicitud->cliente->avatar() }}" alt="Foto de {{ $solicitud->cliente->usuario }}">
+                    <img src="{{ $solicitud->cliente->avatar() }}" alt="Foto de {{ $solicitud->cliente->nombreCompleto() }}">
                     <div>
                         <div class="text-secondary small">Vas a enviarle un presupuesto a</div>
-                        <h1 class="h5 mb-1">{{ $solicitud->cliente->usuario }}</h1>
+                        <h1 class="h5 mb-1">{{ $solicitud->cliente->nombreCompleto() }}</h1>
                         <span class="small">Por: «{{ $solicitud->titulo }}»</span>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
 
                     <div class="solicitud-encabezado">
                         <h2 class="h4 mb-1">Armar presupuesto</h2>
-                        <p class="text-secondary mb-0">Indicá cuánto cuesta y cuánto tarda. {{ $solicitud->cliente->usuario }} lo va a ver y puede aceptarlo o rechazarlo.</p>
+                        <p class="text-secondary mb-0">Indicá cuánto cuesta y cuánto tarda. {{ $solicitud->cliente->nombreCompleto() }} lo va a ver y puede aceptarlo o rechazarlo.</p>
                     </div>
 
                     <div class="row g-3 mb-3">

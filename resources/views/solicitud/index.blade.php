@@ -50,7 +50,7 @@
                                     @unless ($solicitud->leida_profesional)
                                         <span class="bandeja-punto"></span>
                                     @endunless
-                                    {{ $solicitud->cliente->usuario }}
+                                    {{ $solicitud->cliente->nombreCompleto() }}
                                 </span>
                                 <span class="bandeja-fecha">{{ $solicitud->created_at->timezone($zona)->format('d/m H:i') }}</span>
                             </div>
@@ -71,7 +71,7 @@
                         <div class="bandeja-de">
                             <img src="{{ $seleccionada->cliente->avatar() }}" alt="" class="bandeja-avatar">
                             <div>
-                                <div class="fw-bold bandeja-nombre">{{ $seleccionada->cliente->usuario }}</div>
+                                <div class="fw-bold bandeja-nombre">{{ $seleccionada->cliente->nombreCompleto() }}</div>
                                 <div class="small text-secondary">
                                     Te envió esta solicitud el {{ $seleccionada->created_at->timezone($zona)->format('d/m/Y') }}
                                     a las {{ $seleccionada->created_at->timezone($zona)->format('H:i') }}
@@ -172,7 +172,7 @@
                                 @if ($seleccionada->estado === 'en_chat')
                                     <button type="button" class="btn btn-accent fw-semibold btn-abrir-chat"
                                             data-usuario-id="{{ $seleccionada->cliente->id }}"
-                                            data-nombre="{{ $seleccionada->cliente->usuario }}"
+                                            data-nombre="{{ $seleccionada->cliente->nombreCompleto() }}"
                                             data-avatar="{{ $seleccionada->cliente->avatar() }}">
                                         <i data-lucide="message-circle"></i> Abrir chat
                                     </button>
@@ -208,10 +208,10 @@
                             <a href="{{ route('contacto') }}" class="btn btn-soporte"><i data-lucide="life-buoy"></i> Soporte</a>
                         </div>
                         @if ($seleccionada->estado === 'pendiente')
-                            <p class="bandeja-ayuda">Si aceptás, vas a armar el presupuesto para el cliente. Si rechazás, la solicitud se elimina para ambos y {{ $seleccionada->cliente->usuario }} recibe un aviso.</p>
+                            <p class="bandeja-ayuda">Si aceptás, vas a armar el presupuesto para el cliente. Si rechazás, la solicitud se elimina para ambos y {{ $seleccionada->cliente->nombreCompleto() }} recibe un aviso.</p>
                         @endif
                         @if ($seleccionada->estado === 'aceptada')
-                            <p class="bandeja-ayuda">Aceptaste esta solicitud. Armá el presupuesto para que {{ $seleccionada->cliente->usuario }} decida si lo acepta.</p>
+                            <p class="bandeja-ayuda">Aceptaste esta solicitud. Armá el presupuesto para que {{ $seleccionada->cliente->nombreCompleto() }} decida si lo acepta.</p>
                         @endif
                         @if ($seleccionada->estado === 'en_chat' && ! $hayPropuesta)
                             <p class="bandeja-ayuda">{{ $cliente }} aceptó tu presupuesto. Cuando terminen el trabajo, pedile que lo confirme con “Finalizar trabajo”. Si no se hace, usá “Cancelar trabajo”. En los dos casos la otra persona tiene que estar de acuerdo.</p>
@@ -239,7 +239,7 @@
                         <div class="modal-body">
                             <i data-lucide="circle-alert" class="icn-rechazo mb-3"></i>
                             <h4 id="modalRechazarLabel">¿Rechazar esta solicitud?</h4>
-                            <p>Se elimina para ambos y {{ $seleccionada->cliente->usuario }} recibe un aviso. Esta acción no se puede deshacer.</p>
+                            <p>Se elimina para ambos y {{ $seleccionada->cliente->nombreCompleto() }} recibe un aviso. Esta acción no se puede deshacer.</p>
                             <form action="{{ route('solicitud.rechazar', $seleccionada->id) }}" method="POST" class="d-flex justify-content-center gap-2 mt-3">
                                 @csrf
                                 <button type="button" class="btn btn-detalle btn-cancelar" data-bs-dismiss="modal">Cancelar</button>

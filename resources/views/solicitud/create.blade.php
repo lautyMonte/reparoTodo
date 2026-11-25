@@ -17,10 +17,10 @@
 
                 {{-- A quien le pedis el trabajo --}}
                 <div class="solicitud-destinatario">
-                    <img src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->usuario }}">
+                    <img src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->nombreCompleto() }}">
                     <div>
                         <div class="text-secondary small">Vas a solicitar un trabajo a</div>
-                        <h1 class="h5 mb-1">{{ $usuario->usuario }}</h1>
+                        <h1 class="h5 mb-1">{{ $usuario->nombreCompleto() }}</h1>
                         <span class="puntaje small">
                             <i data-lucide="star"></i>
                             @if ($profesional->resenas_count > 0)

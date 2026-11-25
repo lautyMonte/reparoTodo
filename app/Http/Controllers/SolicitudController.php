@@ -76,12 +76,12 @@ class SolicitudController extends Controller
             'user_id' => $profesional->user_id,
             'solicitud_id' => $solicitud->id,
             'tipo' => 'solicitud_nueva',
-            'mensaje' => $request->user()->usuario.' te pidió «'.$solicitud->titulo.'»',
+            'mensaje' => $request->user()->nombreCompleto().' te pidió «'.$solicitud->titulo.'»',
         ]);
 
         return redirect()
             ->route('profesional.show', $profesional->id)
-            ->with('exito', 'Solicitud enviada. '.$profesional->user->usuario.' la va a revisar y te va a responder.');
+            ->with('exito', 'Solicitud enviada. '.$profesional->user->nombreCompleto().' la va a revisar y te va a responder.');
     }
 
     /** Bandeja del profesional (se abre la solicitud mas nueva) */
@@ -220,12 +220,12 @@ class SolicitudController extends Controller
             'user_id' => $solicitud->cliente_id,
             'solicitud_id' => $solicitud->id,
             'tipo' => 'solicitud_aceptada',
-            'mensaje' => $request->user()->usuario.' aceptó tu solicitud «'.$solicitud->titulo.'»',
+            'mensaje' => $request->user()->nombreCompleto().' aceptó tu solicitud «'.$solicitud->titulo.'»',
         ]);
 
         return redirect()
             ->route('solicitud.show', $solicitud->id)
-            ->with('exito', 'Aceptaste la solicitud. Le avisamos a '.$solicitud->cliente->usuario.'.');
+            ->with('exito', 'Aceptaste la solicitud. Le avisamos a '.$solicitud->cliente->nombreCompleto().'.');
     }
 
     /** El profesional rechaza la solicitud (queda guardada pero deja de verse) */
@@ -240,12 +240,12 @@ class SolicitudController extends Controller
             'user_id' => $solicitud->cliente_id,
             'solicitud_id' => $solicitud->id,
             'tipo' => 'solicitud_rechazada',
-            'mensaje' => $request->user()->usuario.' rechazó tu solicitud «'.$solicitud->titulo.'»',
+            'mensaje' => $request->user()->nombreCompleto().' rechazó tu solicitud «'.$solicitud->titulo.'»',
         ]);
 
         return redirect()
             ->route('solicitud.index')
-            ->with('exito', 'Rechazaste la solicitud. Le avisamos a '.$solicitud->cliente->usuario.'.');
+            ->with('exito', 'Rechazaste la solicitud. Le avisamos a '.$solicitud->cliente->nombreCompleto().'.');
     }
 
     /** Busca una solicitud pendiente que sea de este profesional (si no, da error 404) */
