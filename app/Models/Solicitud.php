@@ -21,6 +21,8 @@ class Solicitud extends Model
         'fecha_deseada',
         'estado',
         'leida_profesional',
+        'cierre_propuesto_por',
+        'cierre_tipo',
     ];
 
     // Cada solicitud la hizo un cliente (un usuario). La columna se llama cliente_id, no user_id,
@@ -48,11 +50,30 @@ class Solicitud extends Model
         return $this->hasOne(Presupuesto::class);
     }
 
+    // Quien propuso el cierre que esta esperando respuesta (un usuario)
+    public function proponente(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cierre_propuesto_por');
+    }
+
+    // Hay una propuesta de cierre esperando respuesta?
+    public function tieneCierrePendiente(): bool
+    {
+        return $this->cierre_propuesto_por !== null;
+    }
+
+    // La otra persona de la solicitud: si sos el cliente es el profesional, y al reves
+    public function otraPersona(User $usuario): User
+    {
+        return $usuario->id === $this->cliente_id ? $this->profesional->user : $this->cliente;
+    }
+
     protected function casts(): array
     {
         return [
             'fecha_deseada' => 'date',
             'leida_profesional' => 'boolean',
+            'cierre_propuesto_por' => 'integer',
         ];
     }
 }

@@ -68,6 +68,14 @@ Route::delete('/resenas/{resena}', [ResenaController::class, 'destroy'])
     ->middleware('auth')
     ->name('resenas.destroy');
 
+// Cierre del trabajo: lo proponen y lo responden tanto el cliente como el profesional
+Route::middleware('auth')->group(function () {
+    Route::post('/solicitudes/{id}/cierre', [SolicitudController::class, 'proponerCierre'])->whereNumber('id')->name('cierre.proponer');
+    Route::post('/solicitudes/{id}/cierre/aceptar', [SolicitudController::class, 'aceptarCierre'])->whereNumber('id')->name('cierre.aceptar');
+    Route::post('/solicitudes/{id}/cierre/rechazar', [SolicitudController::class, 'rechazarCierre'])->whereNumber('id')->name('cierre.rechazar');
+    Route::delete('/solicitudes/{id}/cierre', [SolicitudController::class, 'retirarCierre'])->whereNumber('id')->name('cierre.retirar');
+});
+
 // Notificaciones: para cualquier usuario con sesion iniciada
 Route::middleware('auth')->group(function () {
     Route::post('/notificaciones/leer', [NotificacionController::class, 'leerTodas'])->name('notificacion.leer');
