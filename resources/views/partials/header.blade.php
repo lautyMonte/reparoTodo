@@ -88,13 +88,23 @@
                                 'presupuesto_nuevo' => 'Nuevo presupuesto.',
                                 'presupuesto_aceptado' => 'Presupuesto aceptado.',
                                 'presupuesto_rechazado' => 'Presupuesto rechazado.',
+                                'cierre_propuesto' => 'Propuesta de cierre.',
+                                'cierre_aceptado' => 'Propuesta aceptada.',
+                                'cierre_rechazado' => 'Propuesta rechazada.',
+                                'cierre_retirado' => 'Propuesta retirada.',
                             ];
+                            // Las propuestas de cierre las reciben los dos roles: cada uno abre su propia bandeja
+                            $detalle = auth()->user()->tipo === 'profesional' ? 'solicitud.show' : 'solicitud.cliente.show';
                             // A que solicitud lleva cada tipo. Los rechazos no estan: esa solicitud ya no se ve, y van a la lista
                             $destinos = [
                                 'solicitud_nueva' => 'solicitud.show',
                                 'presupuesto_aceptado' => 'solicitud.show',
                                 'solicitud_aceptada' => 'solicitud.cliente.show',
                                 'presupuesto_nuevo' => 'solicitud.cliente.show',
+                                'cierre_propuesto' => $detalle,
+                                'cierre_aceptado' => $detalle,
+                                'cierre_rechazado' => $detalle,
+                                'cierre_retirado' => $detalle,
                             ];
                             $lista = auth()->user()->tipo === 'profesional' ? 'solicitud.index' : 'solicitud.cliente.index';
                         @endphp

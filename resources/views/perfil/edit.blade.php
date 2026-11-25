@@ -68,20 +68,23 @@
 
         {{-- Datos exclusivos del profesional --}}
         @if ($profesional)
+            @php
+                $ciudadesElegidas = old('ciudades', $profesional->ciudades->pluck('id')->all());
+            @endphp
+
             <div class="campo">
-                <label for="ciudad" class="form-label"><i data-lucide="map-pin"></i>Ubicación</label>
-                <div class="fila">
-                    <select id="provincia" name="provincia[]" class="tom-select" multiple required>
-                        @foreach ($provincias as $provincia)
-                            <option value="{{ $provincia->id }}" @selected(in_array( $provincia->id, old('provincia', $provinciasSeleccionadas) ))>
-                                {{ $provincia->nombre }}
-                            </option>
+                <span class="form-label"><i data-lucide="map-pin"></i>Ciudades donde trabajás</span>
+
+                @foreach ($provincias as $provincia)
+                    <small class="text-secondary d-block mt-2">{{ $provincia->nombre }}</small>
+                    <div class="oficios">
+                        @foreach ($provincia->ciudades as $ciudad)
+                            <input type="checkbox" name="ciudades[]" id="ciudad-{{ $ciudad->id }}"
+                                   value="{{ $ciudad->id }}" @checked(in_array($ciudad->id, $ciudadesElegidas))>
+                            <label for="ciudad-{{ $ciudad->id }}" class="chip">{{ $ciudad->nombre }}</label>
                         @endforeach
-                    </select>
-                    <select id="ciudad" name="ciudad[]" class="tom-select" multiple required>
-                    </select>
-                    
-                </div>
+                    </div>
+                @endforeach
             </div>
 
             @if ($oficios)
@@ -122,17 +125,4 @@
 
     });
 </script>
-@push('scripts')
-
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
-
-    <script>
-        const provinciasDB = @js($provincias);
-        const ciudadesAnteriores = @js(old('ciudad', $ciudadesAnteriores));
-    </script>
-
-    <script src="{{ asset('js/registro.js') }}"></script>
-    <script src="{{ asset('js/ciudades.js') }}" defer></script>
-
-@endpush
 @endsection

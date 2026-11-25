@@ -719,9 +719,11 @@ img.avatar-rt { object-fit: cover; }
 .bandeja-item.activa, .bandeja-item.activa:hover { background: #fff; }
 /* La barra lateral toma el color del estado: se ve al pasar el mouse y queda fija en la abierta */
 .bandeja-item.borde-pendiente:hover, .bandeja-item.borde-pendiente.activa { border-left-color: var(--rt-naranja); }
-.bandeja-item.borde-aceptada:hover, .bandeja-item.borde-aceptada.activa { border-left-color: #2e7d4f; }
+.bandeja-item.borde-aceptada:hover, .bandeja-item.borde-aceptada.activa { border-left-color: #1a8a96; }
 .bandeja-item.borde-presupuestada:hover, .bandeja-item.borde-presupuestada.activa { border-left-color: #2f6fb5; }
 .bandeja-item.borde-en_chat:hover, .bandeja-item.borde-en_chat.activa { border-left-color: #6f4bb8; }
+.bandeja-item.borde-finalizada:hover, .bandeja-item.borde-finalizada.activa { border-left-color: #2e7d4f; }
+.bandeja-item.borde-cancelada:hover, .bandeja-item.borde-cancelada.activa { border-left-color: #8a8a8a; }
 .bandeja-avatar {
     flex: 0 0 40px;
     width: 40px;
@@ -749,9 +751,11 @@ img.avatar-rt { object-fit: cover; }
 /* Etiqueta de estado */
 .estado { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 0.1rem 0.55rem; border-radius: 999px; margin-top: 0.3rem; background: #e8eef7; color: var(--rt-azul); }
 .estado-pendiente { background: #fde9d0; color: #8a4a06; }
-.estado-aceptada { background: #d9f0e1; color: #1c6b3a; }
+.estado-aceptada { background: #d3eef0; color: #0e5a63; }
 .estado-presupuestada { background: #dce9f7; color: #1f4f8a; }
 .estado-en_chat { background: #e9e1f6; color: #4b2f86; }
+.estado-finalizada { background: #d9f0e1; color: #1c6b3a; }
+.estado-cancelada { background: #e4e4e4; color: #4a4a4a; }
 
 /* Detalle de la solicitud */
 .bandeja-detalle { display: flex; flex-direction: column; }
@@ -813,6 +817,7 @@ img.avatar-rt { object-fit: cover; }
     --bs-btn-hover-bg: var(--rt-crema);
     --bs-btn-hover-border-color: transparent;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 @media (max-width: 991.98px) {
@@ -910,3 +915,23 @@ img.avatar-rt { object-fit: cover; }
     font-weight: 700;
 }
 .solicitud-cuerpo .input-group > .form-control { border-radius: 0 17px 17px 0; }
+
+/* ===== Aviso del cierre del trabajo ===== */
+.cierre-aviso {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    background: #e9e1f6;
+    border-left: 4px solid #6f4bb8;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    color: #3b2570;
+    text-align: left;
+}
+.cierre-aviso .lucide { width: 1.3rem; height: 1.3rem; flex: none; margin-top: 0.1rem; }
+.cierre-aviso strong { display: block; font-family: 'Montserrat', sans-serif; }
+.cierre-aviso span { font-size: 0.9rem; }
+.cierre-aviso.cancelar { background: #fbe9e7; border-left-color: #c0392b; color: #7a2a22; }
+.cierre-aviso.cerrado-fin { background: #e3f4e9; border-left-color: #2e7d4f; color: #1c5a34; }
+.cierre-aviso.cerrado-can { background: #eeeeee; border-left-color: #8a8a8a; color: #444; }

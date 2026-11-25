@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Notificacion;
 use App\Models\Profesional;
 use App\Models\Solicitud;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -129,7 +131,7 @@ class SolicitudController extends Controller
 
         // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
         $estado = $request->query('estado');
-        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada', 'en_chat'], true)) {
+        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada', 'en_chat', 'finalizada', 'cancelada'], true)) {
             $estado = null;
         }
         $lista = $estado === null ? $todas : $todas->where('estado', $estado);
@@ -190,7 +192,7 @@ class SolicitudController extends Controller
 
         // Filtro de la lista (?estado=pendiente). Si viene cualquier otra cosa, se muestran todas
         $estado = $request->query('estado');
-        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada', 'en_chat'], true)) {
+        if (! in_array($estado, ['pendiente', 'aceptada', 'presupuestada', 'en_chat', 'finalizada', 'cancelada'], true)) {
             $estado = null;
         }
         $lista = $estado === null ? $todas : $todas->where('estado', $estado);
@@ -252,5 +254,148 @@ class SolicitudController extends Controller
         return $request->user()->profesional->solicitudes()
             ->where('estado', 'pendiente')
             ->findOrFail($id);
+    }
+
+    /** El cliente o el profesional propone finalizar o cancelar un trabajo que esta en chat */
+    public function proponerCierre(Request $request, int $id): RedirectResponse
+    {
+        $datos = $request->validate([
+            'tipo' => ['required', 'in:finalizar,cancelar'],
+        ]);
+
+        $usuario = $request->user();
+
+        // Solo se puede proponer si no hay otra propuesta esperando respuesta
+        $solicitud = $this->enChatDelUsuario($request)
+            ->whereNull('cierre_propuesto_por')
+            ->findOrFail($id);
+
+        $solicitud->update([
+            'cierre_propuesto_por' => $usuario->id,
+            'cierre_tipo' => $datos['tipo'],
+        ]);
+
+        // Le avisamos a la otra persona
+        $otra = $solicitud->otraPersona($usuario);
+        Notificacion::create([
+            'user_id' => $otra->id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'cierre_propuesto',
+            'mensaje' => $usuario->nombreCompleto().' propone '.$datos['tipo'].' el trabajo «'.$solicitud->titulo.'»',
+        ]);
+
+        return $this->volverALaSolicitud($usuario, $solicitud)
+            ->with('exito', 'Le propusiste '.$datos['tipo'].' el trabajo a '.$otra->nombreCompleto().'. Te avisamos cuando responda.');
+    }
+
+    /** La otra persona acepta la propuesta: el trabajo queda finalizado o cancelado */
+    public function aceptarCierre(Request $request, int $id): RedirectResponse
+    {
+        $usuario = $request->user();
+        $solicitud = $this->propuestaParaResponder($request)->findOrFail($id);
+
+        // Guardamos estos datos antes de limpiar la propuesta
+        $tipo = $solicitud->cierre_tipo;
+        $proponente = $solicitud->proponente;
+
+        $solicitud->update([
+            'estado' => $tipo === 'finalizar' ? 'finalizada' : 'cancelada',
+            'cierre_propuesto_por' => null,
+            'cierre_tipo' => null,
+        ]);
+
+        // Le avisamos a quien lo habia propuesto
+        Notificacion::create([
+            'user_id' => $proponente->id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'cierre_aceptado',
+            'mensaje' => $usuario->nombreCompleto().' aceptó '.$tipo.' el trabajo «'.$solicitud->titulo.'»',
+        ]);
+
+        return $this->volverALaSolicitud($usuario, $solicitud)
+            ->with('exito', 'Aceptaste '.$tipo.' el trabajo. Le avisamos a '.$proponente->nombreCompleto().'.');
+    }
+
+    /** La otra persona rechaza la propuesta: el trabajo sigue en chat */
+    public function rechazarCierre(Request $request, int $id): RedirectResponse
+    {
+        $usuario = $request->user();
+        $solicitud = $this->propuestaParaResponder($request)->findOrFail($id);
+
+        $tipo = $solicitud->cierre_tipo;
+        $proponente = $solicitud->proponente;
+
+        $solicitud->update([
+            'cierre_propuesto_por' => null,
+            'cierre_tipo' => null,
+        ]);
+
+        Notificacion::create([
+            'user_id' => $proponente->id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'cierre_rechazado',
+            'mensaje' => $usuario->nombreCompleto().' rechazó '.$tipo.' el trabajo «'.$solicitud->titulo.'». Sigue en chat.',
+        ]);
+
+        return $this->volverALaSolicitud($usuario, $solicitud)
+            ->with('exito', 'Rechazaste '.$tipo.' el trabajo. Sigue en chat y le avisamos a '.$proponente->nombreCompleto().'.');
+    }
+
+    /** Quien propuso el cierre retira su propuesta */
+    public function retirarCierre(Request $request, int $id): RedirectResponse
+    {
+        $usuario = $request->user();
+
+        // Solo la puede retirar quien la hizo
+        $solicitud = $this->enChatDelUsuario($request)
+            ->where('cierre_propuesto_por', $usuario->id)
+            ->findOrFail($id);
+
+        $tipo = $solicitud->cierre_tipo;
+        $otra = $solicitud->otraPersona($usuario);
+
+        $solicitud->update([
+            'cierre_propuesto_por' => null,
+            'cierre_tipo' => null,
+        ]);
+
+        Notificacion::create([
+            'user_id' => $otra->id,
+            'solicitud_id' => $solicitud->id,
+            'tipo' => 'cierre_retirado',
+            'mensaje' => $usuario->nombreCompleto().' retiró su propuesta de '.$tipo.' el trabajo «'.$solicitud->titulo.'»',
+        ]);
+
+        return $this->volverALaSolicitud($usuario, $solicitud)
+            ->with('exito', 'Retiraste tu propuesta. Le avisamos a '.$otra->nombreCompleto().'.');
+    }
+
+    /** Solicitudes en chat donde participa este usuario, ya sea como cliente o como profesional */
+    private function enChatDelUsuario(Request $request): Builder
+    {
+        $usuario = $request->user();
+
+        return Solicitud::where('estado', 'en_chat')
+            ->where(function ($consulta) use ($usuario) {
+                $consulta->where('cliente_id', $usuario->id)
+                    ->orWhereHas('profesional', function ($profesional) use ($usuario) {
+                        $profesional->where('user_id', $usuario->id);
+                    });
+            })
+            ->with(['cliente', 'profesional.user']);
+    }
+
+    /** De esas, las que tienen una propuesta hecha por la otra persona (la que me toca responder a mi) */
+    private function propuestaParaResponder(Request $request): Builder
+    {
+        return $this->enChatDelUsuario($request)
+            ->whereNotNull('cierre_propuesto_por')
+            ->where('cierre_propuesto_por', '!=', $request->user()->id);
+    }
+
+    /** Vuelve a la bandeja de quien actuo, con esa solicitud abierta */
+    private function volverALaSolicitud(User $usuario, Solicitud $solicitud): RedirectResponse
+    {
+        return redirect()->route($usuario->tipo === 'profesional' ? 'solicitud.show' : 'solicitud.cliente.show', $solicitud->id);
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ciudad;
-use App\Models\Provincia;
 use App\Models\Oficio;
 use App\Models\Profesional;
+use App\Models\Provincia;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -186,98 +186,103 @@ class ProfesionalController extends Controller
     {
         $usuario = $request->user();
 
-        $profesional = $usuario->profesional()
-            ->with('oficios', 'ciudades.provincia')
-            ->firstOrFail();
+        $profesional = $usuario->profesional()->with('oficios', 'ciudades')->firstOrFail();
 
         Gate::authorize('update', $profesional);
 
         $oficios = Oficio::all();
 
-        // Obtener todas las provincias
-        $provincias = Provincia::with('ciudades')->get();
+        $provincias = Provincia::with('ciudades')->orderBy('nombre')->get();
 
-        //Obtener todas las ciudades
-        $ciudades = Ciudad::all();
-
-       $ciudadesAnteriores = $profesional->ciudades->pluck('id')->toArray();
-
-        $provinciasSeleccionadas = $profesional->ciudades->pluck('provincia_id')->unique()->values()->toArray();
-
-        return view('perfil.edit', compact('usuario','profesional','oficios','provincias', 'ciudades','provinciasSeleccionadas','ciudadesAnteriores'
-                    ));
+        return view('perfil.edit', compact('usuario', 'profesional', 'oficios', 'provincias'));
     }
 
-    public function update(Request $request)
-    {
-        $usuario = $request->user();
+    
+public function update(Request $request)
+{
+    $usuario = $request->user();
 
-        $profesional = $usuario->profesional()->firstOrFail();
+    $profesional = $usuario->profesional()->firstOrFail();
 
-        Gate::authorize('update', $profesional);
+    Gate::authorize('update', $profesional);
 
-        $validated = $request->validate([
+    $validated = $request->validate([
 
         // Datos del usuario
-        'usuario' => ['required','string','max:20',
-                    Rule::unique('users', 'usuario')->ignore($usuario->id),
-            ],
-            'nombre' => ['required', 'string', 'max:50'],
-            'apellido' => ['required', 'string', 'max:50'],
-            'telefono' => ['required', 'string', 'max:16'],
-            'email' => ['required','email',
-                    Rule::unique('users', 'email')->ignore($usuario->id),
-            ],
-            'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
+        'usuario' => [
+            'required',
+            'string',
+            'max:20',
+            Rule::unique('users', 'usuario')->ignore($usuario->id),
+        ],
 
-        // Datos profesionales
-       'provincia' => ['required', 'array', 'min:1'],
-       'provincia.*' => ['required', 'integer', 'distinct', 'exists:provincias,id'],
+        'nombre' => ['required', 'string', 'max:50'],
+        'apellido' => ['required', 'string', 'max:50'],
+        'telefono' => ['required', 'string', 'max:16'],
 
-        'ciudad' => ['required', 'array', 'min:1'],
-        'ciudad.*' => ['required', 'integer', 'distinct', 'exists:ciudades,id'],
-        
+        'email' => [
+            'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($usuario->id),
+        ],
+
+        'imagen' => [
+            'nullable',
+            'image',
+            Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')
+        ],
+
+        // Ciudades
+        'ciudades' => ['required', 'array', 'min:1'],
+
+        'ciudades.*' => [
+            'required',
+            'integer',
+            'distinct',
+            'exists:ciudades,id'
+        ],
+
         // Oficios
         'oficios' => ['required', 'array', 'min:1'],
 
-        'oficios.*' => ['required','integer','distinct','exists:oficios,id'],
-        ]);
+        'oficios.*' => [
+            'required',
+            'integer',
+            'distinct',
+            'exists:oficios,id'
+        ],
+    ]);
 
-        // Comprobar que las ciudades pertenezcan a las provincias seleccionadas.
-        $ciudadesValidas = Ciudad::whereIn('id', $validated['ciudad'])
-            ->whereIn('provincia_id', $validated['provincia'])->count();
-
-        if ($ciudadesValidas !== count($validated['ciudad'])) {
-            return back()->withErrors(['ciudad' => 'Hay ciudades que no pertenecen a las provincias seleccionadas.'])->withInput();
-        }
-
-        DB::transaction(function () use ($request, $usuario,$profesional,$validated) 
-        {
+    DB::transaction(function () use ($request, $usuario, $profesional, $validated) {
 
         // Datos del usuario
-        $datosUsuario = ['usuario' => $validated['usuario'],
-                  'nombre'=> $validated['nombre'],
-                  'apellido'=> $validated['apellido'],
-                  'telefono'=> $validated['telefono'] ?? null,
-                  'email' => $validated['email']
+        $datosUsuario = [
+            'usuario' => $validated['usuario'],
+            'nombre' => $validated['nombre'],
+            'apellido' => $validated['apellido'],
+            'telefono' => $validated['telefono'],
+            'email' => $validated['email'],
         ];
 
         if ($request->hasFile('imagen')) {
-            $datosUsuario['imagen'] = $request->file('imagen')->store('perfil', 'public');
+            $datosUsuario['imagen'] = $request->file('imagen')
+                ->store('perfil', 'public');
         }
-        
 
         $usuario->update($datosUsuario);
 
-        // Actualizar ciudades mediante la tabla intermedia.
-        $profesional->ciudades()->sync($validated['ciudad']);
+        // Actualizar ciudades
+        $profesional->ciudades()->sync($validated['ciudades']);
 
-        // Actualizar oficios.
+        // Actualizar oficios
         $profesional->oficios()->sync($validated['oficios']);
 
     });
 
-    return redirect()->route('profesional.edit')->with('success', 'Perfil profesional actualizado correctamente.');
-    }
+    return redirect()
+        ->route('profesional.edit')
+        ->with('success', 'Perfil profesional actualizado correctamente.');
+}
+
 }
 
