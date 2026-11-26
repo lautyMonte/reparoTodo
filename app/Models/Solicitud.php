@@ -44,6 +44,12 @@ class Solicitud extends Model
         return $this->hasOne(Resena::class);
     }
 
+    // Una solicitud puede tener una publicación.
+    public function publicacion(): HasOne
+    {
+        return $this->hasOne(Publicacion::class);
+    }
+
     // Una solicitud tiene muchas fotos (1:N)
     public function fotos(): HasMany
     {

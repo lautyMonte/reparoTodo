@@ -159,10 +159,60 @@
                         <div class="bandeja-botones">
                             <span></span>
                             <div class="bandeja-botones-centro">
+
+                                {{-- Gestión de publicaciones del portfolio --}}
+                                @if ($seleccionada->estado === 'finalizada')
+
+                                    @if (!$seleccionada->publicacion)
+
+                                        @can('create', [\App\Models\Publicacion::class, $seleccionada])
+                                            <button
+                                                type="button"
+                                                class="btn btn-accent fw-semibold"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalCrearPublicacion"
+                                            >
+                                                <i data-lucide="image-plus"></i>
+                                                Publicar trabajo
+                                            </button>
+                                        @endcan
+
+                                    @else
+
+                                        @can('update', $seleccionada->publicacion)
+                                            <button
+                                                type="button"
+                                                class="btn btn-accent fw-semibold"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditarPublicacion{{ $seleccionada->publicacion->id }}"
+                                            >
+                                                <i data-lucide="pencil"></i>
+                                                Editar publicación
+                                            </button>
+                                        @endcan
+
+                                        @can('delete', $seleccionada->publicacion)
+                                            <button
+                                                type="button"
+                                                class="btn btn-rechazar fw-semibold"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEliminarPublicacion{{ $seleccionada->publicacion->id }}"
+                                            >
+                                                <i data-lucide="trash-2"></i>
+                                                Eliminar publicación
+                                            </button>
+                                        @endcan
+
+                                    @endif
+
+                                @endif
+
                                 @if ($seleccionada->estado === 'pendiente')
                                     <form action="{{ route('solicitud.aceptar', $seleccionada->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="btn btn-aceptar fw-semibold"><i data-lucide="check"></i> Aceptar</button>
+                                        <button type="submit" class="btn btn-aceptar fw-semibold">
+                                            <i data-lucide="check"></i> Aceptar
+                                        </button>
                                     </form>
                                     <button type="button" class="btn btn-rechazar fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRechazar"><i data-lucide="x"></i> Rechazar</button>
                                 @endif
@@ -250,5 +300,43 @@
                 </div>
             </div>
         @endif
+
+        {{-- Modales de gestión del portfolio --}}
+        @if ($seleccionada)
+
+            @if (!$seleccionada->publicacion)
+
+                @can('create', [\App\Models\Publicacion::class, $seleccionada])
+
+                    @include('publicacion.modal-crear', [
+                        'solicitud' => $seleccionada,
+                    ])
+
+                @endcan
+
+            @else
+
+                @can('update', $seleccionada->publicacion)
+
+                    @include('publicacion.modal-editar', [
+                        'publicacion' => $seleccionada->publicacion,
+                        'origen' => 'bandeja_publicacion_editar',
+                    ])
+
+                @endcan
+
+                @can('delete', $seleccionada->publicacion)
+
+                    @include('publicacion.modal-eliminar', [
+                        'publicacion' => $seleccionada->publicacion,
+                        'origen' => 'bandeja_publicacion_eliminar',
+                    ])
+
+                @endcan
+
+            @endif
+
+        @endif
+
     </div>
 @endsection
