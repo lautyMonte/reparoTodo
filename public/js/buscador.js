@@ -113,20 +113,18 @@ document.addEventListener('DOMContentLoaded', () => {
         realizarBusqueda(true);
     });
 
-    // Limpiar filtros
+   // Limpiar filtros
     botonLimpiar.addEventListener('click', () => {
 
-        // Desmarcar todos los checkboxes
-        formularioFiltros.querySelectorAll('input[type="checkbox"]')
-            .forEach(checkbox => {
-                checkbox.checked = false;
-            });
+        // Restablecer todos los campos del formulario
+        formularioFiltros.reset();
 
-        // Eliminar los parámetros de oficios de la URL
+        // Eliminar los parámetros de los filtros de la URL
         const url = new URL(window.location.href);
 
         for (const parametro of [...url.searchParams.keys()]) {
-            if (parametro === 'oficios' || parametro.startsWith('oficios[')) {
+
+            if (parametro === 'oficios' || parametro.startsWith('oficios[') || parametro === 'localidades' || parametro.startsWith('localidades[') || parametro === 'puntaje') {
                 url.searchParams.delete(parametro);
             }
         }
@@ -150,11 +148,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Actualizar cantidad de filtros seleccionados
     function actualizarContadorFiltros() {
 
-        const filtrosSeleccionados = formularioFiltros.querySelectorAll(
-            'input[type="checkbox"]:checked'
+        // Contar checkboxes seleccionados
+        const checkboxes = formularioFiltros.querySelectorAll(
+        'input[type="checkbox"]:checked'
         );
 
-        const cantidad = filtrosSeleccionados.length;
+        // Comprobar si hay un puntaje seleccionado
+        const puntajeSeleccionado = formularioFiltros.querySelector(
+            'input[name="puntaje"]:checked'
+        );
+
+        // Sumar los filtros seleccionados
+        let cantidad = checkboxes.length;
+
+        if (puntajeSeleccionado && puntajeSeleccionado.value !== '') {
+            cantidad++;
+        }
 
         contadorFiltros.textContent = cantidad;
 

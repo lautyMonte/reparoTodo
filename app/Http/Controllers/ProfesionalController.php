@@ -114,14 +114,13 @@ class ProfesionalController extends Controller
             'localidades' => ['nullable', 'array'],
             'localidades.*' => ['string', 'max:100'],
 
-            'puntajes' => ['nullable', 'array'],
-            'puntajes.*' => ['integer', 'between:1,5'],
+            'puntaje' => ['nullable', 'integer', 'between:1,5']
         ]);
 
         $buscar = trim($request->input('buscar', ''));
         $oficios = $request->input('oficios', []);
         $localidades = $request->input('localidades', []);
-        $puntajes = $request->input('puntajes', []);
+        $puntaje = $request->input('puntaje');
 
         $profesionales = Profesional::with([
             'user',
@@ -164,19 +163,17 @@ class ProfesionalController extends Controller
 
             ->get();
 
-        // Filtrar por puntuación minima
-        if (! empty($puntajes)) {
+       // Filtrar por puntuación mínima
+    if ($puntaje !== null && $puntaje !== '') {
 
-            $puntajeMinimo = min($puntajes);
+        $profesionales = $profesionales->filter(function ($profesional) use ($puntaje) {
 
-            $profesionales = $profesionales->filter(function ($profesional) use ($puntajeMinimo) {
+            return $profesional->resenas_avg_puntaje !== null
+                && $profesional->resenas_avg_puntaje >= $puntaje;
 
-                return $profesional->resenas_avg_puntaje !== null
-                    && $profesional->resenas_avg_puntaje >= $puntajeMinimo;
+        })->values();
 
-            })->values();
-
-        }
+    }
 
         return response()->json([
             'html' => view(

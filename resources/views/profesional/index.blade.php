@@ -92,24 +92,33 @@
                     </div>
 
                     <hr>
-                    {{-- FILTRO POR PUNTUACIÓN MINIMA--}}
+                    {{-- FILTRO POR PUNTUACIÓN MÍNIMA --}}
                     <div class="mb-3">
 
-                        <h6 class="fw-bold">Puntuación minima</h6>
+                        <h6 class="fw-bold">Puntuación mínima</h6>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="puntaje" value="" id="puntaje-todos" checked>
+                                <label class="form-check-label" for="puntaje-todos">
+                                    Todos los puntajes
+                                </label>
+                        </div>
 
                         @foreach ([1, 2, 3, 4, 5] as $puntaje)
 
-                            <div class="form-check">
+                        <div class="form-check">
 
-                                <input class="form-check-input" type="checkbox" name="puntajes[]" value="{{ $puntaje }}" id="puntaje-{{ $puntaje }}">
+                            <input class="form-check-input" type="radio" name="puntaje" value="{{ $puntaje }}" id="puntaje-{{ $puntaje }}">
 
                                 <label class="form-check-label" for="puntaje-{{ $puntaje }}">
                                     {{ $puntaje }} estrellas
                                 </label>
-                            </div>
+
+                        </div>
+
                         @endforeach
+
                     </div>
-                </form>
 
                     </div>
                         {{-- Botones --}}
