@@ -326,4 +326,32 @@ class ResenaTest extends TestCase
 
         $this->assertDatabaseCount('resenas', 0);
     }
+
+    public function test_resena_publica_muestra_trabajo_y_nombre_del_cliente(): void
+    {
+        $this->solicitud->resena()->create([
+            'puntaje' => 5,
+            'comentario' => 'Excelente trabajo.',
+        ]);
+
+        $respuesta = $this->get(route('profesional.show', [
+            'id' => $this->profesional->id,
+            'tab' => 'resenas',
+        ]));
+
+        $respuesta->assertOk();
+
+        // Información pública.
+        $respuesta->assertSee($this->solicitud->titulo);
+        $respuesta->assertSee($this->cliente->nombreCompleto());
+        $respuesta->assertSee('Excelente trabajo.');
+        $respuesta->assertSee('Trabajo verificado');
+        $respuesta->assertSee('data-resena-puntaje="5"', false);
+
+        // Información privada.
+        $respuesta->assertDontSee($this->cliente->usuario);
+        $respuesta->assertDontSee($this->cliente->email);
+        $respuesta->assertDontSee($this->cliente->telefono);
+        $respuesta->assertDontSee($this->solicitud->descripcion);
+    }
 }

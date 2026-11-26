@@ -294,7 +294,7 @@
                             @endphp
 
                             <div
-                                class="tarjeta-resena"
+                                class="tarjeta-resena border rounded-3 p-3 mb-3 bg-white"
                                 data-resena-inline
                                 data-resena-puntaje="{{ $resena->puntaje }}"
                             >
@@ -306,31 +306,16 @@
 
                                 <div class="flex-grow-1">
 
-                                    {{-- Encabezado de la reseña --}}
-                                    <div class="d-flex justify-content-between align-items-start">
+                                {{-- Encabezado de la reseña --}}
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
 
-                                        <strong>
+                                    <div>
+                                        <strong class="d-block text-break">
                                             {{ $resena->solicitud->cliente->nombreCompleto() }}
                                         </strong>
 
-                                        <small class="text-secondary">
-                                            {{ $resena->created_at->format('d/m/Y') }}
-                                        </small>
-
-                                    </div>
-
-                                    <small class="text-success">
-                                        <i data-lucide="badge-check"></i>
-                                        Trabajo verificado
-                                    </small>
-
-                                    {{-- Estado de lectura --}}
-                                    <div
-                                        data-resena-lectura
-                                        class="{{ $mostrarFormulario ? 'd-none' : '' }}"
-                                    >
-
-                                        <div class="my-1">
+                                        {{-- Puntuación del cliente --}}
+                                        <div class="d-flex align-items-center gap-1 mt-1">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 <i
                                                     data-lucide="star"
@@ -340,39 +325,69 @@
                                                 ></i>
                                             @endfor
                                         </div>
+                                    </div>
+
+                                    <small class="text-secondary text-nowrap">
+                                        {{ $resena->created_at->format('d/m/Y') }}
+                                    </small>
+
+                                </div>
+
+                                <hr class="my-2">
+
+                                    {{-- Trabajo asociado a la reseña --}}
+                                    <div class="mb-2">
+
+                                        <small class="text-success d-flex align-items-center gap-1 mb-1">
+                                            <i data-lucide="badge-check"></i>
+                                            Trabajo verificado
+                                        </small>
+
+                                        <div class="fw-semibold text-break">
+                                            {{ $resena->solicitud->titulo }}
+                                        </div>
+
+                                    </div>
+
+                                    {{-- Estado de lectura --}}
+                                    <div
+                                        data-resena-lectura
+                                        class="{{ $mostrarFormulario ? 'd-none' : '' }}"
+                                    >
 
                                         @if ($resena->comentario)
-                                            <p class="mb-0">
-                                                {{ $resena->comentario }}
-                                            </p>
+                                            <p class="mb-0 text-break" style="white-space: pre-line;">{{ $resena->comentario }}</p>
                                         @endif
 
-                                        <div class="resena-acciones gap-2">
+                                        @canany(['update', 'delete'], $resena)
 
-                                            @can('update', $resena)
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-eliminar-resena"
-                                                    data-resena-editar
-                                                >
-                                                    <i data-lucide="pencil"></i>
-                                                    Editar reseña
-                                                </button>
-                                            @endcan
+                                            <div class="resena-acciones gap-2">
 
-                                            @can('delete', $resena)
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-eliminar-resena"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modalEliminarResena{{ $resena->id }}"
-                                                >
-                                                    <i data-lucide="trash-2"></i>
-                                                    Eliminar reseña
-                                                </button>
-                                            @endcan
+                                                @can('update', $resena)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-eliminar-resena"
+                                                        data-resena-editar
+                                                    >
+                                                        <i data-lucide="pencil"></i>
+                                                        Editar reseña
+                                                    </button>
+                                                @endcan
 
-                                        </div>
+                                                @can('delete', $resena)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-eliminar-resena"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalEliminarResena{{ $resena->id }}"
+                                                    >
+                                                        <i data-lucide="trash-2"></i>
+                                                        Eliminar reseña
+                                                    </button>
+                                                @endcan
+
+                                            </div>
+                                        @endcanany
 
                                     </div>
 
