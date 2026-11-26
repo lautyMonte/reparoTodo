@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('apellido',50);
             $table->string('telefono',16);
             $table->string('imagen')->nullable();
+            $table->string('portada')->nullable();
             $table->string('email')->unique();
             $table->enum('tipo', ['cliente', 'profesional'])->default('cliente');
             $table->timestamp('email_verified_at')->nullable(); // nulllable() significa que no es obligatorio, puede ser nulo

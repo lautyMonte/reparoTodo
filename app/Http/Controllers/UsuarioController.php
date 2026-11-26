@@ -18,6 +18,7 @@ use Illuminate\Validation\ValidationException; // Contraseña
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class UsuarioController extends Controller
 {
@@ -248,9 +249,6 @@ class UsuarioController extends Controller
         Gate::authorize('update', $usuario);
 
         $validated = $request->validate([
-            'usuario' => ['required','string','max:20',
-                    Rule::unique('users', 'usuario')->ignore($usuario->id),
-            ],
             'nombre' => ['required', 'string', 'max:50'],
             'apellido' => ['required', 'string', 'max:50'],
             'telefono' => ['required', 'string', 'max:16'],
@@ -258,19 +256,41 @@ class UsuarioController extends Controller
                     Rule::unique('users', 'email')->ignore($usuario->id),
             ],
             'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png'])->max('2mb')],
+            'portada' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
         ]);
 
-        $datos = ['usuario' => $validated['usuario'],
-                  'nombre'=> $validated['nombre'],
+         // Guardar rutas de imágenes anteriores
+         $archivosAnteriores = [];
+
+        
+            
+            $datos = [ 'nombre'=> $validated['nombre'],
                   'apellido'=> $validated['apellido'],
                   'telefono'=> $validated['telefono'] ?? null,
                   'email' => $validated['email']];
 
-        if ($request->hasFile('imagen')) {
-            $datos['imagen'] = $request->file('imagen')->store('perfil', 'public');
+            if ($request->hasFile('imagen')) {
+            if ($usuario->imagen) {
+                $archivosAnteriores[] = $usuario->imagen;
+            }
+            $datos['imagen'] = $request->file('imagen')
+                ->store('perfil', 'public');
         }
 
-        $usuario->update($datos);
+        if ($request->hasFile('portada')) {
+            if ($usuario->portada) {
+                $archivosAnteriores[] = $usuario->portada;
+            }
+            $datos['portada'] = $request->file('portada')
+                ->store('portada', 'public');
+        }
+         $usuario->update($datos);
+        
+
+        //Eliminar imágenes anteriores después de confirmar la transacción
+        foreach (array_unique($archivosAnteriores) as $archivo) {
+            Storage::disk('public')->delete($archivo);
+        }
 
         return redirect()->route('usuario.edit')->with('success', 'Perfil actualizado correctamente.');
     }
