@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Resena;
 use App\Models\User;
+use App\Models\Solicitud;
 use Illuminate\Database\Seeder;
 
 class ResenaSeeder extends Seeder
@@ -45,14 +45,36 @@ class ResenaSeeder extends Seeder
         ];
 
         foreach ($datos as $emailProfesional => $resenas) {
-            $profesional = User::where('email', $emailProfesional)->first()->profesional;
+
+            $profesional = User::where('email', $emailProfesional)
+                ->firstOrFail()
+                ->profesional;
 
             foreach ($resenas as $resena) {
-                $cliente = User::where('email', $resena['cliente'])->first();
 
-                Resena::updateOrCreate(
-                    ['profesional_id' => $profesional->id, 'user_id' => $cliente->id],
-                    ['puntaje' => $resena['puntaje'], 'comentario' => $resena['comentario']]
+                $cliente = User::where('email', $resena['cliente'])
+                    ->firstOrFail();
+
+                // Crear una solicitud finalizada de prueba.
+                $solicitud = Solicitud::firstOrCreate(
+                    [
+                        'cliente_id' => $cliente->id,
+                        'profesional_id' => $profesional->id,
+                        'titulo' => 'Trabajo de prueba finalizado',
+                        'estado' => 'finalizada',
+                    ],
+                    [
+                        'descripcion' => 'Trabajo generado para probar las reseñas verificadas.',
+                    ]
+                );
+
+                // Crear o actualizar la reseña de la solicitud.
+                $solicitud->resena()->updateOrCreate(
+                    [],
+                    [
+                        'puntaje' => $resena['puntaje'],
+                        'comentario' => $resena['comentario'],
+                    ]
                 );
             }
         }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Profesional extends Model
 {
@@ -25,9 +26,15 @@ class Profesional extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function resenas(): HasMany
+    // Reseñas recibidas mediante las solicitudes de trabajo.
+    public function resenas(): HasManyThrough
     {
-        return $this->hasMany(Resena::class);
+        return $this->hasManyThrough(
+            Resena::class,
+            Solicitud::class,
+            'profesional_id',
+            'solicitud_id'
+        );
     }
 
     // Un profesional recibe muchas solicitudes de trabajo (1:N)

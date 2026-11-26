@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['titulo' => 'Términos y condiciones'])
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/tyc.css') }}">

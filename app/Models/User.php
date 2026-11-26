@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**para chatify*/
@@ -48,6 +49,17 @@ class User extends Authenticatable
     public function solicitudes(): HasMany
     {
         return $this->hasMany(Solicitud::class, 'cliente_id');
+    }
+
+    // Reseñas escritas por el cliente en sus solicitudes.
+    public function resenas(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Resena::class,
+            Solicitud::class,
+            'cliente_id',
+            'solicitud_id'
+        );
     }
 
     // Un usuario recibe muchas notificaciones. Se llama notificaciones (no notifications) para no chocar con el sistema propio de Laravel
@@ -137,7 +149,7 @@ class User extends Authenticatable
     public function avatar(): string
     {
         return $this->urlImagen($this->imagen)
-            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 5 + 1).'.svg');
+            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 10 + 1).'.svg');
     }
 
     #[Scope]

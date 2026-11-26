@@ -60,7 +60,7 @@ class ProfesionalController extends Controller
         $profesional = Profesional::with(
             'user',
             'oficios',
-            'resenas.user',
+            'resenas.solicitud.cliente',
             'ciudades.provincia'
         )
             ->withAvg('resenas', 'puntaje')

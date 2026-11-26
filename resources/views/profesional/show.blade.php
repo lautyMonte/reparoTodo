@@ -5,7 +5,11 @@
         $usuario = $profesional->user;
         $promedio = $profesional->resenas_avg_puntaje;
         $total    = $profesional->resenas_count;
-        $resenaPropia = $profesional->resenas->firstWhere('user_id', auth()->id());
+        $mostrarResenas = request()->query('tab') === 'resenas'
+            || (
+                old('origen') === 'perfil_profesional'
+                && ($errors->has('puntaje') || $errors->has('comentario'))
+            );
     @endphp
 
     <div class="detalle-pagina">
@@ -64,25 +68,45 @@
             <section class="col-lg-8">
 
                 <div class="detalle-tabs" role="tablist">
-                    <button type="button" class="detalle-tab active" id="tab-info" data-bs-toggle="tab"
-                        data-bs-target="#panel-info" role="tab" aria-controls="panel-info" aria-selected="true">
-                        <i data-lucide="info"></i> <span>Información</span>
+                    <button
+                        type="button"
+                        class="detalle-tab {{ $mostrarResenas ? '' : 'active' }}"
+                        id="tab-info"
+                        data-bs-toggle="tab"
+                        data-bs-target="#panel-info"
+                        role="tab"
+                        aria-controls="panel-info"
+                        aria-selected="{{ $mostrarResenas ? 'false' : 'true' }}"
+                    >
+                        <i data-lucide="info"></i>
+                        <span>Información</span>
                     </button>
                     <button type="button" class="detalle-tab" id="tab-trabajos" data-bs-toggle="tab"
                         data-bs-target="#panel-trabajos" role="tab" aria-controls="panel-trabajos"
                         aria-selected="false">
                         <i data-lucide="hammer"></i> <span>Trabajos</span>
                     </button>
-                    <button type="button" class="detalle-tab" id="tab-resenas" data-bs-toggle="tab"
-                        data-bs-target="#panel-resenas" role="tab" aria-controls="panel-resenas" aria-selected="false">
-                        <i data-lucide="message-square"></i> <span>Reseñas</span>
+                    <button
+                        type="button"
+                        class="detalle-tab {{ $mostrarResenas ? 'active' : '' }}"
+                        id="tab-resenas"
+                        data-bs-toggle="tab"
+                        data-bs-target="#panel-resenas"
+                        role="tab"
+                        aria-controls="panel-resenas"
+                        aria-selected="{{ $mostrarResenas ? 'true' : 'false' }}"
+                    >
+                        <i data-lucide="message-square"></i>
+                        <span>Reseñas</span>
                     </button>
                 </div>
 
                 <div class="tab-content detalle-tarjeta">
 
                     {{-- INFORMACION --}}
-                    <div class="tab-pane fade show active detalle-pane" id="panel-info" role="tabpanel"
+                    <div class="tab-pane fade detalle-pane {{ $mostrarResenas ? '' : 'show active' }}"
+                        id="panel-info"
+                        role="tabpanel"
                         aria-labelledby="tab-info">
                         <div class="dato-info">
                             <i data-lucide="map-pin"></i>
@@ -137,7 +161,9 @@
                     </div>
 
                     {{-- RESENAS --}}
-                    <div class="tab-pane fade detalle-pane" id="panel-resenas" role="tabpanel"
+                    <div class="tab-pane fade detalle-pane {{ $mostrarResenas ? 'show active' : '' }}"
+                        id="panel-resenas"
+                        role="tabpanel"
                         aria-labelledby="tab-resenas">
 
                         @if ($total > 0)
@@ -178,112 +204,229 @@
                         </div>
 
                         @forelse ($profesional->resenas as $resena)
-                            <div class="tarjeta-resena">
-                                <div class="inicial-resena">{{ mb_strtoupper(mb_substr($resena->user->nombreCompleto(), 0, 1)) }}
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <strong>{{ $resena->user->nombreCompleto() }}</strong>
-                                        <small class="text-secondary">{{ $resena->created_at->format('d/m/Y') }}</small>
-                                    </div>
-                                    <div class="my-1">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i data-lucide="star"
-                                                class="{{ $i <= $resena->puntaje ? 'estrella-llena' : 'estrella-vacia' }}"></i>
-                                        @endfor
-                                    </div>
-                                    @if ($resena->comentario)
-                                        <p class="mb-0">{{ $resena->comentario }}</p>
-                                    @endif
-                                    {{-- Solo el autor puede eliminar su reseña --}}
-                                    @if (auth()->id() === $resena->user_id)
-                                        <div class="resena-acciones">
-                                            <button
-                                                type="button"
-                                                class="btn btn-eliminar-resena"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalEliminarResena"
-                                            >
-                                                <i data-lucide="trash-2"></i>
-                                                Eliminar reseña
-                                            </button>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-secondary text-center mb-0">Este profesional todavía no tiene reseñas.</p>
-                        @endforelse
+                            @php
+                                $puedeEditar = auth()->user()?->can('update', $resena);
 
-                        {{-- Dejar reseña: solo clientes logueados (todavia sin funcionalidad) --}}
-                        @if (auth()->check() && auth()->user()->tipo === 'cliente')
-                            <div class="d-flex justify-content-center mt-3">
-                                <button type="button" class="btn btn-accent btn-detalle px-5" disabled>
-                                    <i data-lucide="pencil"></i> Dejar una reseña
-                                </button>
+                                $mostrarFormulario = $puedeEditar
+                                    && old('origen') === 'perfil_profesional'
+                                    && old('resena_editada') == $resena->id
+                                    && ($errors->has('puntaje') || $errors->has('comentario'));
+                            @endphp
+
+                            <div class="tarjeta-resena" data-resena-inline>
+
+                                {{-- Inicial del cliente --}}
+                                <div class="inicial-resena">
+                                    {{ mb_strtoupper(mb_substr($resena->solicitud->cliente->nombreCompleto(), 0, 1)) }}
+                                </div>
+
+                                <div class="flex-grow-1">
+
+                                    {{-- Encabezado de la reseña --}}
+                                    <div class="d-flex justify-content-between align-items-start">
+
+                                        <strong>
+                                            {{ $resena->solicitud->cliente->nombreCompleto() }}
+                                        </strong>
+
+                                        <small class="text-secondary">
+                                            {{ $resena->created_at->format('d/m/Y') }}
+                                        </small>
+
+                                    </div>
+
+                                    <small class="text-success">
+                                        <i data-lucide="badge-check"></i>
+                                        Trabajo verificado
+                                    </small>
+
+                                    {{-- Estado de lectura --}}
+                                    <div
+                                        data-resena-lectura
+                                        class="{{ $mostrarFormulario ? 'd-none' : '' }}"
+                                    >
+
+                                        <div class="my-1">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i
+                                                    data-lucide="star"
+                                                    class="{{ $i <= $resena->puntaje
+                                                        ? 'estrella-llena'
+                                                        : 'estrella-vacia' }}"
+                                                ></i>
+                                            @endfor
+                                        </div>
+
+                                        @if ($resena->comentario)
+                                            <p class="mb-0">
+                                                {{ $resena->comentario }}
+                                            </p>
+                                        @endif
+
+                                        <div class="resena-acciones gap-2">
+
+                                            @can('update', $resena)
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-eliminar-resena"
+                                                    data-resena-editar
+                                                >
+                                                    <i data-lucide="pencil"></i>
+                                                    Editar reseña
+                                                </button>
+                                            @endcan
+
+                                            @can('delete', $resena)
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-eliminar-resena"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalEliminarResena{{ $resena->id }}"
+                                                >
+                                                    <i data-lucide="trash-2"></i>
+                                                    Eliminar reseña
+                                                </button>
+                                            @endcan
+
+                                        </div>
+
+                                    </div>
+
+                                    {{-- Estado de edición --}}
+                                    @can('update', $resena)
+
+                                        <form
+                                            data-resena-edicion
+                                            class="mt-3 {{ $mostrarFormulario ? '' : 'd-none' }}"
+                                            action="{{ route('resenas.update', $resena) }}"
+                                            method="POST"
+                                            data-puntaje="{{ $resena->puntaje }}"
+                                            data-comentario="{{ $resena->comentario ?? '' }}"
+                                        >
+
+                                            @csrf
+                                            @method('PUT')
+
+                                            <input
+                                                type="hidden"
+                                                name="origen"
+                                                value="perfil_profesional"
+                                            >
+
+                                            <input
+                                                type="hidden"
+                                                name="resena_editada"
+                                                value="{{ $resena->id }}"
+                                            >
+
+                                            @include('resena.form', [
+                                                'resena' => $resena,
+                                                'prefijo' => 'resena-'.$resena->id,
+                                                'usarOld' => $mostrarFormulario
+                                            ])
+
+                                            <div class="d-flex justify-content-end gap-2">
+
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-cancelar"
+                                                    data-resena-cancelar
+                                                >
+                                                    Cancelar
+                                                </button>
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-accent"
+                                                >
+                                                    Guardar cambios
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+
+                                    @endcan
+
+                                </div>
+
                             </div>
-                        @endif
+
+                        @empty
+
+                            <p class="text-secondary text-center mb-0">
+                                Este profesional todavía no tiene reseñas.
+                            </p>
+
+                        @endforelse
                     </div>
                 </div>
             </section>
         </div>
     </div>
-    {{-- Modal de confirmación para eliminar reseña --}}
-    @if ($resenaPropia)
-        <div
-            class="modal fade modal-eliminar-resena"
-            id="modalEliminarResena"
-            tabindex="-1"
-            aria-labelledby="modalEliminarResenaLabel"
-            aria-hidden="true"
-        >
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content text-center p-4">
+    {{-- Modales de confirmación para eliminar reseñas --}}
+    @foreach ($profesional->resenas as $resena)
+        @can('delete', $resena)
 
-                    <div class="modal-body">
+            <div
+                class="modal fade modal-eliminar-resena"
+                id="modalEliminarResena{{ $resena->id }}"
+                tabindex="-1"
+                aria-labelledby="modalEliminarResenaLabel{{ $resena->id }}"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content text-center p-4">
 
-                        <i data-lucide="circle-alert" class="modal-resena-icono mb-3"></i>
+                        <div class="modal-body">
 
-                        <h4 id="modalEliminarResenaLabel">
-                            ¿Eliminar tu reseña?
-                        </h4>
+                            <i data-lucide="circle-alert"
+                                class="modal-resena-icono mb-3">
+                            </i>
 
-                        <p class="text-secondary mt-3">
-                            Tu comentario y puntuación se eliminarán
-                            definitivamente del perfil del profesional.
-                        </p>
+                            <h4 id="modalEliminarResenaLabel{{ $resena->id }}">
+                                ¿Eliminar tu reseña?
+                            </h4>
 
-                        <p class="fw-semibold">
-                            Esta acción no se puede deshacer.
-                        </p>
+                            <p class="text-secondary mt-3">
+                                Tu comentario y puntuación se eliminarán
+                                definitivamente del perfil del profesional.
+                            </p>
 
-                        <form
-                            action="{{ route('resenas.destroy', $resenaPropia) }}"
-                            method="POST"
-                            class="d-flex justify-content-center flex-wrap gap-2 mt-4"
-                        >
-                            @csrf
-                            @method('DELETE')
+                            <p class="fw-semibold">
+                                Esta acción no se puede deshacer.
+                            </p>
 
-                            <button
-                                type="button"
-                                class="btn btn-cancelar"
-                                data-bs-dismiss="modal"
+                            <form
+                                action="{{ route('resenas.destroy', $resena) }}"
+                                method="POST"
+                                class="d-flex justify-content-center flex-wrap gap-2 mt-4"
                             >
-                                Cancelar
-                            </button>
+                                @csrf
+                                @method('DELETE')
 
-                            <button
-                                type="submit"
-                                class="btn btn-rechazar-confirmar"
-                            >
-                                Sí, eliminar reseña
-                            </button>
-                        </form>
+                                <button
+                                    type="button"
+                                    class="btn btn-cancelar"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Cancelar
+                                </button>
 
+                                <button
+                                    type="submit"
+                                    class="btn btn-rechazar-confirmar"
+                                >
+                                    Sí, eliminar reseña
+                                </button>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+
+        @endcan
+    @endforeach
+    <script src="{{ asset('js/resena-inline.js') }}" defer></script>
 @endsection
