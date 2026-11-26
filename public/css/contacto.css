@@ -37,7 +37,8 @@
 }
 
 .campo input,
-.campo select {
+.campo select,
+#mensaje {
     height: 45px;
     padding: 0 16px;
     border: 1px solid #20395d;
@@ -65,7 +66,9 @@
     width: 30%;
     min-height: 150px;
     resize: vertical;
+    padding-top: 12px;
 }
+
 .campo select, option {
     color: #2B2D31;
 }

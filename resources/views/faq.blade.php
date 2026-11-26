@@ -5,6 +5,19 @@
 @endpush
 
 @section('contenido')
+
+    {{-- Enlace "Crear Cuenta": si esta logeado muestra modal de error --}}
+    @php
+        $usuarioActual = auth()->user();
+        $estaLogeado = $usuarioActual ?? null;
+
+        if ($usuarioActual == null) {
+            $urlOfrecer = route('usuario.registro');
+        } else {
+            $urlOfrecer = '#';
+        }
+    @endphp
+
     <div class="contenedor-tit">
         <h1>Preguntas Frecuentes</h1>
         <p>Encontrá respuestas a las dudas más comunes sobre ReparoTodo.</p>
@@ -97,8 +110,9 @@
 
             <div id="pregunta5" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
                 <div class="accordion-body acordeon-body">
-                    Ingresá en <a href="{{ route('usuario.create') }}" class="enlace">Crear Cuenta</a> y completa los campos con la información solicitada.<br>
-                    Luego en <a href="#" class="enlace">Agregar Servicios</a> podes optar por añadir servicios adicionales que realices.<br>
+                    Ingresá en <a href="{{ $urlOfrecer }}" class="enlace" @if ($estaLogeado) data-bs-toggle="modal" data-bs-target="#modalCrearCuenta" @endif class="btn btn-accent btn-lg fw-bold px-5">Crear Cuenta</a> y completa los campos
+                    con la información solicitada.<br>
+                    Luego en Agregar Servicios podes optar por añadir servicios adicionales que realices.<br>
                     Una vez registrado ya podes comenzar a ofrecer tus servicios.
                 </div>
             </div>
@@ -143,7 +157,8 @@
             <div id="pregunta7" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
                 <div class="accordion-body acordeon-body">
                     Si tenés alguna consulta, necesitás ayuda con tu cuenta o querés informar un inconveniente, podés
-                    comunicarte con nuestro equipo a través de la sección <a href="{{ route('contacto') }}" class="enlace">Contacto</a> de la plataforma.<br>
+                    comunicarte con nuestro equipo a través de la sección <a href="{{ route('contacto') }}"
+                        class="enlace">Contacto</a> de la plataforma.<br>
                     Completá el formulario con tus datos y una descripción de tu consulta para que podamos ayudarte.
                 </div>
             </div>
@@ -156,4 +171,21 @@
         <p>Escribinos y te responderemos a la brevedad</p>
         <a href="{{ route('contacto') }}" class="btn btn-faq">Contacto</a>
     </div>
+    @if ($estaLogeado != null)
+        <div class="modal fade" id="modalCrearCuenta" tabindex="-1" aria-labelledby="modalCrearCuentaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center p-4">
+                    <div class="modal-body">
+                        <i data-lucide="triangle-exclamation-point" class="icn-aviso mb-3"></i>
+                        <h4 id="modalCrearCuentaLabel">No podes crear una cuenta si estas logeado</h4>
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Volver</button>
+                            <a href="{{ route('usuario.salir') }}" class="btn btn-accent"><i data-lucide="log-out"></i>
+                                Cerrar sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
