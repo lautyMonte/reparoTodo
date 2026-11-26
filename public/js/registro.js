@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const tipo = document.getElementById('tipo');
     const camposProfesional = document.getElementById('campos-profesional');
     const provincia = document.getElementById('provincia');
-    const ciudad = document.getElementById('ciudad');
+    // const ciudad = document.getElementById('ciudad');
 
     function actualizarFormulario(tipoSeleccionado) {
 
