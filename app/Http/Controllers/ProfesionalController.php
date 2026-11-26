@@ -164,7 +164,7 @@ class ProfesionalController extends Controller
             ->get();
 
        // Filtrar por puntuación mínima
-    if ($puntaje !== null && $puntaje !== '') {
+    if (!empty($puntaje)) {
 
         $profesionales = $profesionales->filter(function ($profesional) use ($puntaje) {
 
