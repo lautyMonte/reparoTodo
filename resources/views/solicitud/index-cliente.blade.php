@@ -22,6 +22,10 @@
             <p class="text-secondary mb-0">Seguí tus pedidos y respondé a los presupuestos que te llegan.</p>
         </div>
 
+        <div id="aviso-nuevas" class="alert alert-warning text-center d-none" data-pendientes="{{ auth()->user()->pendientesDeRespuesta() }}">
+            Hay novedades en tus solicitudes. <a href="{{ request()->fullUrl() }}" class="alert-link">Actualizar</a>
+        </div>
+
         <div class="bandeja-tarjeta">
 
             {{-- Lista de solicitudes (izquierda) --}}
@@ -32,6 +36,8 @@
                     <a href="{{ route('solicitud.cliente.index', ['estado' => 'aceptada']) }}" class="bandeja-filtro {{ $estado === 'aceptada' ? 'activo' : '' }}">Aceptadas {{ $conteo->get('aceptada', 0) }}</a>
                     <a href="{{ route('solicitud.cliente.index', ['estado' => 'presupuestada']) }}" class="bandeja-filtro {{ $estado === 'presupuestada' ? 'activo' : '' }}">Presupuestadas {{ $conteo->get('presupuestada', 0) }}</a>
                     <a href="{{ route('solicitud.cliente.index', ['estado' => 'en_chat']) }}" class="bandeja-filtro {{ $estado === 'en_chat' ? 'activo' : '' }}">En chat {{ $conteo->get('en_chat', 0) }}</a>
+                    <a href="{{ route('solicitud.cliente.index', ['estado' => 'finalizada']) }}" class="bandeja-filtro {{ $estado === 'finalizada' ? 'activo' : '' }}">Finalizadas {{ $conteo->get('finalizada', 0) }}</a>
+                    <a href="{{ route('solicitud.cliente.index', ['estado' => 'cancelada']) }}" class="bandeja-filtro {{ $estado === 'cancelada' ? 'activo' : '' }}">Canceladas {{ $conteo->get('cancelada', 0) }}</a>
                 </div>
 
                 @forelse ($lista as $solicitud)
@@ -44,7 +50,7 @@
                                     @if ($conNovedades->contains($solicitud->id))
                                         <span class="bandeja-punto"></span>
                                     @endif
-                                    {{ $solicitud->profesional->user->usuario }}
+                                    {{ $solicitud->profesional->user->nombreCompleto() }}
                                 </span>
                                 <span class="bandeja-fecha">{{ $solicitud->created_at->timezone($zona)->format('d/m H:i') }}</span>
                             </div>
@@ -71,7 +77,7 @@
                         <div class="bandeja-de">
                             <img src="{{ $seleccionada->profesional->user->avatar() }}" alt="" class="bandeja-avatar">
                             <div>
-                                <div class="fw-bold bandeja-nombre">{{ $seleccionada->profesional->user->usuario }}</div>
+                                <div class="fw-bold bandeja-nombre">{{ $seleccionada->profesional->user->nombreCompleto() }}</div>
                                 <div class="small text-secondary">
                                     Le enviaste esta solicitud el {{ $seleccionada->created_at->timezone($zona)->format('d/m/Y') }}
                                     a las {{ $seleccionada->created_at->timezone($zona)->format('H:i') }}
@@ -114,7 +120,48 @@
                         @endif
                     </div>
 
+                    @php
+                        // Cierre del trabajo: ¿hay una propuesta esperando respuesta? ¿la hice yo?
+                        $hayPropuesta = $seleccionada->estado === 'en_chat' && $seleccionada->tieneCierrePendiente();
+                        $laHiceYo = $hayPropuesta && $seleccionada->cierre_propuesto_por === auth()->id();
+                        $esFinalizar = $seleccionada->cierre_tipo === 'finalizar';
+                        $profesional = $seleccionada->profesional->user->nombreCompleto();
+                    @endphp
+
                     <div class="bandeja-acciones">
+                        @if ($seleccionada->estado === 'finalizada')
+                            @include('partials.aviso-cierre', [
+                                'clase' => 'cerrado-fin',
+                                'icono' => 'circle-check',
+                                'titulo' => 'Trabajo finalizado',
+                                'texto' => 'Ustedes dos confirmaron que el trabajo está terminado. El chat con '.$profesional.' se cerró.',
+                            ])
+                        @endif
+                        @if ($seleccionada->estado === 'cancelada')
+                            @include('partials.aviso-cierre', [
+                                'clase' => 'cerrado-can',
+                                'icono' => 'ban',
+                                'titulo' => 'Trabajo cancelado',
+                                'texto' => 'Ustedes dos acordaron cancelar el trabajo. El chat con '.$profesional.' se cerró.',
+                            ])
+                        @endif
+                        @if ($hayPropuesta && ! $laHiceYo)
+                            @include('partials.aviso-cierre', [
+                                'clase' => $esFinalizar ? '' : 'cancelar',
+                                'icono' => $esFinalizar ? 'info' : 'triangle-alert',
+                                'titulo' => $profesional.' propone '.($esFinalizar ? 'finalizar' : 'cancelar').' el trabajo',
+                                'texto' => $esFinalizar ? 'Dice que el trabajo ya está terminado. ¿Estás de acuerdo?' : 'Dice que no va a poder hacerlo. ¿Estás de acuerdo en cancelarlo?',
+                            ])
+                        @endif
+                        @if ($laHiceYo)
+                            @include('partials.aviso-cierre', [
+                                'clase' => $esFinalizar ? '' : 'cancelar',
+                                'icono' => $esFinalizar ? 'info' : 'triangle-alert',
+                                'titulo' => 'Esperando respuesta de '.$profesional,
+                                'texto' => 'Propusiste '.($esFinalizar ? 'finalizar' : 'cancelar').' el trabajo. Te avisamos cuando responda.',
+                            ])
+                        @endif
+
                         <div class="bandeja-botones">
                             <span></span>
                             <div class="bandeja-botones-centro">
@@ -128,22 +175,58 @@
                                 @if ($seleccionada->estado === 'en_chat')
                                     <button type="button" class="btn btn-accent fw-semibold btn-abrir-chat"
                                             data-usuario-id="{{ $seleccionada->profesional->user->id }}"
-                                            data-nombre="{{ $seleccionada->profesional->user->usuario }}"
+                                            data-nombre="{{ $seleccionada->profesional->user->nombreCompleto() }}"
                                             data-avatar="{{ $seleccionada->profesional->user->avatar() }}">
                                         <i data-lucide="message-circle"></i> Abrir chat
                                     </button>
+                                    @if (! $hayPropuesta)
+                                        <form action="{{ route('cierre.proponer', $seleccionada->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="tipo" value="finalizar">
+                                            <button type="submit" class="btn btn-aceptar fw-semibold"><i data-lucide="check"></i> Finalizar trabajo</button>
+                                        </form>
+                                        <form action="{{ route('cierre.proponer', $seleccionada->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="tipo" value="cancelar">
+                                            <button type="submit" class="btn btn-rechazar fw-semibold"><i data-lucide="x"></i> Cancelar trabajo</button>
+                                        </form>
+                                    @elseif ($laHiceYo)
+                                        <form action="{{ route('cierre.retirar', $seleccionada->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-cancelar fw-semibold"><i data-lucide="undo-2"></i> Retirar propuesta</button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('cierre.aceptar', $seleccionada->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-aceptar fw-semibold"><i data-lucide="check"></i> Aceptar</button>
+                                        </form>
+                                        <form action="{{ route('cierre.rechazar', $seleccionada->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-rechazar fw-semibold"><i data-lucide="x"></i> Rechazar</button>
+                                        </form>
+                                    @endif
                                 @endif
                             </div>
                             <a href="{{ route('contacto') }}" class="btn btn-soporte"><i data-lucide="life-buoy"></i> Soporte</a>
                         </div>
                         @if ($seleccionada->estado === 'pendiente')
-                            <p class="bandeja-ayuda">Esperando que {{ $seleccionada->profesional->user->usuario }} responda tu solicitud.</p>
-                        @elseif ($seleccionada->estado === 'aceptada')
-                            <p class="bandeja-ayuda">{{ $seleccionada->profesional->user->usuario }} aceptó tu solicitud y te va a enviar un presupuesto.</p>
-                        @elseif ($seleccionada->estado === 'presupuestada')
-                            <p class="bandeja-ayuda">Si aceptás, se abre el chat con {{ $seleccionada->profesional->user->usuario }} para coordinar el trabajo. Si rechazás, el presupuesto se elimina para ambos y {{ $seleccionada->profesional->user->usuario }} recibe un aviso.</p>
-                        @elseif ($seleccionada->estado === 'en_chat')
-                            <p class="bandeja-ayuda">Aceptaste el presupuesto. Ya podés hablar con {{ $seleccionada->profesional->user->usuario }} por el chat para coordinar el trabajo.</p>
+                            <p class="bandeja-ayuda">Esperando que {{ $seleccionada->profesional->user->nombreCompleto() }} responda tu solicitud.</p>
+                        @endif
+                        @if ($seleccionada->estado === 'aceptada')
+                            <p class="bandeja-ayuda">{{ $seleccionada->profesional->user->nombreCompleto() }} aceptó tu solicitud y te va a enviar un presupuesto.</p>
+                        @endif
+                        @if ($seleccionada->estado === 'presupuestada')
+                            <p class="bandeja-ayuda">Si aceptás, se abre el chat con {{ $seleccionada->profesional->user->nombreCompleto() }} para coordinar el trabajo. Si rechazás, el presupuesto se elimina para ambos y {{ $seleccionada->profesional->user->nombreCompleto() }} recibe un aviso.</p>
+                        @endif
+                        @if ($seleccionada->estado === 'en_chat' && ! $hayPropuesta)
+                            <p class="bandeja-ayuda">Aceptaste el presupuesto. Cuando termine el trabajo, confirmalo con “Finalizar trabajo”. Si no se hace, usá “Cancelar trabajo”. En los dos casos la otra persona tiene que estar de acuerdo.</p>
+                        @endif
+                        @if ($hayPropuesta && ! $laHiceYo)
+                            <p class="bandeja-ayuda">Si aceptás, el trabajo queda {{ $esFinalizar ? 'finalizado' : 'cancelado' }} y se cierra el chat con {{ $profesional }}. Si rechazás, el trabajo sigue en chat.</p>
+                        @endif
+                        @if ($laHiceYo)
+                            <p class="bandeja-ayuda">Si {{ $profesional }} acepta, el trabajo queda {{ $esFinalizar ? 'finalizado' : 'cancelado' }}. Mientras tanto, el trabajo sigue en chat.</p>
                         @endif
                     </div>
                 @else
@@ -163,7 +246,7 @@
                         <div class="modal-body">
                             <i data-lucide="circle-alert" class="icn-rechazo mb-3"></i>
                             <h4 id="modalRechazarLabel">¿Rechazar este presupuesto?</h4>
-                            <p>Se elimina para ambos y {{ $seleccionada->profesional->user->usuario }} recibe un aviso. Esta acción no se puede deshacer.</p>
+                            <p>Se elimina para ambos y {{ $seleccionada->profesional->user->nombreCompleto() }} recibe un aviso. Esta acción no se puede deshacer.</p>
                             <form action="{{ route('presupuesto.rechazar', $seleccionada->id) }}" method="POST" class="d-flex justify-content-center gap-2 mt-3">
                                 @csrf
                                 <button type="button" class="btn btn-detalle btn-cancelar" data-bs-dismiss="modal">Cancelar</button>

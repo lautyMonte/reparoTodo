@@ -24,24 +24,19 @@
     <div class="catalogo-grid">
 
         @php
-            $presentacion = [
-                'Albañilería' => ['Albañil', 'box'],
-                'Carpintería' => ['Carpintero', 'hammer'],
-                'Cerrajería' => ['Cerrajero', 'key-round'],
-                'Electricidad' => ['Electricista', 'zap'],
-                'Fletes' => ['Fletero', 'truck'],
-                'Gas' => ['Gasista', 'flame'],
-                'Pintura' => ['Pintor', 'paint-roller'],
-                'Plomería' => ['Plomero', 'droplet'],
+            $iconos = [
+                'Albañil' => 'box',
+                'Carpintero' => 'hammer',
+                'Cerrajero' => 'key-round',
+                'Electricista' => 'zap',
+                'Fletero' => 'truck',
+                'Gasista' => 'flame',
+                'Pintor' => 'paint-roller',
+                'Plomero' => 'droplet',
             ];
         @endphp
 
         @forelse ($oficios as $oficio)
-
-            @php
-                [$nombre, $icono] = $presentacion[$oficio->tipo]
-                    ?? [$oficio->tipo, 'wrench'];
-            @endphp
 
             <a
                 href="{{ route('profesional.index', [
@@ -49,10 +44,10 @@
                 ]) }}"
                 class="tarjeta-oficio"
             >
-                <i data-lucide="{{ $icono }}"
+                <i data-lucide="{{ $iconos[$oficio->tipo] ?? 'wrench' }}"
                    aria-hidden="true"></i>
 
-                <span>{{ $nombre }}</span>
+                <span>{{ $oficio->tipo }}</span>
             </a>
 
         @empty

@@ -319,3 +319,14 @@
         font-size: 32px;
     }
 }
+
+/* Tom Select esconde el select real. Lo anclamos abajo de su selector para que
+   el aviso del navegador aparezca junto al campo que falla */
+#campos-profesional > div {
+    position: relative;
+}
+
+#campos-profesional > div > select.ts-hidden-accessible {
+    left: 0;
+    bottom: 0;
+}

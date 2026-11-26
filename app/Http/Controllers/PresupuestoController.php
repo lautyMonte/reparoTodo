@@ -58,12 +58,12 @@ class PresupuestoController extends Controller
             'user_id' => $solicitud->cliente_id,
             'solicitud_id' => $solicitud->id,
             'tipo' => 'presupuesto_nuevo',
-            'mensaje' => $request->user()->usuario.' te envió un presupuesto para «'.$solicitud->titulo.'»',
+            'mensaje' => $request->user()->nombreCompleto().' te envió un presupuesto para «'.$solicitud->titulo.'»',
         ]);
 
         return redirect()
             ->route('solicitud.show', $solicitud->id)
-            ->with('exito', 'Enviaste el presupuesto. Le avisamos a '.$solicitud->cliente->usuario.'.');
+            ->with('exito', 'Enviaste el presupuesto. Le avisamos a '.$solicitud->cliente->nombreCompleto().'.');
     }
 
     /** Busca una solicitud aceptada que sea de este profesional (si no, da error 404) */
@@ -87,12 +87,12 @@ class PresupuestoController extends Controller
             'user_id' => $solicitud->profesional->user_id,
             'solicitud_id' => $solicitud->id,
             'tipo' => 'presupuesto_aceptado',
-            'mensaje' => $request->user()->usuario.' aceptó tu presupuesto para «'.$solicitud->titulo.'»',
+            'mensaje' => $request->user()->nombreCompleto().' aceptó tu presupuesto para «'.$solicitud->titulo.'»',
         ]);
 
         return redirect()
             ->route('solicitud.cliente.show', $solicitud->id)
-            ->with('exito', 'Aceptaste el presupuesto. Le avisamos a '.$solicitud->profesional->user->usuario.'.');
+            ->with('exito', 'Aceptaste el presupuesto. Le avisamos a '.$solicitud->profesional->user->nombreCompleto().'.');
     }
 
     /** El cliente rechaza el presupuesto (queda guardado pero deja de verse) */
@@ -107,12 +107,12 @@ class PresupuestoController extends Controller
             'user_id' => $solicitud->profesional->user_id,
             'solicitud_id' => $solicitud->id,
             'tipo' => 'presupuesto_rechazado',
-            'mensaje' => $request->user()->usuario.' rechazó tu presupuesto para «'.$solicitud->titulo.'»',
+            'mensaje' => $request->user()->nombreCompleto().' rechazó tu presupuesto para «'.$solicitud->titulo.'»',
         ]);
 
         return redirect()
             ->route('solicitud.cliente.index')
-            ->with('exito', 'Rechazaste el presupuesto. Le avisamos a '.$solicitud->profesional->user->usuario.'.');
+            ->with('exito', 'Rechazaste el presupuesto. Le avisamos a '.$solicitud->profesional->user->nombreCompleto().'.');
     }
 
     /** Busca una solicitud presupuestada que sea de este cliente (si no, da error 404) */

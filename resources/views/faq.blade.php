@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['titulo' => 'Preguntas frecuentes'])
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/faq.css') }}">

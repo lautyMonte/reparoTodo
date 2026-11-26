@@ -22,7 +22,7 @@
                 <div class="detalle-tarjeta detalle-lateral">
                     <div class="detalle-tapa"></div>
                     <div class="detalle-lateral-cuerpo">
-                        <img class="detalle-foto" src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->usuario }}">
+                        <img class="detalle-foto" src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->nombreCompleto() }}">
                         <h1 class="h3 mb-2">{{ $usuario->nombreCompleto() }}</h1>
 
                         <span class="pill-valoracion puntaje">
@@ -39,8 +39,7 @@
                         <div class="detalle-separador"></div>
 
                         <div>
-                            @if ($esDuenio)
-                                <p class="text-secondary small mb-0">Así ven tu perfil los clientes.</p>
+                            @if ($esDuenio)             
                             @elseif (auth()->check() && auth()->user()->tipo === 'cliente')
                                 <a href="{{ route('solicitud.create', $profesional->id) }}"
                                     class="btn btn-accent btn-detalle w-100">
@@ -51,6 +50,11 @@
                                     <i data-lucide="briefcase"></i> Solicitar trabajo
                                 </a>
                             @endif
+                            @can('update', $profesional)
+                                <a href="{{ route('profesional.edit') }}" class="btn btn-accent btn-detalle w-100">
+                                    <i data-lucide="pencil"></i>Editar mi perfil</a>
+
+                            @endcan
                         </div>
                     </div>
                 </div>

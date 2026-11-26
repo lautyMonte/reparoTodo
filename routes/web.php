@@ -21,8 +21,7 @@ Route::post('/ingresar',[UsuarioController::class,'verifica'])->name('usuario.ve
 Route::get('/salir',[UsuarioController::class,'salir'])->name('usuario.salir');
 Route::get('/nuevo',[UsuarioController::class,'create'])->name('usuario.create');
 Route::post('/nuevo',[UsuarioController::class,'store'])->name('usuario.store');
-Route::get('/oficios', [OficioController::class, 'index'])
-    ->name('oficio.index');
+Route::get('/oficios', [OficioController::class, 'index'])->name('oficio.index');
 
 // Mostrar formulario de contacto
 Route::view('/contacto', 'contacto')->name('contacto');
@@ -47,6 +46,9 @@ Route::middleware('cliente')->group(function () {
     Route::get('/mis-solicitudes/{id}', [SolicitudController::class, 'showCliente'])->whereNumber('id')->name('solicitud.cliente.show');
     Route::post('/mis-solicitudes/{id}/presupuesto/aceptar', [PresupuestoController::class, 'aceptar'])->whereNumber('id')->name('presupuesto.aceptar');
     Route::post('/mis-solicitudes/{id}/presupuesto/rechazar', [PresupuestoController::class, 'rechazar'])->whereNumber('id')->name('presupuesto.rechazar');
+
+    Route::get('/cuenta/editar', [UsuarioController::class, 'edit'])->name('usuario.edit');
+    Route::put('/cuenta/actualizar', [UsuarioController::class, 'update'])->name('usuario.update');
 });
 
 Route::middleware('profesional')->group(function () {
@@ -56,12 +58,23 @@ Route::middleware('profesional')->group(function () {
     Route::post('/bandeja/{id}/rechazar', [SolicitudController::class, 'rechazar'])->whereNumber('id')->name('solicitud.rechazar');
     Route::get('/bandeja/{id}/presupuesto', [PresupuestoController::class, 'create'])->whereNumber('id')->name('presupuesto.create');
     Route::post('/bandeja/{id}/presupuesto', [PresupuestoController::class, 'store'])->whereNumber('id')->name('presupuesto.store');
+
+    Route::get('/mi-perfil/editar', [ProfesionalController::class, 'edit'])->name('profesional.edit');
+    Route::put('/mi-perfil/actualizar', [ProfesionalController::class, 'update'])->name('profesional.update');
 });
 
 
 Route::delete('/resenas/{resena}', [ResenaController::class, 'destroy'])
     ->middleware('auth')
     ->name('resenas.destroy');
+
+// Cierre del trabajo: lo proponen y lo responden tanto el cliente como el profesional
+Route::middleware('auth')->group(function () {
+    Route::post('/solicitudes/{id}/cierre', [SolicitudController::class, 'proponerCierre'])->whereNumber('id')->name('cierre.proponer');
+    Route::post('/solicitudes/{id}/cierre/aceptar', [SolicitudController::class, 'aceptarCierre'])->whereNumber('id')->name('cierre.aceptar');
+    Route::post('/solicitudes/{id}/cierre/rechazar', [SolicitudController::class, 'rechazarCierre'])->whereNumber('id')->name('cierre.rechazar');
+    Route::delete('/solicitudes/{id}/cierre', [SolicitudController::class, 'retirarCierre'])->whereNumber('id')->name('cierre.retirar');
+});
 
 // Notificaciones: para cualquier usuario con sesion iniciada
 Route::middleware('auth')->group(function () {

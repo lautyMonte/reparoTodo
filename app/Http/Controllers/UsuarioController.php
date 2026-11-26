@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException; // Contraseña
 // Usuario logueado
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class UsuarioController extends Controller
 {
@@ -223,5 +225,52 @@ class UsuarioController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('usuario.registro');
+    }
+
+    public function edit(Request $request)
+    {
+        $usuario = $request->user();
+
+        Gate::authorize('update', $usuario);
+
+        return view('perfil.edit', [
+            'usuario' => $usuario,
+            'profesional' => null,
+            'oficios' => null,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $usuario = $request->user();
+
+        Gate::authorize('update', $usuario);
+
+        $validated = $request->validate([
+            'usuario' => ['required','string','max:20',
+                    Rule::unique('users', 'usuario')->ignore($usuario->id),
+            ],
+            'nombre' => ['required', 'string', 'max:50'],
+            'apellido' => ['required', 'string', 'max:50'],
+            'telefono' => ['required', 'string', 'max:16'],
+            'email' => ['required','email',
+                    Rule::unique('users', 'email')->ignore($usuario->id),
+            ],
+            'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png'])->max('2mb')],
+        ]);
+
+        $datos = ['usuario' => $validated['usuario'],
+                  'nombre'=> $validated['nombre'],
+                  'apellido'=> $validated['apellido'],
+                  'telefono'=> $validated['telefono'] ?? null,
+                  'email' => $validated['email']];
+
+        if ($request->hasFile('imagen')) {
+            $datos['imagen'] = $request->file('imagen')->store('perfil', 'public');
+        }
+
+        $usuario->update($datos);
+
+        return redirect()->route('usuario.edit')->with('success', 'Perfil actualizado correctamente.');
     }
 }

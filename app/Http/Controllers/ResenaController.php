@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Resena;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ResenaController extends Controller
 {
-    public function destroy(Request $request, Resena $resena): RedirectResponse
+    public function destroy(Resena $resena): RedirectResponse
     {
-        // Solo el autor puede eliminar su reseña.
-        abort_unless($resena->user_id === $request->user()->id, 403);
+        // Solo el autor puede eliminar su reseña (lo decide ResenaPolicy).
+        Gate::authorize('delete', $resena);
 
         // Guardamos el profesional para volver a su perfil.
         $profesionalId = $resena->profesional_id;

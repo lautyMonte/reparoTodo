@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Ciudad;
 use App\Models\Oficio;
 use App\Models\Profesional;
+use App\Models\Provincia;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ProfesionalController extends Controller
 {
@@ -130,7 +134,13 @@ class ProfesionalController extends Controller
             // Buscar por nombre
             ->when($buscar !== '', function ($query) use ($buscar) {
                 $query->whereHas('user', function ($q) use ($buscar) {
-                    $q->where('usuario', 'LIKE', "%{$buscar}%");
+                    // Cada palabra escrita tiene que estar en el nombre o en el apellido
+                    foreach (explode(' ', $buscar) as $palabra) {
+                        $q->where(function ($subconsulta) use ($palabra) {
+                            $subconsulta->where('nombre', 'LIKE', "%{$palabra}%")
+                                ->orWhere('apellido', 'LIKE', "%{$palabra}%");
+                        });
+                    }
                 });
             })
 
@@ -175,4 +185,81 @@ class ProfesionalController extends Controller
             )->render(),
         ]);
     }
+    
+     public function edit(Request $request)
+    {
+        $usuario = $request->user();
+
+        $profesional = $usuario->profesional()->with('oficios', 'ciudades')->firstOrFail();
+
+        Gate::authorize('update', $profesional);
+
+        $oficios = Oficio::all();
+
+        $provincias = Provincia::with('ciudades')->orderBy('nombre')->get();
+
+        return view('perfil.edit', compact('usuario', 'profesional', 'oficios', 'provincias'));
+    }
+
+    public function update(Request $request)
+    {
+        $usuario = $request->user();
+
+        $profesional = $usuario->profesional()->firstOrFail();
+
+        Gate::authorize('update', $profesional);
+
+        $validated = $request->validate([
+
+        // Datos del usuario
+        'usuario' => ['required','string','max:20',
+                    Rule::unique('users', 'usuario')->ignore($usuario->id),
+            ],
+            'nombre' => ['required', 'string', 'max:50'],
+            'apellido' => ['required', 'string', 'max:50'],
+            'telefono' => ['required', 'string', 'max:16'],
+            'email' => ['required','email',
+                    Rule::unique('users', 'email')->ignore($usuario->id),
+            ],
+            'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
+
+        // Ciudades donde trabaja
+        'ciudades' => ['required', 'array', 'min:1'],
+
+        'ciudades.*' => ['required', 'integer', 'distinct', 'exists:ciudades,id'],
+
+        // Oficios
+        'oficios' => ['required', 'array', 'min:1'],
+
+        'oficios.*' => ['required','integer','distinct','exists:oficios,id'],
+        ]);
+
+        DB::transaction(function () use ($request, $usuario,$profesional,$validated) 
+        {
+
+        // Datos del usuario
+        $datosUsuario = ['usuario' => $validated['usuario'],
+                  'nombre'=> $validated['nombre'],
+                  'apellido'=> $validated['apellido'],
+                  'telefono'=> $validated['telefono'] ?? null,
+                  'email' => $validated['email']
+        ];
+
+        if ($request->hasFile('imagen')) {
+            $datosUsuario['imagen'] = $request->file('imagen')->store('perfil', 'public');
+        }
+        
+
+        $usuario->update($datosUsuario);
+
+        // Actualizar ciudades
+        $profesional->ciudades()->sync($validated['ciudades']);
+
+        // Actualizar oficios
+        $profesional->oficios()->sync($validated['oficios']);
+    });
+
+    return redirect()->route('profesional.edit')->with('success', 'Perfil profesional actualizado correctamente.');
+    }
 }
+

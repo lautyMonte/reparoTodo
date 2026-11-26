@@ -57,18 +57,23 @@ class User extends Authenticatable
     }
 
     // Cuantas cosas le estan esperando a este usuario segun su rol:
-    // profesional = solicitudes por aceptar o rechazar, y aceptadas a las que les falta el presupuesto
-    // cliente = presupuestos que tiene que aceptar o rechazar
+    // profesional = solicitudes por aceptar o rechazar, aceptadas a las que les falta el presupuesto,
+    // y propuestas de cierre que le hizo un cliente
+    // cliente = presupuestos que tiene que aceptar o rechazar, y propuestas de cierre que le hizo un profesional
     public function pendientesDeRespuesta(): int
     {
         $cantidad = 0;
 
         if ($this->tipo === 'profesional' && $this->profesional) {
             $cantidad = $this->profesional->solicitudes()->whereIn('estado', ['pendiente', 'aceptada'])->count();
+            $cantidad += $this->profesional->solicitudes()->where('estado', 'en_chat')
+                ->whereNotNull('cierre_propuesto_por')->where('cierre_propuesto_por', '!=', $this->id)->count();
         }
 
         if ($this->tipo === 'cliente') {
             $cantidad = $this->solicitudes()->where('estado', 'presupuestada')->count();
+            $cantidad += $this->solicitudes()->where('estado', 'en_chat')
+                ->whereNotNull('cierre_propuesto_por')->where('cierre_propuesto_por', '!=', $this->id)->count();
         }
 
         return $cantidad;
@@ -132,7 +137,7 @@ class User extends Authenticatable
     public function avatar(): string
     {
         return $this->urlImagen($this->imagen)
-            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 5 + 1).'.svg');
+            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 10 + 1).'.svg');
     }
 
     #[Scope]
