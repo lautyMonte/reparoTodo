@@ -245,14 +245,43 @@
                             </div>
                         @endif
 
-                        {{-- Filtros por estrellas (todavia sin funcionalidad) --}}
+                        {{-- Filtros por estrellas --}}
                         <div class="filtro-estrellas">
-                            <button type="button" class="btn-filtro-estrella activo">Todas</button>
+
+                            <button
+                                type="button"
+                                class="btn-filtro-estrella activo"
+                                data-filtro-puntaje="todas"
+                                aria-pressed="true"
+                            >
+                                Todas
+                            </button>
+
                             @foreach ([5, 4, 3, 2, 1] as $estrellas)
-                                <button type="button" class="btn-filtro-estrella">{{ $estrellas }} <i
-                                        data-lucide="star"></i></button>
+
+                                <button
+                                    type="button"
+                                    class="btn-filtro-estrella"
+                                    data-filtro-puntaje="{{ $estrellas }}"
+                                    aria-pressed="false"
+                                >
+                                    {{ $estrellas }}
+                                    <i data-lucide="star"></i>
+                                </button>
+
                             @endforeach
+
                         </div>
+
+                        @if ($total > 0)
+                            <p
+                                id="resenas-sin-resultados"
+                                class="text-secondary text-center py-3 d-none"
+                                role="status"
+                            >
+                                No hay reseñas con esta puntuación.
+                            </p>
+                        @endif
 
                         @forelse ($profesional->resenas as $resena)
                             @php
@@ -264,7 +293,11 @@
                                     && ($errors->has('puntaje') || $errors->has('comentario'));
                             @endphp
 
-                            <div class="tarjeta-resena" data-resena-inline>
+                            <div
+                                class="tarjeta-resena"
+                                data-resena-inline
+                                data-resena-puntaje="{{ $resena->puntaje }}"
+                            >
 
                                 {{-- Inicial del cliente --}}
                                 <div class="inicial-resena">
@@ -506,5 +539,6 @@
 
     @endif
 
-    <script src="{{ asset('js/resena-inline.js') }}" defer></script>
+<script src="{{ asset('js/resena-inline.js') }}" defer></script>
+<script src="{{ asset('js/resena-filtros.js') }}" defer></script>
 @endsection
