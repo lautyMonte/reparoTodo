@@ -47,12 +47,21 @@
     @include('partials.header')
 
     <main class="container py-4 flex-grow-1">
-        {{-- Mensajes que mandan los controladores con ->with('error', ...) o ->with('exito', ...) --}}
+
+        {{-- Mensajes que mandan los controladores --}}
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
+
         @if (session('exito') && !request()->routeIs('contacto'))
             <div class="alert alert-success">{{ session('exito') }}</div>
+        @endif
+
+        {{-- Mensajes de advertencia --}}
+        @if (session('advertencia'))
+            <div class="alert alert-warning">
+                {{ session('advertencia') }}
+            </div>
         @endif
 
         @include('partials.errores-validacion')

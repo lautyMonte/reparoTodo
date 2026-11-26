@@ -9,6 +9,7 @@ use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\OficioController;
 use App\Http\Controllers\ResenaController;
+use App\Http\Controllers\PublicacionController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -78,6 +79,22 @@ Route::middleware(['auth', 'cliente'])->group(function () {
     Route::delete('/resenas/{resena}',
         [ResenaController::class, 'destroy'])
         ->name('resenas.destroy');
+});
+
+// Gestión de publicaciones de trabajos finalizados.
+Route::middleware(['auth', 'profesional'])->group(function () {
+
+    Route::post('/solicitudes/{solicitud}/publicacion',
+        [PublicacionController::class, 'store'])
+        ->name('publicaciones.store');
+
+    Route::put('/publicaciones/{publicacion}',
+        [PublicacionController::class, 'update'])
+        ->name('publicaciones.update');
+
+    Route::delete('/publicaciones/{publicacion}',
+        [PublicacionController::class, 'destroy'])
+        ->name('publicaciones.destroy');
 });
 
 // Cierre del trabajo: lo proponen y lo responden tanto el cliente como el profesional

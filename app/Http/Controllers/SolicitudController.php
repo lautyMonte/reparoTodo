@@ -120,6 +120,9 @@ class SolicitudController extends Controller
 
         // Al abrirla queda leida, ella y sus notificaciones
         if ($seleccionada !== null) {
+
+            $seleccionada->load('publicacion.fotos');
+
             if (! $seleccionada->leida_profesional) {
                 $seleccionada->update(['leida_profesional' => true]);
             }

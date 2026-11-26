@@ -37,6 +37,17 @@ class Profesional extends Model
         );
     }
 
+    // Publicaciones realizadas a través de sus solicitudes.
+    public function publicaciones(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Publicacion::class,
+            Solicitud::class,
+            'profesional_id',
+            'solicitud_id'
+        );
+    }
+
     // Un profesional recibe muchas solicitudes de trabajo (1:N)
     public function solicitudes(): HasMany
     {
