@@ -14,35 +14,35 @@ class OficioSeeder extends Seeder
     {
         //
         Oficio::updateOrCreate([
-            'tipo' => 'Plomería',
+            'tipo' => 'Plomero',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Electricidad',
+            'tipo' => 'Electricista',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Gas',
+            'tipo' => 'Gasista',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Cerrajería',
+            'tipo' => 'Cerrajero',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Albañilería',
+            'tipo' => 'Albañil',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Carpintería',
+            'tipo' => 'Carpintero',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Fletes',
+            'tipo' => 'Fletero',
         ]);
 
         Oficio::updateOrCreate([
-            'tipo' => 'Pintura',
+            'tipo' => 'Pintor',
         ]);
     }
 }

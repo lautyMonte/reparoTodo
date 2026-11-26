@@ -2,9 +2,18 @@
 
 @section('contenido')
 
-    {{-- Link del boton "Ofrecer servicios": sin sesion va al login; con sesion queda en "#" hasta que exista esa pantalla --}}
+    {{-- Boton "Ofrecer servicios": sin sesion va al login; el profesional va a su perfil; el cliente ve un aviso --}}
     @php
-        $urlOfrecer = auth()->check() ? '#' : route('usuario.registro');
+        $usuarioActual = auth()->user();
+        $esCliente = $usuarioActual && $usuarioActual->tipo === 'cliente';
+
+        if (! $usuarioActual) {
+            $urlOfrecer = route('usuario.registro');
+        } elseif ($usuarioActual->profesional) {
+            $urlOfrecer = route('profesional.show', $usuarioActual->profesional->id);
+        } else {
+            $urlOfrecer = '#';
+        }
     @endphp
 
     {{-- ========== 1. CARRUSEL PRINCIPAL ========== --}}
@@ -32,7 +41,7 @@
                 <div class="slide-rt" style="background-image: url('{{ asset('img/home/slide-profesional.avif') }}')">
                     <div class="slide-contenido">
                         <h1>Conseguí clientes cerca tuyo</h1>
-                        <a href="{{ $urlOfrecer }}" class="btn btn-accent btn-lg fw-bold px-5">Ofrecer servicios</a>
+                        <a href="{{ $urlOfrecer }}" @if ($esCliente) data-bs-toggle="modal" data-bs-target="#modalOfrecer" @endif class="btn btn-accent btn-lg fw-bold px-5">Ofrecer servicios</a>
                     </div>
                 </div>
             </div>
@@ -213,7 +222,7 @@
                     </li>
                 </ul>
 
-                <a href="{{ $urlOfrecer }}" class="btn btn-accent btn-lg fw-bold px-5">Ofrecer servicios</a>
+                <a href="{{ $urlOfrecer }}" @if ($esCliente) data-bs-toggle="modal" data-bs-target="#modalOfrecer" @endif class="btn btn-accent btn-lg fw-bold px-5">Ofrecer servicios</a>
             </div>
 
             <div class="col-lg-5 offset-lg-1">
@@ -233,7 +242,7 @@
                             <span class="chip-oficio">Cerrajero</span>
                         </div>
 
-                        <p class="small text-muted mb-1"><i data-lucide="map-pin"></i> Cipolletti, Río Negro</p>
+                        <p class="small text-muted mb-1"><i data-lucide="map-pin"></i> Cipolletti</p>
                         <p class="small text-body mb-3">Instalaciones eléctricas, reparaciones de plomería y cambio de
                             cerraduras en toda la zona.</p>
 
@@ -265,7 +274,7 @@
             <div class="carousel-item">
                 <div class="slide-cta">
                     <h2>Sumate a ReparoTodo</h2>
-                    <a href="{{ $urlOfrecer }}" class="btn btn-accent fw-bold px-5">Ofrecer servicios</a>
+                    <a href="{{ $urlOfrecer }}" @if ($esCliente) data-bs-toggle="modal" data-bs-target="#modalOfrecer" @endif class="btn btn-accent fw-bold px-5">Ofrecer servicios</a>
                 </div>
             </div>
         </div>
@@ -280,4 +289,22 @@
         </button>
     </div>
 
+    {{-- Aviso para el cliente que toca "Ofrecer servicios" --}}
+    @if ($esCliente)
+        <div class="modal fade" id="modalOfrecer" tabindex="-1" aria-labelledby="modalOfrecerLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center p-4">
+                    <div class="modal-body">
+                        <i data-lucide="briefcase" class="icn-aviso mb-3"></i>
+                        <h4 id="modalOfrecerLabel">Necesitás una cuenta de profesional</h4>
+                        <p>Ahora estás usando ReparoTodo como cliente. Para ofrecer tus servicios, cerrá sesión y luego ingresá o registrate como profesional.</p>
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Volver</button>
+                            <a href="{{ route('usuario.salir') }}" class="btn btn-accent"><i data-lucide="log-out"></i> Cerrar sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection

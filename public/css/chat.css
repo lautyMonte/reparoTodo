@@ -194,7 +194,7 @@
     color: var(--rt-azul);
 }
 .chat-formulario button:hover { background: var(--rt-naranja-oscuro); }
-.chat-formulario .lucide { width: 1.15rem; height: 1.15rem; }
+.chat-formulario .lucide { width: 1.15rem; height: 1.15rem; transform: translate(-1px, 1px); }
 
 /* Foco visible con el teclado */
 .chat-boton:focus-visible,

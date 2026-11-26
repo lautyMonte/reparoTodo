@@ -137,7 +137,7 @@ class User extends Authenticatable
     public function avatar(): string
     {
         return $this->urlImagen($this->imagen)
-            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 5 + 1).'.svg');
+            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 10 + 1).'.svg');
     }
 
     #[Scope]
