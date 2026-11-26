@@ -50,7 +50,7 @@
                                     @if ($conNovedades->contains($solicitud->id))
                                         <span class="bandeja-punto"></span>
                                     @endif
-                                    {{ $solicitud->profesional->user->usuario }}
+                                    {{ $solicitud->profesional->user->nombreCompleto() }}
                                 </span>
                                 <span class="bandeja-fecha">{{ $solicitud->created_at->timezone($zona)->format('d/m H:i') }}</span>
                             </div>
@@ -77,7 +77,7 @@
                         <div class="bandeja-de">
                             <img src="{{ $seleccionada->profesional->user->avatar() }}" alt="" class="bandeja-avatar">
                             <div>
-                                <div class="fw-bold bandeja-nombre">{{ $seleccionada->profesional->user->usuario }}</div>
+                                <div class="fw-bold bandeja-nombre">{{ $seleccionada->profesional->user->nombreCompleto() }}</div>
                                 <div class="small text-secondary">
                                     Le enviaste esta solicitud el {{ $seleccionada->created_at->timezone($zona)->format('d/m/Y') }}
                                     a las {{ $seleccionada->created_at->timezone($zona)->format('H:i') }}
@@ -175,7 +175,7 @@
                                 @if ($seleccionada->estado === 'en_chat')
                                     <button type="button" class="btn btn-accent fw-semibold btn-abrir-chat"
                                             data-usuario-id="{{ $seleccionada->profesional->user->id }}"
-                                            data-nombre="{{ $seleccionada->profesional->user->usuario }}"
+                                            data-nombre="{{ $seleccionada->profesional->user->nombreCompleto() }}"
                                             data-avatar="{{ $seleccionada->profesional->user->avatar() }}">
                                         <i data-lucide="message-circle"></i> Abrir chat
                                     </button>
@@ -211,13 +211,13 @@
                             <a href="{{ route('contacto') }}" class="btn btn-soporte"><i data-lucide="life-buoy"></i> Soporte</a>
                         </div>
                         @if ($seleccionada->estado === 'pendiente')
-                            <p class="bandeja-ayuda">Esperando que {{ $seleccionada->profesional->user->usuario }} responda tu solicitud.</p>
+                            <p class="bandeja-ayuda">Esperando que {{ $seleccionada->profesional->user->nombreCompleto() }} responda tu solicitud.</p>
                         @endif
                         @if ($seleccionada->estado === 'aceptada')
-                            <p class="bandeja-ayuda">{{ $seleccionada->profesional->user->usuario }} aceptó tu solicitud y te va a enviar un presupuesto.</p>
+                            <p class="bandeja-ayuda">{{ $seleccionada->profesional->user->nombreCompleto() }} aceptó tu solicitud y te va a enviar un presupuesto.</p>
                         @endif
                         @if ($seleccionada->estado === 'presupuestada')
-                            <p class="bandeja-ayuda">Si aceptás, se abre el chat con {{ $seleccionada->profesional->user->usuario }} para coordinar el trabajo. Si rechazás, el presupuesto se elimina para ambos y {{ $seleccionada->profesional->user->usuario }} recibe un aviso.</p>
+                            <p class="bandeja-ayuda">Si aceptás, se abre el chat con {{ $seleccionada->profesional->user->nombreCompleto() }} para coordinar el trabajo. Si rechazás, el presupuesto se elimina para ambos y {{ $seleccionada->profesional->user->nombreCompleto() }} recibe un aviso.</p>
                         @endif
                         @if ($seleccionada->estado === 'en_chat' && ! $hayPropuesta)
                             <p class="bandeja-ayuda">Aceptaste el presupuesto. Cuando termine el trabajo, confirmalo con “Finalizar trabajo”. Si no se hace, usá “Cancelar trabajo”. En los dos casos la otra persona tiene que estar de acuerdo.</p>
@@ -246,7 +246,7 @@
                         <div class="modal-body">
                             <i data-lucide="circle-alert" class="icn-rechazo mb-3"></i>
                             <h4 id="modalRechazarLabel">¿Rechazar este presupuesto?</h4>
-                            <p>Se elimina para ambos y {{ $seleccionada->profesional->user->usuario }} recibe un aviso. Esta acción no se puede deshacer.</p>
+                            <p>Se elimina para ambos y {{ $seleccionada->profesional->user->nombreCompleto() }} recibe un aviso. Esta acción no se puede deshacer.</p>
                             <form action="{{ route('presupuesto.rechazar', $seleccionada->id) }}" method="POST" class="d-flex justify-content-center gap-2 mt-3">
                                 @csrf
                                 <button type="button" class="btn btn-detalle btn-cancelar" data-bs-dismiss="modal">Cancelar</button>

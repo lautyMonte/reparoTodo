@@ -19,7 +19,7 @@ class ChatController extends Controller
 
             return [
                 'usuario_id' => $otro->id,
-                'nombre' => $otro->usuario,
+                'nombre' => $otro->nombreCompleto(),
                 'avatar' => $otro->avatar(),
                 'ultimo_mensaje' => $ultimo?->body,
                 'fecha' => $ultimo?->created_at,

@@ -22,7 +22,7 @@
                 <div class="detalle-tarjeta detalle-lateral">
                     <div class="detalle-tapa"></div>
                     <div class="detalle-lateral-cuerpo">
-                        <img class="detalle-foto" src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->usuario }}">
+                        <img class="detalle-foto" src="{{ $usuario->avatar() }}" alt="Foto de {{ $usuario->nombreCompleto() }}">
                         <h1 class="h3 mb-2">{{ $usuario->nombreCompleto() }}</h1>
 
                         <span class="pill-valoracion puntaje">
