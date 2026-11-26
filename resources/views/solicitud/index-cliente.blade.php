@@ -100,6 +100,139 @@
                         @endif
 
                         <p class="bandeja-descripcion">{{ $seleccionada->descripcion }}</p>
+                        {{-- Reseña del trabajo finalizado --}}
+                        @if ($seleccionada->estado === 'finalizada')
+
+                            @php
+                                $resenaActual = $seleccionada->resena;
+
+                                $puedeResenar = $resenaActual
+                                    ? auth()->user()->can('update', $resenaActual)
+                                    : auth()->user()->can('create', [
+                                        \App\Models\Resena::class,
+                                        $seleccionada
+                                    ]);
+
+                                $mostrarFormulario = $puedeResenar && (
+                                    request()->boolean('editar_resena')
+                                    || $errors->has('puntaje')
+                                    || $errors->has('comentario')
+                                );
+                            @endphp
+
+                            <div class="border rounded p-3 mt-3"
+                                id="formularioResena"
+                                data-resena-inline>
+
+                                {{-- Encabezado --}}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                    <h3 class="h5 mb-0">Tu reseña</h3>
+
+                                    @if ($puedeResenar)
+                                        <button
+                                            type="button"
+                                            id="btnEditarResena"
+                                            data-resena-editar
+                                            class="btn btn-accent btn-sm {{ $mostrarFormulario ? 'd-none' : '' }}"
+                                        >
+                                            <i data-lucide="pencil"></i>
+
+                                            {{ $resenaActual ? 'Editar reseña' : 'Dejar una reseña' }}
+                                        </button>
+                                    @endif
+
+                                </div>
+
+                                {{-- Estado de lectura --}}
+                                <div id="resenaLectura"
+                                    data-resena-lectura
+                                    class="{{ $mostrarFormulario ? 'd-none' : '' }}">
+
+                                    @if ($resenaActual)
+
+                                        <div class="mb-2">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i
+                                                    data-lucide="star"
+                                                    class="{{ $i <= $resenaActual->puntaje
+                                                        ? 'estrella-llena'
+                                                        : 'estrella-vacia' }}"
+                                                ></i>
+                                            @endfor
+                                        </div>
+
+                                        <p class="mb-0">
+                                            {{ $resenaActual->comentario ?? 'Sin comentario.' }}
+                                        </p>
+
+                                    @else
+
+                                        <p class="text-secondary mb-0">
+                                            Todavía no calificaste este trabajo.
+                                        </p>
+
+                                    @endif
+
+                                </div>
+
+                                {{-- Estado de edición --}}
+                                @if ($puedeResenar)
+
+                                    <form
+                                        id="resenaEdicion"
+                                        data-resena-edicion
+                                        class="{{ $mostrarFormulario ? '' : 'd-none' }}"
+                                        action="{{ $resenaActual
+                                            ? route('resenas.update', $resenaActual)
+                                            : route('resenas.store', $seleccionada) }}"
+                                        method="POST"
+                                        data-puntaje="{{ $resenaActual->puntaje ?? '' }}"
+                                        data-comentario="{{ $resenaActual->comentario ?? '' }}"
+                                    >
+
+                                        @csrf
+
+                                        @if ($resenaActual)
+                                            @method('PUT')
+                                        @endif
+
+                                        <input
+                                            type="hidden"
+                                            name="origen"
+                                            value="mis_solicitudes"
+                                        >
+
+                                        @include('resena.form', [
+                                            'resena' => $resenaActual
+                                        ])
+
+                                        <div class="d-flex justify-content-end gap-2">
+
+                                            <button
+                                                type="button"
+                                                id="btnCancelarResena"
+                                                data-resena-cancelar
+                                                class="btn btn-cancelar"
+                                            >
+                                                Cancelar
+                                            </button>
+
+                                            <button type="submit" class="btn btn-accent">
+                                                {{ $resenaActual
+                                                    ? 'Guardar cambios'
+                                                    : 'Publicar reseña' }}
+                                            </button>
+
+                                        </div>
+
+                                    </form>
+
+                                @endif
+
+                            </div>
+
+                        @endif
 
                         @if ($seleccionada->presupuesto)
                             @include('partials.presupuesto', [
@@ -165,6 +298,7 @@
                         <div class="bandeja-botones">
                             <span></span>
                             <div class="bandeja-botones-centro">
+
                                 @if ($seleccionada->estado === 'presupuestada')
                                     <form action="{{ route('presupuesto.aceptar', $seleccionada->id) }}" method="POST">
                                         @csrf
@@ -258,4 +392,5 @@
             </div>
         @endif
     </div>
+    <script src="{{ asset('js/resena-inline.js') }}" defer></script>
 @endsection

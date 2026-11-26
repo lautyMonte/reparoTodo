@@ -64,9 +64,21 @@ Route::middleware('profesional')->group(function () {
 });
 
 
-Route::delete('/resenas/{resena}', [ResenaController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('resenas.destroy');
+// Gestión de reseñas de trabajos finalizados.
+Route::middleware(['auth', 'cliente'])->group(function () {
+
+    Route::post('/solicitudes/{solicitud}/resena',
+        [ResenaController::class, 'store'])
+        ->name('resenas.store');
+
+    Route::put('/resenas/{resena}',
+        [ResenaController::class, 'update'])
+        ->name('resenas.update');
+
+    Route::delete('/resenas/{resena}',
+        [ResenaController::class, 'destroy'])
+        ->name('resenas.destroy');
+});
 
 // Cierre del trabajo: lo proponen y lo responden tanto el cliente como el profesional
 Route::middleware('auth')->group(function () {

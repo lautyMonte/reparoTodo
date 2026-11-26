@@ -164,7 +164,7 @@ class SolicitudController extends Controller
         // Las rechazadas no se muestran: para el cliente tambien es como si se hubieran borrado
         $todas = $request->user()->solicitudes()
             ->where('estado', '!=', 'rechazada')
-            ->with(['profesional.user', 'presupuesto', 'fotos'])
+            ->with(['profesional.user', 'presupuesto', 'fotos', 'resena'])
             ->latest()
             ->get();
 

@@ -38,6 +38,12 @@ class Solicitud extends Model
         return $this->belongsTo(Profesional::class);
     }
 
+    // Una solicitud puede tener una única reseña.
+    public function resena(): HasOne
+    {
+        return $this->hasOne(Resena::class);
+    }
+
     // Una solicitud tiene muchas fotos (1:N)
     public function fotos(): HasMany
     {

@@ -937,3 +937,67 @@ img.avatar-rt { object-fit: cover; }
 .cierre-aviso.cancelar { background: #fbe9e7; border-left-color: #c0392b; color: #7a2a22; }
 .cierre-aviso.cerrado-fin { background: #e3f4e9; border-left-color: #2e7d4f; color: #1c5a34; }
 .cierre-aviso.cerrado-can { background: #eeeeee; border-left-color: #8a8a8a; color: #444; }
+/* ===== Selector de puntuación de reseñas ===== */
+
+.rating-estrellas {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 8px;
+}
+
+.rating-estrellas input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.rating-estrellas label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #c8ccd2;
+    cursor: pointer;
+    transition: color 0.15s ease,
+                transform 0.15s ease;
+}
+
+.rating-estrellas label .lucide {
+    width: 2rem;
+    height: 2rem;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+/* Puntuación seleccionada */
+
+.rating-estrellas input:checked ~ label {
+    color: var(--rt-naranja);
+}
+
+/* Previsualización de la puntuación */
+
+@media (hover: hover) {
+
+    .rating-estrellas:has(label:hover) label {
+        color: #c8ccd2;
+    }
+
+    .rating-estrellas:has(label:hover) label:hover,
+    .rating-estrellas:has(label:hover) label:hover ~ label {
+        color: var(--rt-naranja);
+    }
+
+    .rating-estrellas label:hover {
+        transform: scale(1.12);
+    }
+}
+
+/* Accesibilidad mediante teclado */
+
+.rating-estrellas input:focus-visible + label {
+    outline: 2px solid var(--rt-azul);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
