@@ -4,12 +4,27 @@
     @php
         $usuario = $profesional->user;
         $promedio = $profesional->resenas_avg_puntaje;
-        $total    = $profesional->resenas_count;
-        $mostrarResenas = request()->query('tab') === 'resenas'
-            || (
-                old('origen') === 'perfil_profesional'
-                && ($errors->has('puntaje') || $errors->has('comentario'))
-            );
+        $total = $profesional->resenas_count;
+
+        $tabActiva = request()->query('tab', 'info');
+
+        if (old('origen') === 'perfil_profesional') {
+
+            if ($errors->getBag('publicacion')->any()) {
+                $tabActiva = 'trabajos';
+            } elseif ($errors->has('puntaje') || $errors->has('comentario')) {
+                $tabActiva = 'resenas';
+            }
+
+        }
+
+        if (!in_array($tabActiva, ['info', 'trabajos', 'resenas'], true)) {
+            $tabActiva = 'info';
+        }
+
+        $mostrarInfo = $tabActiva === 'info';
+        $mostrarTrabajos = $tabActiva === 'trabajos';
+        $mostrarResenas = $tabActiva === 'resenas';
     @endphp
 
     <div class="detalle-pagina">
@@ -68,24 +83,35 @@
             <section class="col-lg-8">
 
                 <div class="detalle-tabs" role="tablist">
+
                     <button
                         type="button"
-                        class="detalle-tab {{ $mostrarResenas ? '' : 'active' }}"
+                        class="detalle-tab {{ $mostrarInfo ? 'active' : '' }}"
                         id="tab-info"
                         data-bs-toggle="tab"
                         data-bs-target="#panel-info"
                         role="tab"
                         aria-controls="panel-info"
-                        aria-selected="{{ $mostrarResenas ? 'false' : 'true' }}"
+                        aria-selected="{{ $mostrarInfo ? 'true' : 'false' }}"
                     >
                         <i data-lucide="info"></i>
                         <span>Información</span>
                     </button>
-                    <button type="button" class="detalle-tab" id="tab-trabajos" data-bs-toggle="tab"
-                        data-bs-target="#panel-trabajos" role="tab" aria-controls="panel-trabajos"
-                        aria-selected="false">
-                        <i data-lucide="hammer"></i> <span>Trabajos</span>
+
+                    <button
+                        type="button"
+                        class="detalle-tab {{ $mostrarTrabajos ? 'active' : '' }}"
+                        id="tab-trabajos"
+                        data-bs-toggle="tab"
+                        data-bs-target="#panel-trabajos"
+                        role="tab"
+                        aria-controls="panel-trabajos"
+                        aria-selected="{{ $mostrarTrabajos ? 'true' : 'false' }}"
+                    >
+                        <i data-lucide="hammer"></i>
+                        <span>Trabajos</span>
                     </button>
+
                     <button
                         type="button"
                         class="detalle-tab {{ $mostrarResenas ? 'active' : '' }}"
@@ -99,12 +125,13 @@
                         <i data-lucide="message-square"></i>
                         <span>Reseñas</span>
                     </button>
+
                 </div>
 
                 <div class="tab-content detalle-tarjeta">
 
                     {{-- INFORMACION --}}
-                    <div class="tab-pane fade detalle-pane {{ $mostrarResenas ? '' : 'show active' }}"
+                    <div class="tab-pane fade detalle-pane {{ $mostrarInfo ? 'show active' : '' }}"
                         id="panel-info"
                         role="tabpanel"
                         aria-labelledby="tab-info">
@@ -154,10 +181,34 @@
                     </div>
 
                     {{-- TRABAJOS --}}
-                    <div class="tab-pane fade detalle-pane text-center" id="panel-trabajos" role="tabpanel"
-                        aria-labelledby="tab-trabajos">
-                        <i data-lucide="hammer" class="text-secondary mb-2"></i>
-                        <p class="text-secondary mb-0">Todavía no hay trabajos publicados.</p>
+                    <div
+                        class="tab-pane fade detalle-pane {{ $mostrarTrabajos ? 'show active' : '' }}"
+                        id="panel-trabajos"
+                        role="tabpanel"
+                        aria-labelledby="tab-trabajos"
+                    >
+
+                        @forelse ($profesional->publicaciones as $publicacion)
+
+                            @include('publicacion.tarjeta', [
+                                'publicacion' => $publicacion,
+                                'esDuenio' => $esDuenio,
+                            ])
+
+                        @empty
+
+                            <div class="text-center py-4">
+
+                                <i data-lucide="hammer" class="text-secondary mb-2"></i>
+
+                                <p class="text-secondary mb-0">
+                                    Todavía no hay trabajos publicados.
+                                </p>
+
+                            </div>
+
+                        @endforelse
+
                     </div>
 
                     {{-- RESENAS --}}
@@ -428,5 +479,32 @@
 
         @endcan
     @endforeach
+    {{-- Modales de gestión del portfolio --}}
+    @if ($esDuenio)
+
+        @foreach ($profesional->publicaciones as $publicacion)
+
+            @can('update', $publicacion)
+
+                @include('publicacion.modal-editar', [
+                    'publicacion' => $publicacion,
+                    'origen' => 'perfil_profesional',
+                ])
+
+            @endcan
+
+            @can('delete', $publicacion)
+
+                @include('publicacion.modal-eliminar', [
+                    'publicacion' => $publicacion,
+                    'origen' => 'perfil_profesional',
+                ])
+
+            @endcan
+
+        @endforeach
+
+    @endif
+
     <script src="{{ asset('js/resena-inline.js') }}" defer></script>
 @endsection

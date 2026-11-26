@@ -63,6 +63,13 @@ class ProfesionalController extends Controller
             'resenas.solicitud.cliente',
             'ciudades.provincia'
         )
+            ->with([
+                'publicaciones' => function ($consulta) {
+                    $consulta->where('solicitudes.estado', 'finalizada')
+                        ->orderByDesc('publicaciones.created_at')
+                        ->with(['fotos', 'solicitud']);
+                },
+            ])
             ->withAvg('resenas', 'puntaje')
             ->withCount('resenas')
             ->findOrFail($id);

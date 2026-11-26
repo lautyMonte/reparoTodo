@@ -640,4 +640,167 @@ class PublicacionTest extends TestCase
             'id' => $publicacion->id,
         ]);
     }
+
+    // VISUALIZACIÓN PÚBLICA DEL PORTFOLIO
+
+    public function test_visitante_puede_ver_publicaciones_y_fotos(): void
+    {
+        $publicacion = $this->crearPublicacion();
+
+        $foto = $this->agregarFoto($publicacion);
+
+        $respuesta = $this->get(route('profesional.show', [
+            'id' => $this->profesional->profesional->id,
+            'tab' => 'trabajos',
+        ]));
+
+        $respuesta->assertOk();
+
+        $respuesta->assertSee($publicacion->titulo);
+        $respuesta->assertSee($publicacion->descripcion);
+        $respuesta->assertSee('Trabajo verificado');
+        $respuesta->assertSee(asset('storage/'.$foto->ruta));
+
+        // No se muestran datos privados de la solicitud.
+        $respuesta->assertDontSee($this->solicitud->descripcion);
+
+        // No se muestran acciones de gestión.
+        $respuesta->assertDontSee('Editar publicación');
+        $respuesta->assertDontSee('Eliminar publicación');
+    }
+
+    public function test_propietario_puede_ver_acciones_y_modales_del_portfolio(): void
+    {
+        $publicacion = $this->crearPublicacion();
+
+        $respuesta = $this->actingAs($this->profesional)
+            ->get(route('profesional.show', [
+                'id' => $this->profesional->profesional->id,
+                'tab' => 'trabajos',
+            ]));
+
+        $respuesta->assertOk();
+
+        $respuesta->assertSee('Editar publicación');
+        $respuesta->assertSee('Eliminar publicación');
+
+        $respuesta->assertSee(
+            'id="modalEditarPublicacion'.$publicacion->id.'"',
+            false
+        );
+
+        $respuesta->assertSee(
+            'id="modalEliminarPublicacion'.$publicacion->id.'"',
+            false
+        );
+    }
+
+    public function test_otros_usuarios_no_pueden_ver_acciones_del_portfolio(): void
+    {
+        $publicacion = $this->crearPublicacion();
+
+        foreach ([$this->cliente, $this->otroProfesional] as $usuario) {
+
+            $respuesta = $this->actingAs($usuario)
+                ->get(route('profesional.show', [
+                    'id' => $this->profesional->profesional->id,
+                    'tab' => 'trabajos',
+                ]));
+
+            $respuesta->assertOk();
+
+            $respuesta->assertSee($publicacion->titulo);
+
+            $respuesta->assertDontSee('Editar publicación');
+            $respuesta->assertDontSee('Eliminar publicación');
+
+            $respuesta->assertDontSee(
+                'id="modalEditarPublicacion'.$publicacion->id.'"',
+                false
+            );
+
+            $respuesta->assertDontSee(
+                'id="modalEliminarPublicacion'.$publicacion->id.'"',
+                false
+            );
+        }
+    }
+
+    public function test_perfil_sin_publicaciones_muestra_estado_vacio(): void
+    {
+        $publicacion = $this->crearPublicacion();
+
+        $respuesta = $this->get(route('profesional.show', [
+            'id' => $this->otroProfesional->profesional->id,
+            'tab' => 'trabajos',
+        ]));
+
+        $respuesta->assertOk();
+
+        $respuesta->assertSee(
+            'Todavía no hay trabajos publicados.'
+        );
+
+        $respuesta->assertDontSee($publicacion->titulo);
+    }
+
+    public function test_error_de_edicion_mantiene_activa_la_pestania_trabajos(): void
+    {
+        $publicacion = $this->crearPublicacion();
+
+        $urlPerfil = route(
+            'profesional.show',
+            $this->profesional->profesional->id
+        );
+
+        $respuesta = $this->actingAs($this->profesional)
+            ->from($urlPerfil)
+            ->put(
+                route('publicaciones.update', $publicacion),
+                $this->datosPublicacion([
+                    'titulo' => '',
+                    'origen' => 'perfil_profesional',
+                    'publicacion_editada' => $publicacion->id,
+                ])
+            );
+
+        $respuesta->assertRedirect($urlPerfil);
+
+        $respuesta->assertSessionHasErrorsIn(
+            'publicacion',
+            ['titulo' => 'Ingresá un título para el trabajo.']
+        );
+
+        $respuesta->assertSessionHas(
+            '_old_input.origen',
+            'perfil_profesional'
+        );
+
+        // Conservar la cookie de sesión entre las peticiones.
+        $nombreCookie = config('session.cookie');
+
+        $cookie = $respuesta->getCookie($nombreCookie, false);
+
+        $this->assertNotNull($cookie);
+
+        $respuestaPerfil = $this
+            ->withUnencryptedCookie($nombreCookie, $cookie->getValue())
+            ->get($urlPerfil);
+
+        $respuestaPerfil->assertOk();
+
+        $respuestaPerfil->assertSee(
+            'Ingresá un título para el trabajo.'
+        );
+
+        $respuestaPerfil->assertSee(
+            'data-publicacion-errores',
+            false
+        );
+
+        $this->assertMatchesRegularExpression(
+            '/class="tab-pane fade detalle-pane show active"\s+id="panel-trabajos"/',
+            $respuestaPerfil->getContent()
+        );
+    }
 }
