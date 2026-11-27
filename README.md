@@ -1,36 +1,65 @@
-## Para que pueda iniciar el programa
+# ReparoTodo
+
+Aplicación web que conecta **clientes** con **profesionales** de oficios (plomería, electricidad, gas, cerrajería, etc.). El cliente busca un profesional, le envía una solicitud, recibe un presupuesto, conversa por chat y, al terminar el trabajo, puede dejar su reseña. El profesional puede publicar los trabajos que terminó para mostrarlos en su perfil.
+
+Trabajo Final Integrador de **Programación Web Dinámica** (Tecnicatura en Desarrollo Web, Universidad Nacional del Comahue).
+
+**Integrantes:** Luciano Elia, Franco Palma, Matias Jañez y Lautaro Montesino.
+
+## Requisitos
+
+- PHP 8.3 o superior
+- Composer
+- MySQL (por ejemplo, el que trae XAMPP)
+
+## Cómo iniciar el proyecto
+
+Desde la carpeta del proyecto:
 
 ```bash
-composer install (para que cree la carpeta vendor)
+composer install
 copy .env.example .env
 php artisan key:generate
-php artisan migrate:fresh (crear las tablas en la base de datos)
-php artisan db:seed (para poblarlas con datos)
+```
+
+En macOS o Linux, el segundo comando es `cp .env.example .env`.
+
+Después, **creá una base de datos vacía** llamada `reparotodo` (por ejemplo, desde phpMyAdmin). Si tu MySQL tiene usuario o contraseña distintos a los de siempre (`root` sin contraseña), cambialos en el archivo `.env` (`DB_USERNAME` y `DB_PASSWORD`).
+
+Por último:
+
+```bash
+php artisan migrate:fresh --seed
+php artisan storage:link
 php artisan serve
 ```
 
-# Para la base de datos (crearlo con este nombre)
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=reparoTodo
-DB_USERNAME=root
+- `migrate:fresh --seed` crea todas las tablas y las llena con datos de prueba.
+- `storage:link` hace visibles las fotos que se suben (perfiles, portadas y trabajos publicados).
+- `serve` inicia la aplicación en http://localhost:8000.
 
-DB_PASSWORD=
+## Usuarios de prueba
 
-# Para la libreria chatify (probar antes ejecutar el programa sin realizar los pasos 1 y 2)
-1-composer require munafio/chatify (Prepara el entorno de chatify en composer.json y composer.lock)
+Todos tienen la contraseña **`password123`**. Se ingresa con el nombre de usuario.
 
-2-php artisan chatify:install (crea las migraciones,su configuracion, la ruta para comunicarse)
+| Usuario | Tipo | Nombre |
+|---|---|---|
+| `lautarorodriguez` | Cliente | Lautaro Rodriguez |
+| `carlagomez` | Cliente | Carla Gomez |
+| `luciaromero` | Cliente | Lucia Romero |
+| `manuelferrari` | Cliente | Manuel Ferrari |
+| `pablodiaz` | Cliente | Pablo Diaz |
+| `estebanquito` | Profesional | Esteban Quito |
+| `armandoparedes` | Profesional | Armando Paredes |
+| `lujanperez` | Profesional | Lujan Perez |
+| `matiasjañez` | Profesional | Matias Jañez |
+| `matiassalgado` | Profesional | Matias Salgado |
 
-3-php artisan migrate y php artisan storage:link (migrar las tablas, para gestionar conversaciones, participantes, mensajes y configuraciones)
-//quizas quitar la opcion de favoritos y bloqueados
+También se pueden crear cuentas nuevas desde la pantalla de registro.
 
-5-En modelo user:
-use Chatify\Traits\InteractsWithChatify; (para declarar la herramienta que usamos)
-use InteractsWithChatify;(va dentro de la clase  y es para que trabaje con los usuarios creados)
+## Notas
 
-4-en .env agregar:
-CHATIFY_API_MIDDLEWARE=api,auth:sanctum
-CHATIFY_WEB_ENABLED=false
-para utilizar las solicitudes de chatify con middleware de API.El "false" es para que podamos crear nuestra propia interfaz de usuario
+- **Chat:** usa la librería [Chatify](https://github.com/munafio/chatify), que ya está incluida en `composer.json`. No hace falta instalar nada más. Las variables necesarias ya vienen en `.env.example`.
+- **Selectores con búsqueda:** los campos de selección múltiple del registro (género, oficios, provincias y ciudades) usan la librería [Tom Select](https://tom-select.js.org/). Se carga por CDN desde el layout, así que no hace falta instalarla.
+- **Formulario de contacto:** por defecto no envía correos reales (`MAIL_MAILER=log` en `.env`). Los mensajes quedan registrados en `storage/logs/laravel.log`. Para enviarlos por Gmail, cambiá la sección de mail del `.env` por tus datos (`MAIL_MAILER=smtp`, tu correo y una clave de aplicación).
+- **Si se cambia algo de la base de datos:** volvé a correr `php artisan migrate:fresh --seed`. Esto borra y recrea todos los datos.
