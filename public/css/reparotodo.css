@@ -800,6 +800,20 @@ img.avatar-rt {
     margin-bottom: 1.25rem;
 }
 
+.btn-filtro-estrella {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--rt-borde);
+    border-radius: 50rem;
+    color: var(--rt-azul);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
 #form-filtros .btn-filtro-estrella {
     display: inline-flex;
     align-items: center;
