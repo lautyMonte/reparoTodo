@@ -849,17 +849,14 @@ img.avatar-rt {
     gap: 1rem;
 }
 
-.inicial-resena {
+.avatar-resena {
     flex: 0 0 46px;
     width: 46px;
     height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: 50%;
+    object-fit: cover;
+    display: block;
     background: var(--rt-crema);
-    color: var(--rt-azul);
-    font-weight: 800;
 }
 
 .estrella-llena,
