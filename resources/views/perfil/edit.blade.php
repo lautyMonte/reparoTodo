@@ -9,14 +9,6 @@
 <div class="container mt-4" id="contenedor-perfil">
     <h2 class="titulo">Editar perfil</h2>
 
-    {{--Cambiarlo por partials errores-validacion.blade--}}
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    
     <form action="{{ $profesional ? route('profesional.update'): route('usuario.update') }}" method="POST" enctype="multipart/form-data" class="form-perfil">
 
         @csrf

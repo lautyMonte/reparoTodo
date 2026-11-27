@@ -267,8 +267,26 @@ public function update(Request $request)
             'distinct',
             'exists:oficios,id'
         ],
+    ], [
+        'nombre.required' => 'El nombre es obligatorio',
+        'apellido.required' => 'El apellido es obligatorio',
+        'telefono.required' => 'El teléfono es obligatorio',
+        'email.required' => 'El email es obligatorio',
+        'email.email' => 'Ingrese un email válido',
+        'email.unique' => 'Ese email ya está registrado',
+        'imagen.image' => 'La foto de perfil debe ser una imagen',
+        'imagen.max' => 'La foto de perfil no puede pesar más de 2 MB',
+        'portada.image' => 'La portada debe ser una imagen',
+        'portada.max' => 'La portada no puede pesar más de 2 MB',
+        'ciudades.required' => 'Debe seleccionar al menos una ciudad',
+        'ciudades.min' => 'Debe seleccionar al menos una ciudad',
+        'ciudades.*.exists' => 'La ciudad seleccionada no existe',
+        'oficios.required' => 'Debe seleccionar al menos un oficio',
+        'oficios.min' => 'Debe seleccionar al menos un oficio',
+        'oficios.*.exists' => 'El oficio seleccionado no existe',
     ]);
-    // Guardar rutas de imágenes anteriores prueba de pull
+    
+    // Guardar rutas de imágenes anteriores
     $archivosAnteriores = [];
 
     DB::transaction(function () use ($request,$usuario,$profesional,$validated, &$archivosAnteriores) {
@@ -314,7 +332,7 @@ public function update(Request $request)
 
     return redirect()
         ->route('profesional.edit')
-        ->with('success', 'Perfil profesional actualizado correctamente.');
+        ->with('exito', 'Perfil profesional actualizado correctamente.');
 }
 
 }

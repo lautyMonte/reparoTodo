@@ -263,6 +263,17 @@ class UsuarioController extends Controller
             ],
             'imagen' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png'])->max('2mb')],
             'portada' => ['nullable','image',Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')],
+        ], [
+            'nombre.required' => 'El nombre es obligatorio',
+            'apellido.required' => 'El apellido es obligatorio',
+            'telefono.required' => 'El teléfono es obligatorio',
+            'email.required' => 'El email es obligatorio',
+            'email.email' => 'Ingrese un email válido',
+            'email.unique' => 'Ese email ya está registrado',
+            'imagen.image' => 'La foto de perfil debe ser una imagen',
+            'imagen.max' => 'La foto de perfil no puede pesar más de 2 MB',
+            'portada.image' => 'La portada debe ser una imagen',
+            'portada.max' => 'La portada no puede pesar más de 2 MB',
         ]);
 
          // Guardar rutas de imágenes anteriores
@@ -298,6 +309,6 @@ class UsuarioController extends Controller
             Storage::disk('public')->delete($archivo);
         }
 
-        return redirect()->route('usuario.edit')->with('success', 'Perfil actualizado correctamente.');
+        return redirect()->route('usuario.edit')->with('exito', 'Perfil actualizado correctamente.');
     }
 }

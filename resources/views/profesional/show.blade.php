@@ -366,7 +366,7 @@
                                                 @can('update', $resena)
                                                     <button
                                                         type="button"
-                                                        class="btn btn-eliminar-resena"
+                                                        class="btn btn-eliminar-resena btn-editar-resena"
                                                         data-resena-editar
                                                     >
                                                         <i data-lucide="pencil"></i>

@@ -303,7 +303,6 @@ class SolicitudController extends Controller
 
         $solicitud->update([
             'estado' => $tipo === 'finalizar' ? 'finalizada' : 'cancelada',
-            'cierre_propuesto_por' => null,
             'cierre_tipo' => null,
         ]);
 
