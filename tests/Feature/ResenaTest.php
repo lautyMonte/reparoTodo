@@ -29,6 +29,7 @@ class ResenaTest extends TestCase
             'email' => 'cliente@example.com',
             'password' => 'password123',
             'tipo' => 'cliente',
+            'genero' => 'm',
         ]);
 
         $this->otroCliente = User::create([
@@ -39,6 +40,7 @@ class ResenaTest extends TestCase
             'email' => 'otro@example.com',
             'password' => 'password123',
             'tipo' => 'cliente',
+            'genero' => 'f',
         ]);
 
         $usuarioProfesional = User::create([
@@ -49,6 +51,7 @@ class ResenaTest extends TestCase
             'email' => 'profesional@example.com',
             'password' => 'password123',
             'tipo' => 'profesional',
+            'genero' => 'm',
         ]);
 
         $this->profesional = $usuarioProfesional

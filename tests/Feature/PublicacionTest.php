@@ -54,6 +54,7 @@ class PublicacionTest extends TestCase
             'email' => $nombre . '@example.com',
             'password' => 'password123',
             'tipo' => $tipo,
+            'genero' => 'm',
         ]);
     }
 
