@@ -263,7 +263,7 @@ public function update(Request $request)
             'exists:oficios,id'
         ],
     ]);
-    // Guardar rutas de imágenes anteriores
+    // Guardar rutas de imágenes anteriores prueba de pull
     $archivosAnteriores = [];
 
     DB::transaction(function () use ($request,$usuario,$profesional,$validated, &$archivosAnteriores) {
