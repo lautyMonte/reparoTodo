@@ -172,7 +172,7 @@
                         @if ($profesional->oficios->isNotEmpty())
                             <div class="lista-servicios">
                                 @foreach ($profesional->oficios as $oficio)
-                                    <span class="etiqueta-servicio">{{ $oficio->tipo }}</span>
+                                    <span class="etiqueta-servicio">{{ $oficio->nombreParaGenero($profesional->user->genero) }}</span>
                                 @endforeach
                             </div>
                         @else

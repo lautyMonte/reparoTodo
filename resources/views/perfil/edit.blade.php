@@ -98,7 +98,7 @@
                         @foreach ($oficios as $oficio)
                             <input type="checkbox" name="oficios[]" id="oficio-{{ $oficio->id }}"
                                    value="{{ $oficio->id }}" @checked(in_array($oficio->id, $seleccionados))>
-                            <label for="oficio-{{ $oficio->id }}" class="chip">{{ $oficio->tipo }}</label>
+                            <label for="oficio-{{ $oficio->id }}" class="chip">{{ $oficio->nombreParaGenero($usuario->genero) }}</label>
                         @endforeach
                     </div>
                 </div>

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken(); // Es el token que se genera para recordar la sesion del usuario
             $table->timestamps();
+            $table->enum('genero', ['m', 'f']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -16,7 +16,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @foreach ($profesional->oficios->take(3) as $oficio)
-                                <span class="chip-lista">{{ $oficio->tipo }}</span>
+                                <span class="chip-lista">{{ $oficio->nombreParaGenero($profesional->user->genero) }}</span>
                             @endforeach
 
                             @if ($profesional->oficios->count() > 3)

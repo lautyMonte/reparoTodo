@@ -88,6 +88,7 @@ class UsuarioController extends Controller
                 'password_confirmation' => ['required', 'string', 'min:8', 'max:20', 'same:password'],
                 'telefono' => ['required', 'regex:/^\+?[0-9 ]{8,15}$/'],
                 'imagen' => ['nullable', 'image'],
+                'genero' => ['required', 'in:m,f']
             ], [
                 'usuario.required' => 'El usuario es obligatorio',
                 'usuario.unique' => 'El nombre de usuario ya está registrado',
@@ -106,6 +107,7 @@ class UsuarioController extends Controller
                 'password.max' => 'La contraseña es demasiado larga',
                 'password_confirmation.required' => 'Debe confirmar su contraseña',
                 'password_confirmation.same' => 'Las contraseñas no coinciden',
+                'genero.required' => 'Porfavor seleccione una opción'
             ]);
 
             User::create([
@@ -117,6 +119,7 @@ class UsuarioController extends Controller
                 'password' => Hash::make($validated['password']),
                 'imagen' => null,
                 'tipo' => 'cliente',
+                'genero' => $validated['genero']
             ]);
 
         } else {
@@ -135,7 +138,8 @@ class UsuarioController extends Controller
                 'provincia' => ['required', 'array', 'min:1'],
                 'provincia.*' => ['required', 'integer', 'distinct', 'exists:provincias,id'],
                 'ciudad' => ['required', 'array', 'min:1'],
-                'ciudad.*' => ['required', 'integer', 'distinct', 'exists:ciudades,id'],
+                'ciudad.*' => ['required', 'integer', 'distinct', 'exists:ciudades,id'],                
+                'genero' => ['required', 'in:m,f']
 
             ], [
                 'usuario.required' => 'El usuario es obligatorio',
@@ -176,6 +180,7 @@ class UsuarioController extends Controller
                 'ciudad.*.integer' => 'La ciudad seleccionada no es válida',
                 'ciudad.*.distinct' => 'No puede seleccionar ciudades repetidas',
                 'ciudad.*.exists' => 'La ciudad seleccionada no existe',
+                'genero.required' => 'Porfavor seleccione una opción'
             ]);
             $ciudadesValidas = Ciudad::whereIn('id', $validated['ciudad'])
                 ->whereIn('provincia_id', $validated['provincia'])
@@ -198,6 +203,7 @@ class UsuarioController extends Controller
                     'password' => Hash::make($validated['password']),
                     'imagen' => null,
                     'tipo' => 'profesional',
+                    'genero' => $validated['genero']
                 ]);
 
                 // Crear el profesional asociado al usuario

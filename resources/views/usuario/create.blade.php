@@ -52,6 +52,15 @@
                 title="Solo números y espacios (entre 8 y 15). Podés empezar con +">
         </div>
 
+        <div class="campo">
+            <label for="genero">Género</label>
+            <select name="genero" id="genero" class="tom-select" required>
+                <option value="" style="color:#71809a">Seleccionar género</option>
+                <option value="m" @selected(old('genero') === 'm')>Masculino</option>
+                <option value="f" @selected(old('genero') === 'f')>Femenino</option>
+            </select>
+        </div>
+
 
         <!-- Campos exclusivos del profesional -->
         <div class="campo" id="campos-profesional" hidden>
@@ -64,8 +73,9 @@
                     <option value="">Seleccionar especialidades</option>
 
                     @foreach ($oficios as $oficio)
-                        <option value="{{ $oficio->id }}" @selected(in_array($oficio->id, (array) old('especialidad', [])))>
-                            {{ $oficio->tipo }}
+                        <option value="{{ $oficio->id }}" data-nombre-m="{{ $oficio->nombreParaGenero('m') }}"
+                            data-nombre-f="{{ $oficio->nombreParaGenero('f') }}" @selected(in_array($oficio->id, (array) old('especialidad', [])))>
+                            {{ $oficio->nombreParaGenero(old('genero')) }}
                         </option>
                     @endforeach
 
@@ -91,7 +101,7 @@
 
 
             <label for="ciudad">Ciudades en las que realizas servicios</label>
-            
+
             <div>
                 <select id="ciudad" name="ciudad[]" class="tom-select" multiple disabled required>
 
@@ -114,13 +124,11 @@
 @endsection
 
 @push('scripts')
-
     <script>
         const provinciasDB = {{ Illuminate\Support\Js::from($provincias) }};
         const ciudadesAnteriores = {{ Illuminate\Support\Js::from((array) old('ciudad', [])) }};
     </script>
 
-    <script src="{{ asset('js/registro.js') }}"></script>
+    <script src="{{ asset('js/registro.js') }}" defer></script>
     <script src="{{ asset('js/ciudades.js') }}" defer></script>
-
 @endpush

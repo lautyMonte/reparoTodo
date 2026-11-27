@@ -183,7 +183,7 @@
 
                             <div class="mb-3">
                                 @foreach ($destacado->oficios as $oficio)
-                                    <span class="chip-oficio">{{ $oficio->tipo }}</span>
+                                    <span class="chip-oficio">{{ $oficio->nombreParaGenero($destacado->user->genero) }}</span>
                                 @endforeach
                             </div>
 

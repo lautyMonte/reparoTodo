@@ -24,6 +24,7 @@ class UserSeeder extends Seeder
         'imagen' => null,
         'email_verified_at' => now(),//para que ya este verificado el mail
         'password' => Hash::make('password123'),
+        'genero' => 'm'
     ]
 );
 
@@ -38,6 +39,7 @@ User::updateOrCreate(
         'imagen' => null,
         'email_verified_at' => now(),//para que ya este verificado el mail
         'password' => Hash::make('password123'),
+        'genero' => 'm'
     ]
 );
 
@@ -52,6 +54,7 @@ User::updateOrCreate(
         'imagen' => null,
         'email_verified_at' => now(),//para que ya este verificado el mail
         'password' => Hash::make('password123'),
+        'genero' => 'f'
     ]);
 
     User::updateOrCreate(
@@ -65,17 +68,18 @@ User::updateOrCreate(
         'imagen' => null,
         'email_verified_at' => now(),
         'password' => Hash::make('password123'),
+        'genero' => 'm'
     ]
 );
 
     // Profesionales nuevos y clientes que dejan resenas (todos con password123)
     $nuevos = [
-        ['matias@mail.com', 'matiasjañez', 'Matias', 'Jañez', '542994237860', 'profesional'],
-        ['salgado@mail.com', 'matiassalgado', 'Matias', 'Salgado', '542994237861', 'profesional'],
-        ['carla@mail.com',   'carlagomez', 'Carla', 'Gomez', '542994237862', 'cliente'],
-        ['lucia@mail.com',   'luciaromero', 'Lucia', 'Romero', '542994237863', 'cliente'],
-        ['manuel@mail.com',  'manuelferrari', 'Manuel', 'Ferrari', '542994237864', 'cliente'],
-        ['pablo@mail.com',   'pablodiaz', 'Pablo', 'Diaz', '542994237865', 'cliente'],
+        ['matias@mail.com', 'matiasjañez', 'Matias', 'Jañez', '542994237860', 'profesional', 'm'],
+        ['salgado@mail.com', 'matiassalgado', 'Matias', 'Salgado', '542994237861', 'profesional', 'm'],
+        ['carla@mail.com',   'carlagomez', 'Carla', 'Gomez', '542994237862', 'cliente', 'f'],
+        ['lucia@mail.com',   'luciaromero', 'Lucia', 'Romero', '542994237863', 'cliente', 'f'],
+        ['manuel@mail.com',  'manuelferrari', 'Manuel', 'Ferrari', '542994237864', 'cliente', 'm'],
+        ['pablo@mail.com',   'pablodiaz', 'Pablo', 'Diaz', '542994237865', 'cliente', 'm'],
     ];
 
     foreach ($nuevos as $nuevo) {
@@ -90,6 +94,7 @@ User::updateOrCreate(
                 'imagen' => null,
                 'email_verified_at' => now(),
                 'password' => Hash::make('password123'),
+                'genero' => $nuevo[6]
             ]
         );
     }

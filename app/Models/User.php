@@ -11,10 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
 /**para chatify*/
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +29,7 @@ class User extends Authenticatable
     use InteractsWithChatify;
 
     protected $fillable = [
-        'usuario', 'nombre', 'apellido', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password',
+        'usuario', 'nombre', 'apellido', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password', 'genero',
     ];
 
     // Obtener el nombre completo del usuario
@@ -102,11 +101,11 @@ class User extends Authenticatable
     {
         return $this->notificaciones()->latest()->take($cantidad)->get();
     }
-    
+
     // Las personas con las que puede chatear ahora: las del otro lado de sus solicitudes en estado en_chat
     public function contactosDeChat(): Collection
     {
-        $contactos = new Collection();
+        $contactos = new Collection;
 
         if ($this->tipo === 'cliente') {
             $contactos = User::whereHas('profesional.solicitudes', function ($consulta) {
@@ -148,8 +147,13 @@ class User extends Authenticatable
     // (cuando esten los avatares de los clientes, se cambia solo la ruta de abajo)
     public function avatar(): string
     {
-        return $this->urlImagen($this->imagen)
-            ?? asset('img/avatares/avatar-'.(($this->id - 1) % 10 + 1).'.svg');
+        // return $this->urlImagen($this->imagen)
+        //     ?? asset('img/avatares/avatar-'.(($this->id - 1) % 10 + 1).'.svg');
+        
+        $genero = $this->genero;
+        $numeroAvatar = ($this->id - 1) % 10 + 1;
+
+        return $this->urlImagen($this->imagen) ?? asset('img/avatares/'.$genero.'/avatar-'.$genero.'-'.$numeroAvatar.'.svg');
     }
 
     #[Scope]
