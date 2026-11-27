@@ -556,7 +556,8 @@ img.avatar-rt {
     background-color: #fff;
     border: 1px solid #ced4da;
     padding-left: 2.5rem;
-    border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
+    /* border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius); */
+    border-radius: 10px;
 }
 
 .campo-buscar .form-control:focus {

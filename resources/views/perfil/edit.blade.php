@@ -30,10 +30,10 @@
             </label>
             <input type="file" name="portada" id="portada" accept="image/jpeg,image/png,image/jpg" hidden>
 
+
             <label for="avatar" class="avatar">
-                 <img src="{{$usuario->avatar()}}"
-                            alt="Foto de {{ $usuario->usuario }}" id="preview-avatar">
-                        <i data-lucide="pencil"></i>
+                <img src="{{$usuario->avatar()}}" alt="Foto de {{ $usuario->usuario }}" id="preview-avatar">
+                    <i data-lucide="pencil"></i>
             </label>
             <input type="file" name="imagen" id="avatar" accept="image/jpeg,image/png,image/jpg" hidden>
         </div>

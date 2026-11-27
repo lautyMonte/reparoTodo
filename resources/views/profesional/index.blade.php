@@ -34,7 +34,7 @@
                             placeholder="Buscar por nombre">
                     </div>
 
-                    <button type="submit" class="btn btn-accent btn-barra fw-semibold">Buscar</button>
+                    <!-- <button type="submit" class="btn btn-accent btn-barra fw-semibold">Buscar</button> -->
                 </div>
             </form>
         </div>

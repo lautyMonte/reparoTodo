@@ -12,7 +12,7 @@
         $estaLogeado = $usuarioActual ?? null;
 
         if ($usuarioActual == null) {
-            $urlOfrecer = route('usuario.registro');
+            $urlOfrecer = route('usuario.create');
         } else {
             $urlOfrecer = '#';
         }

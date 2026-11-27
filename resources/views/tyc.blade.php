@@ -5,6 +5,18 @@
 @endpush
 
 @section('contenido')
+    {{-- Enlace "Crear Cuenta": si esta logeado muestra modal de error --}}
+    @php
+        $usuarioActual = auth()->user();
+        $estaLogeado = $usuarioActual ?? null;
+
+        if ($usuarioActual == null) {
+            $urlOfrecer = route('usuario.create');
+        } else {
+            $urlOfrecer = '#';
+        }
+    @endphp
+
     {{-- Titulo --}}
     <h1>Términos y Condiciones</h1>
     <p class="terminos-descripcion">Bienvenido a ReparoTodo. Antes de utilizar nuestra plataforma, te invitamos a conocer las
@@ -49,10 +61,10 @@
                 <h2>02. Registro y cuentas</h2>
                 <p>
                     Para explorar los servicios disponibles, buscar profesionales y consultar sus perfiles, no es necesario
-                    <a href="{{ route('usuario.create') }}">crear una cuenta</a>.
+                    <a href="{{ $urlOfrecer }}" class="enlace" @if ($estaLogeado) data-bs-toggle="modal" data-bs-target="#modalCrearCuenta" @endif class="btn btn-accent btn-lg fw-bold px-5">Crear Cuenta</a>.
                 <p>
                     Sin embargo, para contactar a un profesional, los usuarios deberán <a
-                        href="{{ route('usuario.create') }}">registrarse</a> en la plataforma.
+                        href="{{ route('usuario.registro') }}">registrarse</a> en la plataforma.
                 <p>
                     Los profesionales que deseen ofrecer sus servicios también deberán crear una cuenta y completar su
                     perfil con la información solicitada.
@@ -213,6 +225,23 @@
             </section>
         </article>
     </div>
+     @if ($estaLogeado != null)
+        <div class="modal fade" id="modalCrearCuenta" tabindex="-1" aria-labelledby="modalCrearCuentaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center p-4">
+                    <div class="modal-body">
+                        <i data-lucide="triangle-exclamation-point" class="icn-aviso mb-3"></i>
+                        <h4 id="modalCrearCuentaLabel">No podes crear una cuenta si estas logeado</h4>
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Volver</button>
+                            <a href="{{ route('usuario.salir') }}" class="btn btn-accent"><i data-lucide="log-out"></i>
+                                Cerrar sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @push('scripts')

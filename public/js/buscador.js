@@ -88,11 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Al presionar el botón Buscar
-    formularioNombre.addEventListener('submit', (e) => {
-        e.preventDefault();
-        clearTimeout(temporizador);
-        realizarBusqueda();
-    });
+    // formularioNombre.addEventListener('submit', (e) => {
+    //     e.preventDefault();
+    //     clearTimeout(temporizador);
+    //     realizarBusqueda();
+    // });
 
     // Buscar automáticamente mientras se escribe
     campoBuscar.addEventListener('input', () => {
