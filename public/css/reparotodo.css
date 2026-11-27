@@ -850,17 +850,14 @@ img.avatar-rt {
     gap: 1rem;
 }
 
-.inicial-resena {
+.avatar-resena {
     flex: 0 0 46px;
     width: 46px;
     height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: 50%;
+    object-fit: cover;
+    display: block;
     background: var(--rt-crema);
-    color: var(--rt-azul);
-    font-weight: 800;
 }
 
 .estrella-llena,
@@ -909,6 +906,13 @@ img.avatar-rt {
     background: #fff1ee;
     border-color: #c0392b;
     color: #c0392b;
+}
+
+/* Botón de edición: mismo botón, pero con hover naranja en vez de rojo */
+.btn-eliminar-resena.btn-editar-resena:hover {
+    background: #fff4e5;
+    border-color: var(--rt-naranja);
+    color: var(--rt-azul);
 }
 
 .btn-eliminar-resena .lucide {

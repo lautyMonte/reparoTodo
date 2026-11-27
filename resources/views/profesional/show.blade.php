@@ -299,10 +299,15 @@
                                 data-resena-puntaje="{{ $resena->puntaje }}"
                             >
 
-                                {{-- Inicial del cliente --}}
-                                <div class="inicial-resena">
-                                    {{ mb_strtoupper(mb_substr($resena->solicitud->cliente->nombreCompleto(), 0, 1)) }}
-                                </div>
+                                {{-- Avatar del cliente que escribió la reseña --}}
+                                <img
+                                    class="avatar-resena"
+                                    src="{{ $resena->solicitud->cliente->avatar() }}"
+                                    alt="Avatar de {{ $resena->solicitud->cliente->nombreCompleto() }}"
+                                    width="46"
+                                    height="46"
+                                    loading="lazy"
+                                >
 
                                 <div class="flex-grow-1">
 
@@ -366,7 +371,7 @@
                                                 @can('update', $resena)
                                                     <button
                                                         type="button"
-                                                        class="btn btn-eliminar-resena"
+                                                        class="btn btn-eliminar-resena btn-editar-resena"
                                                         data-resena-editar
                                                     >
                                                         <i data-lucide="pencil"></i>
