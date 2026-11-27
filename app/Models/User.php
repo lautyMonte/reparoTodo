@@ -147,13 +147,21 @@ class User extends Authenticatable
     // (cuando esten los avatares de los clientes, se cambia solo la ruta de abajo)
     public function avatar(): string
     {
-        // return $this->urlImagen($this->imagen)
-        //     ?? asset('img/avatares/avatar-'.(($this->id - 1) % 10 + 1).'.svg');
-        
-        $genero = $this->genero;
+        $imagen = $this->urlImagen($this->imagen);
+
+        if ($imagen !== null) {
+            return $imagen;
+        }
+
+        if (!in_array($this->genero, ['m', 'f'], true)) {
+            return asset('img/avatares/avatar-generico.svg');
+        }
+
         $numeroAvatar = ($this->id - 1) % 10 + 1;
 
-        return $this->urlImagen($this->imagen) ?? asset('img/avatares/'.$genero.'/avatar-'.$genero.'-'.$numeroAvatar.'.svg');
+        return asset(
+            'img/avatares/'.$this->genero.'/avatar-'.$this->genero.'-'.$numeroAvatar.'.svg'
+        );
     }
 
     #[Scope]
