@@ -24,43 +24,46 @@
                 <form action="{{ route('presupuesto.store', $solicitud->id) }}" method="POST" class="solicitud-cuerpo">
                     @csrf
 
-                    <div class="solicitud-encabezado">
-                        <h2 class="h4 mb-1">Armar presupuesto</h2>
-                        <p class="text-secondary mb-0">Indicá cuánto cuesta y cuánto tarda. {{ $solicitud->cliente->nombreCompleto() }} lo va a ver y puede aceptarlo o rechazarlo.</p>
-                    </div>
+                    <div class="solicitud-campos">
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="monto">Monto total</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text">$</span>
-                                <input type="number" name="monto" id="monto" min="1" max="99999999" step="1" required
-                                       class="form-control @error('monto') is-invalid @enderror"
-                                       value="{{ old('monto') }}" placeholder="Ej: 45000">
-                                @error('monto')
+                        <div class="solicitud-encabezado">
+                            <h2 class="h4 mb-1">Armar presupuesto</h2>
+                            <p class="text-secondary mb-0">Indicá cuánto cuesta y cuánto tarda. {{ $solicitud->cliente->nombreCompleto() }} lo va a ver y puede aceptarlo o rechazarlo.</p>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="monto">Monto total</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" name="monto" id="monto" min="1" max="99999999" step="1" required
+                                        class="form-control @error('monto') is-invalid @enderror"
+                                        value="{{ old('monto') }}" placeholder="Ej: 45000">
+                                    @error('monto')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="plazo_dias">Plazo estimado (en días)</label>
+                                <input type="number" name="plazo_dias" id="plazo_dias" min="1" max="365" step="1" required
+                                    class="form-control @error('plazo_dias') is-invalid @enderror"
+                                    value="{{ old('plazo_dias') }}" placeholder="Ej: 3">
+                                @error('plazo_dias')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="plazo_dias">Plazo estimado (en días)</label>
-                            <input type="number" name="plazo_dias" id="plazo_dias" min="1" max="365" step="1" required
-                                   class="form-control @error('plazo_dias') is-invalid @enderror"
-                                   value="{{ old('plazo_dias') }}" placeholder="Ej: 3">
-                            @error('plazo_dias')
+
+                        <div class="mb-3">
+                            <label class="form-label" for="detalle">Detalle del trabajo</label>
+                            <textarea name="detalle" id="detalle" rows="5" maxlength="1000" required
+                                    class="form-control @error('detalle') is-invalid @enderror"
+                                    placeholder="Explicá qué incluye el presupuesto: tareas, materiales, condiciones">{{ old('detalle') }}</textarea>
+                            @error('detalle')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="detalle">Detalle del trabajo</label>
-                        <textarea name="detalle" id="detalle" rows="5" maxlength="1000" required
-                                  class="form-control @error('detalle') is-invalid @enderror"
-                                  placeholder="Explicá qué incluye el presupuesto: tareas, materiales, condiciones">{{ old('detalle') }}</textarea>
-                        @error('detalle')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="solicitud-acciones">

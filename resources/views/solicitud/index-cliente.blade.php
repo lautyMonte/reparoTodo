@@ -120,21 +120,21 @@
                                 );
                             @endphp
 
-                            <div class="border rounded p-3 mt-3"
+                            <div class="bandeja-resena"
                                 id="formularioResena"
                                 data-resena-inline>
 
                                 {{-- Encabezado --}}
-                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bandeja-resena-encabezado">
 
-                                    <h3 class="h5 mb-0">Tu reseña</h3>
+                                    <h3 class="bandeja-resena-titulo">Tu reseña</h3>
 
                                     @if ($puedeResenar)
                                         <button
                                             type="button"
                                             id="btnEditarResena"
                                             data-resena-editar
-                                            class="btn btn-accent btn-sm {{ $mostrarFormulario ? 'd-none' : '' }}"
+                                            class="btn btn-accent btn-sm bandeja-resena-boton {{ $mostrarFormulario ? 'd-none' : '' }}"
                                         >
                                             <i data-lucide="pencil"></i>
 
