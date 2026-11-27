@@ -354,4 +354,41 @@ class ResenaTest extends TestCase
         $respuesta->assertDontSee($this->cliente->telefono);
         $respuesta->assertDontSee($this->solicitud->descripcion);
     }
+
+    public function test_resenas_publicas_se_ordenan_de_mas_reciente_a_mas_antigua(): void
+    {
+        $resenaAntigua = $this->solicitud->resena()->create([
+            'puntaje' => 5,
+            'comentario' => 'Comentario de la reseña antigua.',
+        ]);
+
+        $resenaAntigua->forceFill([
+            'created_at' => now()->subDays(2),
+        ])->save();
+
+        $segundaSolicitud = Solicitud::create([
+            'cliente_id' => $this->cliente->id,
+            'profesional_id' => $this->profesional->id,
+            'titulo' => 'Segunda reparación',
+            'descripcion' => 'Otro trabajo realizado.',
+            'estado' => 'finalizada',
+        ]);
+
+        $segundaSolicitud->resena()->create([
+            'puntaje' => 4,
+            'comentario' => 'Comentario de la reseña reciente.',
+        ]);
+
+        $respuesta = $this->get(route('profesional.show', [
+            'id' => $this->profesional->id,
+            'tab' => 'resenas',
+        ]));
+
+        $respuesta->assertOk();
+
+        $respuesta->assertSeeInOrder([
+            'Comentario de la reseña reciente.',
+            'Comentario de la reseña antigua.',
+        ]);
+    }
 }

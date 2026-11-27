@@ -61,10 +61,15 @@ class ProfesionalController extends Controller
         $profesional = Profesional::with(
             'user',
             'oficios',
-            'resenas.solicitud.cliente',
             'ciudades.provincia'
         )
             ->with([
+                'resenas' => function ($consulta) {
+                    $consulta->orderByDesc('resenas.created_at')
+                        ->orderByDesc('resenas.id')
+                        ->with('solicitud.cliente');
+                },
+
                 'publicaciones' => function ($consulta) {
                     $consulta->where('solicitudes.estado', 'finalizada')
                         ->orderByDesc('publicaciones.created_at')
