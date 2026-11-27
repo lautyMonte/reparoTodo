@@ -63,8 +63,7 @@
                     Para explorar los servicios disponibles, buscar profesionales y consultar sus perfiles, no es necesario
                     <a href="{{ $urlOfrecer }}" class="enlace" @if ($estaLogeado) data-bs-toggle="modal" data-bs-target="#modalCrearCuenta" @endif class="btn btn-accent btn-lg fw-bold px-5">Crear Cuenta</a>.
                 <p>
-                    Sin embargo, para contactar a un profesional, los usuarios deberán <a
-                        href="{{ route('usuario.registro') }}">registrarse</a> en la plataforma.
+                    Sin embargo, para contactar a un profesional, los usuarios deberán <a href="{{ $urlOfrecer }}" class="enlace" @if ($estaLogeado) data-bs-toggle="modal" data-bs-target="#modalCrearCuenta" @endif class="btn btn-accent btn-lg fw-bold px-5">registrarse</a> en la plataforma.
                 <p>
                     Los profesionales que deseen ofrecer sus servicios también deberán crear una cuenta y completar su
                     perfil con la información solicitada.
