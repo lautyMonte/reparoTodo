@@ -231,7 +231,7 @@
 </small>
                         <img
     class="avatar-rt mx-auto mb-2"
-    src="{{ asset('img/avatares/avatar-1.svg') }}"
+    src="{{ asset('img/avatares/m/avatar-m-5.svg') }}"
     alt="Avatar de ejemplo"
 >
                         <h3 class="h5 mb-1">Matias Jañez</h3>
