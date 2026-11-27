@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class ProfesionalController extends Controller
 {
@@ -219,12 +220,6 @@ public function update(Request $request)
     $validated = $request->validate([
 
         // Datos del usuario
-        'usuario' => [
-            'required',
-            'string',
-            'max:20',
-            Rule::unique('users', 'usuario')->ignore($usuario->id),
-        ],
 
         'nombre' => ['required', 'string', 'max:50'],
         'apellido' => ['required', 'string', 'max:50'],
@@ -237,6 +232,12 @@ public function update(Request $request)
         ],
 
         'imagen' => [
+            'nullable',
+            'image',
+            Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')
+        ],
+
+        'portada' => [
             'nullable',
             'image',
             Rule::file()->types(['jpg', 'jpeg', 'png', 'webp'])->max('2mb')
@@ -262,12 +263,13 @@ public function update(Request $request)
             'exists:oficios,id'
         ],
     ]);
+    // Guardar rutas de imágenes anteriores prueba de pull
+    $archivosAnteriores = [];
 
-    DB::transaction(function () use ($request, $usuario, $profesional, $validated) {
+    DB::transaction(function () use ($request,$usuario,$profesional,$validated, &$archivosAnteriores) {
 
         // Datos del usuario
         $datosUsuario = [
-            'usuario' => $validated['usuario'],
             'nombre' => $validated['nombre'],
             'apellido' => $validated['apellido'],
             'telefono' => $validated['telefono'],
@@ -275,8 +277,19 @@ public function update(Request $request)
         ];
 
         if ($request->hasFile('imagen')) {
+            if ($usuario->imagen) {
+                $archivosAnteriores[] = $usuario->imagen;
+            }
             $datosUsuario['imagen'] = $request->file('imagen')
                 ->store('perfil', 'public');
+        }
+
+        if ($request->hasFile('portada')) {
+            if ($usuario->portada) {
+                $archivosAnteriores[] = $usuario->portada;
+            }
+            $datosUsuario['portada'] = $request->file('portada')
+                ->store('portada', 'public');
         }
 
         $usuario->update($datosUsuario);
@@ -288,6 +301,11 @@ public function update(Request $request)
         $profesional->oficios()->sync($validated['oficios']);
 
     });
+
+    //Eliminar imágenes anteriores después de confirmar la transacción
+    foreach (array_unique($archivosAnteriores) as $archivo) {
+        Storage::disk('public')->delete($archivo);
+    }
 
     return redirect()
         ->route('profesional.edit')

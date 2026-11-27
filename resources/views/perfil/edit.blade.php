@@ -22,13 +22,15 @@
         @csrf
         @method('PUT')
 
-        {{-- Portada + avatar (clickeables, sin íconos de lápiz) --}}
+        {{-- Portada + avatar --}}
         <div class="perfil-header">
-            <div for="portada" class="portada">
-                <img src="{{ asset('img/portada/portada-default.jpg') }}" alt="Portada">
-            </div>
+            <label for="portada" class="portada">
+                <img src="{{ $usuario->portada ? $usuario->urlImagen($usuario->portada): asset('img/portada/portada-default.jpg') }}" alt="Portada" id="preview-portada">
+                    <i data-lucide="pencil"></i>
+            </label>
+            <input type="file" name="portada" id="portada" accept="image/jpeg,image/png,image/jpg" hidden>
 
-            <label for="avatar" class="avatar" title="Cambiar foto">
+            <label for="avatar" class="avatar">
                  <img src="{{$usuario->avatar()}}"
                             alt="Foto de {{ $usuario->usuario }}" id="preview-avatar">
                         <i data-lucide="pencil"></i>
@@ -40,7 +42,10 @@
 
         <div class="campo">
             <label for="usuario" class="form-label"><i data-lucide="user-round"></i>Usuario</label>
-            <input type="text" name="usuario" id="usuario" class="form-control" value="{{ old('usuario', $usuario->usuario) }}" required>
+            <div class="input-con-icono">
+                <input type="text" name="usuario" id="usuario" class="form-control"value="{{ old('usuario', $usuario->usuario) }}"disabled>
+                <i data-lucide="lock-keyhole" class="candado"></i>
+            </div>
         </div>
 
         <div class="campo">
@@ -112,17 +117,28 @@
     </form>
 </div>
 <script>
-    const inputAvatar = document.getElementById('avatar');
-    const previewAvatar = document.getElementById('preview-avatar');
+    function previsualizar(input, preview) {
 
-    inputAvatar.addEventListener('change', function () {
+    input.addEventListener('change', function () {
 
         const archivo = this.files[0];
 
         if (archivo) {
-            previewAvatar.src = URL.createObjectURL(archivo);
+            preview.src = URL.createObjectURL(archivo);
         }
 
     });
+
+}
+
+previsualizar(
+    document.getElementById('portada'),
+    document.getElementById('preview-portada')
+);
+
+previsualizar(
+    document.getElementById('avatar'),
+    document.getElementById('preview-avatar')
+);
 </script>
 @endsection

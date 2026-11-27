@@ -162,13 +162,11 @@
                         <div class="card-body text-center p-4">
                             <span class="etiqueta-destacado mb-3"><i data-lucide="star"></i> Destacado</span>
 
-                            @if ($url = $destacado->user->urlImagen($destacado->user->imagen))
-                                <img class="avatar-rt mx-auto mb-2" src="{{ $url }}"
-                                    alt="Foto de {{ $destacado->user->nombreCompleto() }}">
-                            @else
-                                <div class="avatar-rt mx-auto mb-2">
-                                    {{ mb_strtoupper(mb_substr($destacado->user->nombreCompleto(), 0, 1)) }}</div>
-                            @endif
+                                <img
+                                    class="avatar-rt mx-auto mb-2"
+                                    src="{{ $destacado->user->avatar() }}"
+                                    alt="Foto de {{ $destacado->user->nombreCompleto() }}"
+                                >
 
                             <h3 class="h5 mb-1">
                                 <a href="{{ route('profesional.show', $destacado->id) }}"
@@ -228,7 +226,14 @@
             <div class="col-lg-5 offset-lg-1">
                 <div class="card tarjeta-profesional">
                     <div class="card-body text-center p-4">
-                        <div class="avatar-rt mx-auto mb-2">MJ</div>
+                        <small class="d-block text-secondary mb-3">
+    Ejemplo de perfil profesional
+</small>
+                        <img
+    class="avatar-rt mx-auto mb-2"
+    src="{{ asset('img/avatares/avatar-1.svg') }}"
+    alt="Avatar de ejemplo"
+>
                         <h3 class="h5 mb-1">Matias Jañez</h3>
 
                         <p class="estrellas small mb-2">

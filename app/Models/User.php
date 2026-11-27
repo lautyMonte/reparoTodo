@@ -29,7 +29,7 @@ class User extends Authenticatable
     use InteractsWithChatify;
 
     protected $fillable = [
-        'usuario', 'nombre', 'apellido', 'telefono', 'email', 'tipo', 'imagen', 'email_verified_at', 'password', 'genero',
+        'usuario', 'nombre', 'apellido', 'telefono', 'email', 'tipo', 'imagen', 'portada', 'email_verified_at', 'password', 'genero',
     ];
 
     // Obtener el nombre completo del usuario

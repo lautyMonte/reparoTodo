@@ -113,18 +113,30 @@ document.addEventListener('DOMContentLoaded', () => {
         realizarBusqueda(true);
     });
 
-   // Limpiar filtros
+    // Limpiar filtros
     botonLimpiar.addEventListener('click', () => {
 
-        // Restablecer todos los campos del formulario
-        formularioFiltros.reset();
+        // Desmarcar todos los oficios y localidades
+        formularioFiltros.querySelectorAll('input[type="checkbox"]')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+        // Restablecer la puntuación a todos los puntajes
+        formularioFiltros.querySelector('#puntaje-todos').checked = true;
 
         // Eliminar los parámetros de los filtros de la URL
         const url = new URL(window.location.href);
 
         for (const parametro of [...url.searchParams.keys()]) {
 
-            if (parametro === 'oficios' || parametro.startsWith('oficios[') || parametro === 'localidades' || parametro.startsWith('localidades[') || parametro === 'puntaje') {
+            if (
+                parametro === 'oficios' ||
+                parametro.startsWith('oficios[') ||
+                parametro === 'localidades' ||
+                parametro.startsWith('localidades[') ||
+                parametro === 'puntaje'
+            ) {
                 url.searchParams.delete(parametro);
             }
         }
@@ -142,8 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(temporizador);
         realizarBusqueda(true);
     });
-
-
 
     // Actualizar cantidad de filtros seleccionados
     function actualizarContadorFiltros() {
