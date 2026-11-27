@@ -28,7 +28,7 @@
         </div>
         <div class="campo">
             <label for="motivo">Motivo de la consulta</label>
-            <select id="motivo" name="motivo" required>
+            <select id="motivo" name="motivo" class="tom-select" required>
                 <option value="">Elegí un motivo</option>
                 <option value="problema" @selected(old('motivo') === 'problema')>Problema con mi cuenta</option>
                 <option value="reportar" @selected(old('motivo') === 'reportar')>Reportar a un profesional</option>

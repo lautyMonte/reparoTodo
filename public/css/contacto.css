@@ -36,7 +36,7 @@
     color: #20395d;
 }
 
-.campo input,
+.campo > input,
 .campo select,
 #mensaje {
     height: 45px;
@@ -50,13 +50,13 @@
     font-size: 13px;
 }
 
-.campo input::placeholder, 
+.campo > input::placeholder, 
 .campo select:invalid,
 .campo select:disabled {
     color: #71809a;
 }
 
-.campo input:focus,
+.campo > input:focus,
 #mensaje:focus,
 .campo select:focus {
     border: 2px solid #f58b22;
@@ -114,4 +114,115 @@
 .icn-exito {
     width: 64px;
     height: 64px;
+}
+
+/* TOM SELECT */
+
+/* Contenedor principal */
+.campo .ts-wrapper {
+    width: 100%;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+/* Campo de selección */
+.campo .ts-wrapper .ts-control {
+    width: 100%;
+    min-height: 45px;
+    padding: 0 16px;
+    border: 1px solid #20395d;
+    border-radius: 17px;
+    background-color: white;
+    color: #20395d;
+    font-family: inherit;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+/* Campo de búsqueda interno */
+.campo .ts-control input {
+    font-family: inherit;
+    font-size: 13px;
+    color: #20395d;
+}
+
+/* Placeholder */
+.campo .ts-control input::placeholder {
+    color: #71809a;
+    opacity: 1;
+}
+
+/* Campo seleccionado */
+.campo .ts-wrapper.focus .ts-control {
+    border: 2px solid #f58b22;
+    padding: 0 15px;
+    box-shadow: none;
+}
+
+/* Valor seleccionado */
+.campo .ts-control .item {
+    color: #2B2D31;
+}
+
+/* Menú desplegable */
+.campo .ts-dropdown {
+    margin-top: 5px;
+    border: 1px solid #20395d;
+    border-radius: 12px;
+    background-color: white;
+    font-family: inherit;
+    font-size: 13px;
+    color: #20395d;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+}
+
+/* Contenedor de las opciones */
+.campo .ts-dropdown-content {
+    max-height: 200px;
+    padding: 4px;
+}
+
+/* Opciones disponibles */
+.campo .ts-dropdown .option {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Opción sobre la que está el cursor */
+.campo .ts-dropdown .active {
+    background-color: #20395d;
+    color: white;
+}
+
+/* Opción seleccionada */
+.campo .ts-dropdown .selected {
+    font-weight: 600;
+}
+
+/* Mensaje cuando no hay resultados */
+.campo .ts-dropdown .no-results {
+    padding: 10px 12px;
+    color: #71809a;
+}
+
+/* Selector deshabilitado */
+.campo .ts-wrapper.disabled .ts-control {
+    background-color: white;
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Flecha del selector */
+.campo .ts-wrapper.single .ts-control {
+    padding-right: 35px;
+}
+
+/* Mantener espacio para la flecha al enfocar */
+.campo .ts-wrapper.single.focus .ts-control {
+    padding-right: 34px;
 }
