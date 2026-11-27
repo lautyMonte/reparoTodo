@@ -120,7 +120,7 @@
                                 );
                             @endphp
 
-                            <div class="bandeja-resena"
+                            <div class="bandeja-resena {{ $resenaActual ? '' : 'sin-resena' }}"
                                 id="formularioResena"
                                 data-resena-inline>
 
